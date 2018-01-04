@@ -1,14 +1,13 @@
 package org.thetasinner.web;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 @RestController
 public class Service {
-    @RequestMapping("/hello")
-    public @ResponseBody  Data hello(@RequestParam(value="name", defaultValue="ThetaSinner") String name) {
-        return new Data(name);
+    @GetMapping("/hello/{name}")
+    public Mono<ResponseEntity<Data>> hello(@PathVariable(value = "name") String name) {
+        return Mono.just(ResponseEntity.ok(new Data(name)));
     }
 }
