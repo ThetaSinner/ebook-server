@@ -6,8 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.thetasinner.data.EBookDataService;
 import org.thetasinner.data.model.Book;
+import org.thetasinner.data.model.BookMetadata;
 import org.thetasinner.web.model.BookAddRequest;
-import org.thetasinner.web.model.BookAddResponse;
 
 import java.util.List;
 
@@ -18,20 +18,14 @@ public class EBookController {
 
     @RequestMapping("/load")
     public ResponseEntity load(@RequestParam(name="name", defaultValue = "default") String name) {
-        if (eBookDataService.load(name)) {
-            return new ResponseEntity(HttpStatus.OK);
-        }
-
-        return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        eBookDataService.load(name);
+        return new ResponseEntity(HttpStatus.OK);
     }
 
     @RequestMapping("/save")
     public ResponseEntity save(@RequestParam(name="name", defaultValue = "default") String name) {
-        if (eBookDataService.save(name)) {
-            return new ResponseEntity(HttpStatus.OK);
-        }
-
-        return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        eBookDataService.save(name);
+        return new ResponseEntity(HttpStatus.OK);
     }
 
     @RequestMapping("/books")
@@ -39,8 +33,18 @@ public class EBookController {
         return eBookDataService.getBooks();
     }
 
+    @RequestMapping("/book")
+    public @ResponseBody Book book(@RequestParam(name="id") String id) {
+        return eBookDataService.getBook(id);
+    }
+
     @RequestMapping("/book/add")
-    public @ResponseBody BookAddResponse addBook(@RequestBody BookAddRequest bookAddRequest) {
+    public @ResponseBody Book addBook(@RequestBody BookAddRequest bookAddRequest) {
         return eBookDataService.addBook(bookAddRequest);
+    }
+
+    @RequestMapping("book/metadata")
+    public @ResponseBody BookMetadata bookMetadata(@RequestParam(name="id") String id) {
+        return eBookDataService.getBookMetadata(id);
     }
 }

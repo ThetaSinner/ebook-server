@@ -1,14 +1,17 @@
 package org.thetasinner.data;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.thetasinner.data.exception.*;
 import org.thetasinner.data.model.Book;
+import org.thetasinner.data.model.BookMetadata;
 import org.thetasinner.data.model.Library;
 import org.thetasinner.web.model.BookAddRequest;
-import org.thetasinner.web.model.BookAddResponse;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -18,6 +21,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class EBookDataService {
@@ -25,31 +29,34 @@ public class EBookDataService {
 
     private Library library;
 
-    public boolean load(String name) {
+    private static final ObjectMapper mapper = new ObjectMapper();
+
+    public EBookDataService() {
+        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true);
+        mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
+
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+    }
+
+    public void load(String name) {
         try {
             byte[] encoded = Files.readAllBytes(Paths.get(name + ".json"));
             String result = new String(encoded, Charset.defaultCharset());
 
-            ObjectMapper mapper = new ObjectMapper();
             library = mapper.readValue(result.getBytes(), Library.class);
         } catch (IOException e) {
             LOG.error("Failed to load e-book library", e);
-            return false;
+            throw new EBookDataServiceException("Failed to load e-book library", e);
         }
-
-        return true;
     }
 
-    public boolean save(String name) {
+    public void save(String name) {
         try (FileWriter writer = new FileWriter(name + ".json")) {
-            ObjectMapper mapper = new ObjectMapper();
             mapper.writeValue(writer, library);
         } catch (IOException e) {
             LOG.error("Failed to save e-book library", e);
-            return false;
+            throw new EBookDataServiceException("Failed to save e-book library", e);
         }
-
-        return true;
     }
 
     public List<Book> getBooks() {
@@ -60,14 +67,34 @@ public class EBookDataService {
         return new ArrayList<>();
     }
 
-    public BookAddResponse addBook(BookAddRequest bookAddRequest) {
+    public Book getBook(String id) {
+        if (id == null) {
+            throw new InvalidRequestException("Missing request param: id");
+        }
+
+        Optional<Book> book = library.getBooks()
+                .stream()
+                .filter(b -> id.equals(b.getId()))
+                .findFirst();
+
+        // TODO Find first is not necessarily safe to use if multiple books were to have the same id.
+
+        if (book.isPresent()) {
+            return book.get();
+        }
+        else {
+            throw new EBookNotFoundException("Book not found");
+        }
+    }
+
+    public Book addBook(BookAddRequest bookAddRequest) {
         if (bookAddRequest == null || bookAddRequest.getPath() == null) {
-            return new BookAddResponse(BookAddResponse.ResponseStatus.INVALID_PAYLOAD);
+            throw new InvalidRequestException("Invalid add book request");
         }
 
         Path path = Paths.get(bookAddRequest.getPath());
         if (!Files.exists(path)) {
-            return new BookAddResponse(BookAddResponse.ResponseStatus.FILE_NOT_FOUND);
+            throw new EBookFileNotFoundException("Won't add book because the file does not exist");
         }
 
         Book book = new Book();
@@ -75,6 +102,21 @@ public class EBookDataService {
 
         library.getBooks().add(book);
 
-        return new BookAddResponse(BookAddResponse.ResponseStatus.SUCCESS);
+        return book;
+    }
+
+    public BookMetadata getBookMetadata(String id) {
+        if (id == null) {
+            throw new InvalidRequestException("Missing request param: id");
+        }
+
+        Book book = getBook(id);
+
+        if (book.getMetadata() != null) {
+            return book.getMetadata();
+        }
+        else {
+            throw new MetadataNotFoundException("Book does not have metadata");
+        }
     }
 }
