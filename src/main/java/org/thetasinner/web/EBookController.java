@@ -13,6 +13,7 @@ import org.thetasinner.web.model.BookUpdateRequest;
 
 import java.util.List;
 
+@CrossOrigin(origins = "*")
 @RestController
 public class EBookController {
     @Autowired
