@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.ListUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -12,6 +14,8 @@ import org.thetasinner.data.model.Book;
 import org.thetasinner.data.model.BookMetadata;
 import org.thetasinner.data.model.Library;
 import org.thetasinner.web.model.BookAddRequest;
+import org.thetasinner.web.model.BookMetadataUpdateRequest;
+import org.thetasinner.web.model.BookUpdateRequest;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -87,7 +91,7 @@ public class EBookDataService {
         }
     }
 
-    public Book addBook(BookAddRequest bookAddRequest) {
+    public Book createBook(BookAddRequest bookAddRequest) {
         if (bookAddRequest == null || bookAddRequest.getPath() == null) {
             throw new InvalidRequestException("Invalid add book request");
         }
@@ -118,5 +122,96 @@ public class EBookDataService {
         else {
             throw new MetadataNotFoundException("Book does not have metadata");
         }
+    }
+
+    public BookMetadata createBookMetadata(String id, BookMetadata metadata) {
+        if (id == null) {
+            throw new InvalidRequestException("Missing request param: id");
+        }
+
+        Book book = getBook(id);
+
+        if (book.getMetadata() == null) {
+            book.setMetadata(metadata);
+            return metadata;
+        }
+        else {
+            throw new EBookDataServiceException("Won't create metadata because this book already has metadata");
+        }
+    }
+
+    public void deleteBook(String id) {
+        if (id == null) {
+            throw new InvalidRequestException("Missing request param: id");
+        }
+
+        library.getBooks().removeIf(b -> id.equals(b.getId()));
+    }
+
+    public void deleteBookMetadata(String id) {
+        if (id == null) {
+            throw new InvalidRequestException("Missing request param: id");
+        }
+
+        Book book = getBook(id);
+
+        book.setMetadata(null);
+    }
+
+    public Book updateBook(String id, BookUpdateRequest bookUpdateRequest) {
+        if (id == null) {
+            throw new InvalidRequestException("Missing request param: id");
+        }
+
+        if (bookUpdateRequest == null) {
+            throw new InvalidRequestException("Missing request body");
+        }
+
+        Book book = getBook(id);
+
+        if (bookUpdateRequest.getTitle() != null) {
+            book.setTitle(bookUpdateRequest.getTitle());
+        }
+
+        if (!CollectionUtils.isEmpty(bookUpdateRequest.getAuthors())) {
+            book.getAuthors().addAll(bookUpdateRequest.getAuthors());
+        }
+
+        if (bookUpdateRequest.getPublisher() != null) {
+            book.setPublisher(bookUpdateRequest.getPublisher());
+        }
+
+        if (bookUpdateRequest.getDatePublished() != null) {
+            book.setDatePublished(bookUpdateRequest.getDatePublished());
+        }
+
+        if (bookUpdateRequest.getBookMetadataUpdateRequest() != null) {
+            // TODO this causes an extra scan to find the book
+            updateBookMetadata(id, bookUpdateRequest.getBookMetadataUpdateRequest());
+        }
+
+        return book;
+    }
+
+    public BookMetadata updateBookMetadata(String id, BookMetadataUpdateRequest bookMetadataUpdateRequest) {
+        if (id == null) {
+            throw new InvalidRequestException("Missing request param: id");
+        }
+
+        if (bookMetadataUpdateRequest == null) {
+            throw new InvalidRequestException("Missing request body");
+        }
+
+        BookMetadata bookMetadata = getBookMetadata(id);
+
+        if (!CollectionUtils.isEmpty(bookMetadataUpdateRequest.getTags())) {
+            bookMetadata.getTags().addAll(bookMetadataUpdateRequest.getTags());
+        }
+
+        if (bookMetadataUpdateRequest.getRating() != null) {
+            bookMetadata.setRating(bookMetadataUpdateRequest.getRating());
+        }
+
+        return bookMetadata;
     }
 }

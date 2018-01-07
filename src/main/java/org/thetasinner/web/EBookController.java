@@ -8,6 +8,8 @@ import org.thetasinner.data.EBookDataService;
 import org.thetasinner.data.model.Book;
 import org.thetasinner.data.model.BookMetadata;
 import org.thetasinner.web.model.BookAddRequest;
+import org.thetasinner.web.model.BookMetadataUpdateRequest;
+import org.thetasinner.web.model.BookUpdateRequest;
 
 import java.util.List;
 
@@ -28,23 +30,50 @@ public class EBookController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @RequestMapping("/books")
-    public @ResponseBody List<Book> books() {
+    @RequestMapping(value = "/books", method = RequestMethod.GET)
+    public @ResponseBody List<Book> getBooks() {
         return eBookDataService.getBooks();
     }
 
-    @RequestMapping("/book")
-    public @ResponseBody Book book(@RequestParam(name="id") String id) {
+    @RequestMapping(value = "/books/{id}", method = RequestMethod.GET)
+    public @ResponseBody Book getBook(@RequestParam(name="id") String id) {
         return eBookDataService.getBook(id);
     }
 
-    @RequestMapping("/book/add")
-    public @ResponseBody Book addBook(@RequestBody BookAddRequest bookAddRequest) {
-        return eBookDataService.addBook(bookAddRequest);
+    @RequestMapping(value = "/books", method = RequestMethod.POST)
+    public @ResponseBody Book createBook(@RequestBody BookAddRequest bookAddRequest) {
+        return eBookDataService.createBook(bookAddRequest);
     }
 
-    @RequestMapping("book/metadata")
-    public @ResponseBody BookMetadata bookMetadata(@RequestParam(name="id") String id) {
+    @RequestMapping(value = "/books/{id}", method = RequestMethod.PATCH)
+    public @ResponseBody Book updateBook(@RequestParam(name="id") String id, @RequestBody BookUpdateRequest bookUpdateRequest) {
+        return eBookDataService.updateBook(id, bookUpdateRequest);
+    }
+
+    @RequestMapping(value = "/books/{id}", method = RequestMethod.DELETE)
+    public ResponseEntity deleteBook(@RequestParam(name="id") String id) {
+        eBookDataService.deleteBook(id);
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/books/{id}/metadata", method = RequestMethod.GET)
+    public @ResponseBody BookMetadata getBookMetadata(@RequestParam(name="id") String id) {
         return eBookDataService.getBookMetadata(id);
+    }
+
+    @RequestMapping(value = "/books/{id}/metadata", method = RequestMethod.PUT)
+    public @ResponseBody BookMetadata createBookMetadata(@RequestParam(name="id") String id, @RequestBody BookMetadata bookMetadata) {
+        return eBookDataService.createBookMetadata(id, bookMetadata);
+    }
+
+    @RequestMapping(value = "/books/{id}/metadata", method = RequestMethod.DELETE)
+    public ResponseEntity deleteBookMetadata(@RequestParam(name="id") String id) {
+        eBookDataService.deleteBookMetadata(id);
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/books/{id}/metadata", method = RequestMethod.PATCH)
+    public @ResponseBody BookMetadata updateBookMetadata(@RequestParam(name="id") String id, @RequestBody BookMetadataUpdateRequest bookMetadataUpdateRequest) {
+        return eBookDataService.updateBookMetadata(id, bookMetadataUpdateRequest);
     }
 }

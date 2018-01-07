@@ -1,4 +1,4 @@
-package org.thetasinner.data.model;
+package org.thetasinner.web.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -6,31 +6,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class Book {
-    private String id;
-    private String isbn;
+public class BookUpdateRequest {
     private String title;
     @JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
     private List<String> authors = new ArrayList<>();
     private String publisher;
     private Date datePublished;
-    private BookMetadata metadata;
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getIsbn() {
-        return isbn;
-    }
-
-    public void setIsbn(String isbn) {
-        this.isbn = isbn;
-    }
+    private BookMetadataUpdateRequest bookMetadataUpdateRequest;
 
     public String getTitle() {
         return title;
@@ -64,11 +46,11 @@ public class Book {
         this.datePublished = datePublished;
     }
 
-    public BookMetadata getMetadata() {
-        return metadata;
+    public BookMetadataUpdateRequest getBookMetadataUpdateRequest() {
+        return bookMetadataUpdateRequest;
     }
 
-    public void setMetadata(BookMetadata metadata) {
-        this.metadata = metadata;
+    public void setBookMetadataUpdateRequest(BookMetadataUpdateRequest bookMetadataUpdateRequest) {
+        this.bookMetadataUpdateRequest = bookMetadataUpdateRequest;
     }
 }
