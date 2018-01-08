@@ -19,13 +19,13 @@ public class EBookController {
     @Autowired
     private EBookDataService eBookDataService;
 
-    @RequestMapping("/load")
+    @RequestMapping(value = "/load", method=RequestMethod.GET)
     public ResponseEntity load(@RequestParam(name="name", defaultValue = "default") String name) {
         eBookDataService.load(name);
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @RequestMapping("/save")
+    @RequestMapping(value = "/save", method=RequestMethod.GET)
     public ResponseEntity save(@RequestParam(name="name", defaultValue = "default") String name) {
         eBookDataService.save(name);
         return new ResponseEntity(HttpStatus.OK);

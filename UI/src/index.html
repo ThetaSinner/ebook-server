@@ -1,19 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <title>E-Book Server</title>
+
+    <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.css" />
 
     <script type="text/javascript" src="../node_modules/underscore/underscore.js"></script>
     <script type="text/javascript" src="../node_modules/backbone/backbone.js"></script>
     <script type="text/javascript" src="../node_modules/jquery/dist/jquery.js"></script>
+    <script type="text/javascript" src="../node_modules/popper.js/dist/umd/popper.js"></script>
+    <script type="text/javascript" src="../node_modules/bootstrap/dist/js/bootstrap.js"></script>
 
     <script type="text/javascript" src="./lib.js"></script>
 </head>
+
 <body>
-    <form id="loadLibrary" action="/load" method="get">
-        <input type="text" name="name" />
-        <input type="submit" value="Load" />
-    </form>
+    <div class="container">
+        <p>
+            <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseLibraryAdmin" aria-expanded="false"
+                aria-controls="collapseLibraryAdmin">Admin</button>
+        </p>
+        <div class="collapse" id="collapseLibraryAdmin">
+            <div class="card card-body">
+                    <form id="saveLibrary" action="/save" method="post">
+                        <button type="submit" class="btn btn-primary" aria-describedby="saveLibraryHelp">Save</button>
+                        <small id="saveLibraryHelp" class="form-text text-muted">Save your library often!</small>
+                    </form>
+            </div>
+            <div class="card card-body">
+                <!-- Load library -->
+                <form id="loadLibrary" action="/load" method="get">
+                    <div class="form-group">
+                        <label for="libraryNameInput">Library name</label>
+                        <input type="text" class="form-control" id="libraryNameInput" aria-describedby="libraryNameHelp" placeholder="Enter name">
+                        <small id="libraryNameHelp" class="form-text text-muted">This is the file name of your library</small>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Load</button>
+                </form>
+                <!-- End: Load library -->
+            </div>
+        </div>
+    </div>
 </body>
+
 </html>
