@@ -8,9 +8,12 @@ $(function () {
 
         var target = $(event.target);
         var action = target.attr('action');
+        var name = target.find('#libraryNameInput').val();
+
+        console.log(SERVER_URL + action + '?' + encodeURIComponent(name));
 
         $.ajax(
-            SERVER_URL + action + '?' + target.serialize(), {
+            SERVER_URL + action + '?name=' + encodeURIComponent(name), {
                 method: 'GET',
                 success: function(data, textStatus, jqXHR) {
                     /* eslint-disable no-console */
@@ -48,4 +51,13 @@ $(function () {
             }
         );
     });
+});
+
+const BookModel = Backbone.Model.extend({
+    defaults: {
+        'title':  'Missing title',
+        'authors': ['Missing author'],
+    },
+
+    url: '/books'
 });
