@@ -10,6 +10,7 @@ import org.thetasinner.data.model.BookMetadata;
 import org.thetasinner.web.model.BookAddRequest;
 import org.thetasinner.web.model.BookMetadataUpdateRequest;
 import org.thetasinner.web.model.BookUpdateRequest;
+import org.thetasinner.web.model.EmptyJsonResponse;
 
 import java.util.List;
 
@@ -19,16 +20,16 @@ public class EBookController {
     @Autowired
     private EBookDataService eBookDataService;
 
-    @RequestMapping(value = "/load", method=RequestMethod.GET)
-    public ResponseEntity load(@RequestParam(name="name", defaultValue = "default") String name) {
+    @RequestMapping(value = "/load", method = RequestMethod.GET)
+    public @ResponseBody EmptyJsonResponse load(@RequestParam(name = "name", defaultValue = "default") String name) {
         eBookDataService.load(name);
-        return new ResponseEntity(HttpStatus.OK);
+        return new EmptyJsonResponse();
     }
 
-    @RequestMapping(value = "/save", method=RequestMethod.GET)
-    public ResponseEntity save(@RequestParam(name="name", defaultValue = "default") String name) {
+    @RequestMapping(value = "/save", method = RequestMethod.GET)
+    public @ResponseBody EmptyJsonResponse save(@RequestParam(name = "name", defaultValue = "default") String name) {
         eBookDataService.save(name);
-        return new ResponseEntity(HttpStatus.OK);
+        return new EmptyJsonResponse();
     }
 
     @RequestMapping(value = "/books", method = RequestMethod.GET)
@@ -37,7 +38,7 @@ public class EBookController {
     }
 
     @RequestMapping(value = "/books/{id}", method = RequestMethod.GET)
-    public @ResponseBody Book getBook(@RequestParam(name="id") String id) {
+    public @ResponseBody Book getBook(@RequestParam(name = "id") String id) {
         return eBookDataService.getBook(id);
     }
 
@@ -47,34 +48,34 @@ public class EBookController {
     }
 
     @RequestMapping(value = "/books/{id}", method = RequestMethod.PATCH)
-    public @ResponseBody Book updateBook(@RequestParam(name="id") String id, @RequestBody BookUpdateRequest bookUpdateRequest) {
+    public @ResponseBody Book updateBook(@RequestParam(name = "id") String id, @RequestBody BookUpdateRequest bookUpdateRequest) {
         return eBookDataService.updateBook(id, bookUpdateRequest);
     }
 
     @RequestMapping(value = "/books/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity deleteBook(@RequestParam(name="id") String id) {
+    public ResponseEntity deleteBook(@RequestParam(name = "id") String id) {
         eBookDataService.deleteBook(id);
         return new ResponseEntity(HttpStatus.OK);
     }
 
     @RequestMapping(value = "/books/{id}/metadata", method = RequestMethod.GET)
-    public @ResponseBody BookMetadata getBookMetadata(@RequestParam(name="id") String id) {
+    public @ResponseBody BookMetadata getBookMetadata(@RequestParam(name = "id") String id) {
         return eBookDataService.getBookMetadata(id);
     }
 
     @RequestMapping(value = "/books/{id}/metadata", method = RequestMethod.PUT)
-    public @ResponseBody BookMetadata createBookMetadata(@RequestParam(name="id") String id, @RequestBody BookMetadata bookMetadata) {
+    public @ResponseBody BookMetadata createBookMetadata(@RequestParam(name = "id") String id, @RequestBody BookMetadata bookMetadata) {
         return eBookDataService.createBookMetadata(id, bookMetadata);
     }
 
     @RequestMapping(value = "/books/{id}/metadata", method = RequestMethod.DELETE)
-    public ResponseEntity deleteBookMetadata(@RequestParam(name="id") String id) {
+    public ResponseEntity deleteBookMetadata(@RequestParam(name = "id") String id) {
         eBookDataService.deleteBookMetadata(id);
         return new ResponseEntity(HttpStatus.OK);
     }
 
     @RequestMapping(value = "/books/{id}/metadata", method = RequestMethod.PATCH)
-    public @ResponseBody BookMetadata updateBookMetadata(@RequestParam(name="id") String id, @RequestBody BookMetadataUpdateRequest bookMetadataUpdateRequest) {
+    public @ResponseBody BookMetadata updateBookMetadata(@RequestParam(name = "id") String id, @RequestBody BookMetadataUpdateRequest bookMetadataUpdateRequest) {
         return eBookDataService.updateBookMetadata(id, bookMetadataUpdateRequest);
     }
 }

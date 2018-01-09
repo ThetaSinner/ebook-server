@@ -28,10 +28,10 @@
         </p>
         <div class="collapse" id="collapseLibraryAdmin">
             <div class="card card-body">
-                    <form id="saveLibrary" action="/save" method="post">
-                        <button type="submit" class="btn btn-primary" aria-describedby="saveLibraryHelp">Save</button>
-                        <small id="saveLibraryHelp" class="form-text text-muted">Save your library often!</small>
-                    </form>
+                <form id="saveLibrary" action="/save" method="post">
+                    <button type="submit" class="btn btn-primary" aria-describedby="saveLibraryHelp">Save</button>
+                    <small id="saveLibraryHelp" class="form-text text-muted">Save your library often!</small>
+                </form>
             </div>
             <div class="card card-body">
                 <!-- Load library -->
@@ -48,7 +48,24 @@
         </div>
     </div>
 
-
+    <div class="container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <td>Title</td>
+                    <td>Publisher</td>
+                    <td>Date Published</td>
+                    <td>Authors</td>
+                    <td>ISBN</td>
+                    <td>Rating</td>
+                    <td>Tags</td>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- backbone target -->
+            </tbody>
+        </table>
+    </div>
 </body>
 
 </html>

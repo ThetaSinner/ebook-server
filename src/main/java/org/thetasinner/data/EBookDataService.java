@@ -64,7 +64,7 @@ public class EBookDataService {
     }
 
     public List<Book> getBooks() {
-        if (library != null) {
+        if (library != null && !CollectionUtils.isEmpty(library.getBooks())) {
             return library.getBooks();
         }
 
