@@ -20,3 +20,16 @@ rules:
   semi:
     - error
     - always
+  backbone/initialize-on-top:
+    - 1
+    # Note that the newline groups the next elements
+    -
+      View:
+        - tagName
+        - className
+        - el # modification from the default
+        - events
+      Model:
+        - defaults
+      Collection:
+        - model

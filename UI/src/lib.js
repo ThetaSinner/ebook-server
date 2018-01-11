@@ -72,6 +72,10 @@ const BookModel = Backbone.Model.extend({
 const BookView = Backbone.View.extend({
     tagName: 'tr',
 
+    events: {
+        'click button.expand-book': 'expandBook'
+    },
+
     initialize: function () {
         // Ensure that 'this' for render points to its view.
         _.bindAll(this, 'render');
@@ -93,9 +97,14 @@ const BookView = Backbone.View.extend({
         element.append(jQuery('<td>' + this.model.get('isbn') + '</td>'));
         element.append(jQuery('<td>' + this.model.get('metadata').rating + '</td>'));
         element.append(jQuery('<td>' + this.model.get('metadata').tags + '</td>'));
+        element.append(jQuery('<td><button type="button" class="btn btn-default expand-book" aria-label="Expand Book"><i class="material-icons" aria-hidden="true">expand_more</i></button></td>'));
 
         // Backbone docs say this is good practise.
         return this;
+    },
+
+    expandBook: function() {
+        alert('expanding');
     }
 });
 
@@ -106,9 +115,6 @@ const BooksCollection = Backbone.Collection.extend({
 });
 
 const BooksView = Backbone.View.extend({
-    // Store the collection this view manages.
-    collection: null,
-
     // TODO use id
     el: 'tbody',
 
@@ -137,5 +143,8 @@ const BooksView = Backbone.View.extend({
         });
 
         return this;
-    }
+    },
+
+    // Store the collection this view manages.
+    collection: null,
 });
