@@ -70,10 +70,10 @@ const BookModel = Backbone.Model.extend({
 });
 
 const BookView = Backbone.View.extend({
-    tagName: 'tr',
+    tagName: 'div',
 
     events: {
-        'click button.expand-book': 'expandBook'
+        'click .expand-book': 'expandBook'
     },
 
     initialize: function () {
@@ -83,28 +83,23 @@ const BookView = Backbone.View.extend({
         this.model.bind('change', this.render);
     },
 
+    template: _.template($('#bookTableTemplate').html()),
+
     render: function () {
         var element = $(this.el);
 
         // Clear existing row data if needed
         element.empty();
 
-        // TODO template
-        element.append(jQuery('<td>' + this.model.get('title') + '</td>'));
-        element.append(jQuery('<td>' + this.model.get('publisher') + '</td>'));
-        element.append(jQuery('<td>' + this.model.get('datePublished') + '</td>'));
-        element.append(jQuery('<td>' + this.model.get('authors') + '</td>'));
-        element.append(jQuery('<td>' + this.model.get('isbn') + '</td>'));
-        element.append(jQuery('<td>' + this.model.get('metadata').rating + '</td>'));
-        element.append(jQuery('<td>' + this.model.get('metadata').tags + '</td>'));
-        element.append(jQuery('<td><button type="button" class="btn btn-default expand-book" aria-label="Expand Book"><i class="material-icons" aria-hidden="true">expand_more</i></button></td>'));
+        element.html(this.template(this.model.toJSON()));
 
-        // Backbone docs say this is good practise.
         return this;
     },
 
     expandBook: function() {
-        alert('expanding');
+        var template = _.template($('#bookTemplate').html());
+
+        this.$el.append(template(this.model.toJSON()));
     }
 });
 
@@ -115,8 +110,7 @@ const BooksCollection = Backbone.Collection.extend({
 });
 
 const BooksView = Backbone.View.extend({
-    // TODO use id
-    el: 'tbody',
+    el: '#libraryBind',
 
     initialize: function (options) {
         // TODO checked.

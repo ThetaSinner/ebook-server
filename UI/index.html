@@ -11,11 +11,34 @@
     <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.css" />
     <link rel="stylesheet" href="./node_modules/material-design-icons/iconfont/material-icons.css" />
 
+    <link rel="stylesheet" href="./src/style.css" />
+
     <script type="text/javascript" src="./node_modules/jquery/dist/jquery.js"></script>
     <script type="text/javascript" src="./node_modules/underscore/underscore.js"></script>
     <script type="text/javascript" src="./node_modules/backbone/backbone.js"></script>
     <script type="text/javascript" src="./node_modules/popper.js/dist/umd/popper.js"></script>
     <script type="text/javascript" src="./node_modules/bootstrap/dist/js/bootstrap.js"></script>
+
+    <script type="text/template" id="bookTableTemplate">
+        <div class="row es-book-row">
+            <div class="col-sm-2"><%= title %></div>
+            <div class="col-sm-2"><%= authors %></div>
+            <div class="col-sm-2"><%= publisher %></div>
+            <div class="col-sm-1"><%= datePublished %></div>
+            <div class="col-sm-2"><%= isbn %></div>
+            <div class="col-sm-1"><%= metadata.rating %></div>
+            <div class="col-sm-1"><%= metadata.tags %></div>
+            <div class="col-sm-1 expand-book" aria-label="Expand Book">
+                <i class="material-icons" aria-hidden="true">expand_more</i>
+            </div>
+        </div>
+    </script>
+
+    <script type="text/template" id="bookTemplate">
+        <div class="card card-body">
+            <p><%= title %></p>
+        </div>
+    </script>
 
     <script type="text/javascript" src="./src/lib.js"></script>
 </head>
@@ -50,22 +73,17 @@
     </div>
 
     <div class="container">
-        <table class="table">
-            <thead>
-                <tr>
-                    <td>Title</td>
-                    <td>Publisher</td>
-                    <td>Date Published</td>
-                    <td>Authors</td>
-                    <td>ISBN</td>
-                    <td>Rating</td>
-                    <td>Tags</td>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- backbone target -->
-            </tbody>
-        </table>
+        <div class="row">
+            <div class="col-sm-2">Title</div>
+            <div class="col-sm-2">Authors</div>
+            <div class="col-sm-2">Publisher</div>
+            <div class="col-sm-1">Date</div>
+            <div class="col-sm-2">ISBN</div>
+            <div class="col-sm-1">Rating</div>
+            <div class="col-sm-1">Tags</div>
+            <!-- one left over for expand button -->
+        </div>
+        <div id="libraryBind"><!-- backbone target --></div>
     </div>
 </body>
 
