@@ -77,7 +77,7 @@ const BookView = Backbone.View.extend({
     tagName: 'div',
 
     events: {
-        'click .expand-book': 'expandBook'
+        'click .es-icon-button': 'expandBook'
     },
 
     initialize: function() {

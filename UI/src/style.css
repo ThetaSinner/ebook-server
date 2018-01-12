@@ -1,3 +1,7 @@
 .es-book-row>div {
-    overflow: hidden
+    overflow: hidden;
+}
+
+.es-icon-button {
+    cursor: pointer;
 }
