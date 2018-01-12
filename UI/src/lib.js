@@ -62,6 +62,10 @@ $(function () {
     });
 });
 
+function BookViewModel() {
+    this.expanded = false;
+}
+
 const BookModel = Backbone.Model.extend({
     defaults: {
         'title': null,
@@ -76,16 +80,18 @@ const BookView = Backbone.View.extend({
         'click .expand-book': 'expandBook'
     },
 
-    initialize: function () {
+    initialize: function() {
         // Ensure that 'this' for render points to its view.
         _.bindAll(this, 'render');
 
         this.model.bind('change', this.render);
+
+        this.viewModel = new BookViewModel();
     },
 
     template: _.template($('#bookTableTemplate').html()),
 
-    render: function () {
+    render: function() {
         var element = $(this.el);
 
         // Clear existing row data if needed
@@ -97,9 +103,19 @@ const BookView = Backbone.View.extend({
     },
 
     expandBook: function() {
-        var template = _.template($('#bookTemplate').html());
+        if (this.viewModel.expanded) {
+            $('#expand-' + this.model.get('id')).empty();
+        }
+        else {
+            var t = new BookExpandView({
+                el: '#expand-' + this.model.get('id'),
+                model: this.model
+            });
+    
+            t.render();
+        }
 
-        this.$el.append(template(this.model.toJSON()));
+        this.viewModel.expanded = !this.viewModel.expanded;
     }
 });
 
@@ -124,8 +140,8 @@ const BooksView = Backbone.View.extend({
     },
 
     render: function () {
-        var element = $(this.el);
-
+        var element = this.$el;
+        
         element.empty();
 
         this.collection.forEach(function (item) {
@@ -141,4 +157,21 @@ const BooksView = Backbone.View.extend({
 
     // Store the collection this view manages.
     collection: null,
+});
+
+const BookExpandView = Backbone.View.extend({
+    initialize: function () {
+        _.bindAll(this, 'render');
+
+        this.model.bind('change', this.render);
+    },
+
+    template: _.template($('#bookTemplate').html()),
+
+    render: function() {
+        this.$el.empty();
+        this.$el.html(this.template(this.model.toJSON()));
+
+        return this;
+    }
 });
