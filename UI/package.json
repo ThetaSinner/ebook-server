@@ -13,20 +13,36 @@
   "author": "ThetaSinner",
   "license": "GPL-3.0",
   "dependencies": {
-    "backbone": "^1.3.3",
     "bootstrap": "^4.0.0-beta.3",
+    "gulp-cssnano": "^2.1.2",
+    "gulp-sass": "^3.1.0",
     "jquery": "^3.2.1",
+    "lodash": "^4.17.4",
     "material-design-icons": "^3.0.1",
     "popper.js": "^1.12.9",
-    "underscore": "^1.8.3"
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0"
   },
   "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-jest": "^22.1.0",
+    "babel-loader": "^7.1.2",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-react": "^6.24.1",
     "eslint": "^4.15.0",
     "eslint-config-standard": "^11.0.0-beta.0",
     "eslint-plugin-backbone": "^2.1.1",
     "eslint-plugin-import": "^2.8.0",
     "eslint-plugin-node": "^5.2.1",
     "eslint-plugin-promise": "^3.6.0",
-    "eslint-plugin-standard": "^3.0.1"
+    "eslint-plugin-standard": "^3.0.1",
+    "fancy-log": "^1.3.2",
+    "gulp": "github:gulpjs/gulp#4.0",
+    "gulp-autoprefixer": "^4.1.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-sourcemaps": "^2.6.3",
+    "jest": "^22.1.1",
+    "react-test-renderer": "^16.2.0",
+    "webpack": "^3.10.0"
   }
 }

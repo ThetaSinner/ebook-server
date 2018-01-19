@@ -2,6 +2,8 @@ env:
   browser: true
   es6: true
   jquery: true
+  jest: true
+  node: true
 extends: 
   - 'eslint:recommended'
   - 'plugin:backbone/recommended'
