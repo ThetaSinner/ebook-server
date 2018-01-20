@@ -12,8 +12,18 @@ var concat = require('gulp-concat');
 var autoprefixer = require('gulp-autoprefixer');
 var sass = require('gulp-sass');
 
-var js = [
+var jsWatchPaths = [
+    './root.js',
     './src/js/**/*.js'
+];
+
+var cssWatchPaths = [
+    './root.scss',
+    './src/scss/**/*.scss'
+];
+
+var htmlWatchPaths = [
+    './src/index.html'
 ];
 
 var webpackConfig = {
@@ -62,7 +72,8 @@ var cssTask = function() {
         .pipe(sourcemaps.init())
         .pipe(sass({
             includePaths: [
-                './node_modules/bootstrap/scss/'
+                './node_modules/bootstrap/scss/',
+                './node_modules/material-design-icons/iconfont/'
             ],
             outputStyle: 'compressed'
         }).on('error', sass.logError))
@@ -76,10 +87,31 @@ var cssTask = function() {
         .pipe(gulp.dest('./build/css/'));
 };
 
-var build = gulp.parallel(jsTask, cssTask);
+var copyFontTask = function () {
+    var materialDesignIconsFolder = './node_modules/material-design-icons/iconfont/';
+    return gulp.src([
+        materialDesignIconsFolder + 'MaterialIcons-Regular.eot',
+        materialDesignIconsFolder + 'MaterialIcons-Regular.ijmap',
+        materialDesignIconsFolder + 'MaterialIcons-Regular.svg',
+        materialDesignIconsFolder + 'MaterialIcons-Regular.ttf',
+        materialDesignIconsFolder + 'MaterialIcons-Regular.woff',
+        materialDesignIconsFolder + 'MaterialIcons-Regular.woff2'
+    ]).pipe(gulp.dest('./build/css'));
+};
 
-gulp.task('default', gulp.series(build));
+var copyIndexHtmlTask = function() {
+    return gulp.src('./src/index.html')
+        .pipe(gulp.dest('./build/index.html'));
+};
 
-gulp.task('watch', function () {
-    gulp.watch(js, { delay: 200 }, gulp.parallel(jsTask));
+var buildTask = gulp.parallel(jsTask, cssTask, copyFontTask, copyIndexHtmlTask);
+
+gulp.task('default', gulp.series(buildTask));
+
+gulp.task('watch', function (done) {
+    gulp.watch(jsWatchPaths, { delay: 200 }, gulp.parallel(jsTask));
+    gulp.watch(cssWatchPaths, { delay: 200}, gulp.parallel(cssTask));
+    gulp.watch(htmlWatchPaths, gulp.parallel(copyIndexHtmlTask));
+
+    done();
 });
