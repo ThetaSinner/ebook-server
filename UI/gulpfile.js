@@ -66,6 +66,7 @@ var jsTask =  function (done) {
         done();
     });
 };
+gulp.task('manual:js', jsTask);
 
 var cssTask = function() {
     return gulp.src('./root.scss')
@@ -86,6 +87,7 @@ var cssTask = function() {
         .pipe(sourcemaps.write('.'))
         .pipe(gulp.dest('./build/css/'));
 };
+gulp.task('manual:css', cssTask);
 
 var copyFontTask = function () {
     var materialDesignIconsFolder = './node_modules/material-design-icons/iconfont/';
@@ -96,13 +98,15 @@ var copyFontTask = function () {
         materialDesignIconsFolder + 'MaterialIcons-Regular.ttf',
         materialDesignIconsFolder + 'MaterialIcons-Regular.woff',
         materialDesignIconsFolder + 'MaterialIcons-Regular.woff2'
-    ]).pipe(gulp.dest('./build/css'));
+    ]).pipe(gulp.dest('./build/css/'));
 };
+gulp.task('manual:fonts', copyFontTask);
 
 var copyIndexHtmlTask = function() {
     return gulp.src('./src/index.html')
-        .pipe(gulp.dest('./build/index.html'));
+        .pipe(gulp.dest('./build/'));
 };
+gulp.task('manual:index', copyIndexHtmlTask);
 
 var buildTask = gulp.parallel(jsTask, cssTask, copyFontTask, copyIndexHtmlTask);
 
