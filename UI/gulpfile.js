@@ -1,6 +1,10 @@
 var gulp = require('gulp');
 var log = require('fancy-log');
 
+var browserSync = require('browser-sync').create();
+
+var del = require('del');
+
 // js
 var path = require('path');
 var webpack = require('webpack');
@@ -46,7 +50,9 @@ var webpackConfig = {
     devtool: 'source-map'
 };
 
-var jsTask =  function (done) {
+var cleanTask = () => del('./build');
+
+function jsTask(done) {
     webpack(webpackConfig, (err, stats) => {
         if (err) {
             log.error('Webpack error', err);
@@ -65,10 +71,10 @@ var jsTask =  function (done) {
 
         done();
     });
-};
+}
 gulp.task('manual:js', jsTask);
 
-var cssTask = function() {
+function cssTask() {
     return gulp.src('./root.scss')
         .pipe(sourcemaps.init())
         .pipe(sass({
@@ -85,11 +91,12 @@ var cssTask = function() {
         .pipe(concat('bundle.css'))
         .pipe(cssnano())
         .pipe(sourcemaps.write('.'))
-        .pipe(gulp.dest('./build/css/'));
-};
+        .pipe(gulp.dest('./build/css/'))
+        .pipe(browserSync.stream({match: '**/*.css'}));
+}
 gulp.task('manual:css', cssTask);
 
-var copyFontTask = function () {
+function copyFontTask() {
     var materialDesignIconsFolder = './node_modules/material-design-icons/iconfont/';
     return gulp.src([
         materialDesignIconsFolder + 'MaterialIcons-Regular.eot',
@@ -99,23 +106,38 @@ var copyFontTask = function () {
         materialDesignIconsFolder + 'MaterialIcons-Regular.woff',
         materialDesignIconsFolder + 'MaterialIcons-Regular.woff2'
     ]).pipe(gulp.dest('./build/css/'));
-};
+}
 gulp.task('manual:fonts', copyFontTask);
 
-var copyIndexHtmlTask = function() {
+function copyIndexHtmlTask() {
     return gulp.src('./src/index.html')
         .pipe(gulp.dest('./build/'));
-};
+}
 gulp.task('manual:index', copyIndexHtmlTask);
+
+function browserSyncInitTask(done) {
+    browserSync.init({
+        server: {
+            baseDir: './build'
+        }
+    });
+
+    done();
+}
+
+function browserSyncReloadTask(done) {
+    browserSync.reload();
+    done();
+}
+
+function watchTask() {
+    gulp.watch(jsWatchPaths, { delay: 200 }, gulp.parallel(jsTask, browserSyncReloadTask));
+    gulp.watch(cssWatchPaths, { delay: 200}, gulp.parallel(cssTask, browserSyncReloadTask));
+    gulp.watch(htmlWatchPaths, gulp.parallel(copyIndexHtmlTask, browserSyncReloadTask));
+}
 
 var buildTask = gulp.parallel(jsTask, cssTask, copyFontTask, copyIndexHtmlTask);
 
-gulp.task('default', gulp.series(buildTask));
+gulp.task('default', gulp.series(cleanTask, buildTask));
 
-gulp.task('watch', function (done) {
-    gulp.watch(jsWatchPaths, { delay: 200 }, gulp.parallel(jsTask));
-    gulp.watch(cssWatchPaths, { delay: 200}, gulp.parallel(cssTask));
-    gulp.watch(htmlWatchPaths, gulp.parallel(copyIndexHtmlTask));
-
-    done();
-});
+gulp.task('dev', gulp.series(cleanTask, buildTask, browserSyncInitTask, watchTask));
