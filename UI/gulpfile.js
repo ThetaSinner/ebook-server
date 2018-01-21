@@ -21,7 +21,7 @@ var jsWatchPaths = [
     './src/js/**/*.js'
 ];
 
-var cssWatchPaths = [
+var scssWatchPaths = [
     './root.scss',
     './src/scss/**/*.scss'
 ];
@@ -42,7 +42,8 @@ var webpackConfig = {
                 test: /\.js$/,
                 loader: 'babel-loader',
                 query: {
-                    presets: ['env', 'react']
+                    presets: ['env', 'react'],
+                    compact: false
                 }
             }
         ]
@@ -74,40 +75,12 @@ function jsTask(done) {
 }
 gulp.task('manual:js', jsTask);
 
-function jsVendorTask(done) {
-    const config = Object.assign({}, webpackConfig);
-    config.entry = './root-vendor.js';
-    config.output.filename = 'bundle-vendor.js';
-    config.module.loaders[0].query.compact = false; /* gets rid of warnings about large libraries */
-
-    webpack(config, (err, stats) => {
-        if (err) {
-            log.error('Webpack error', err);
-        }
-        else {
-            log('Webpack stats', stats.toString({
-                assets: true,
-                chunks: false,
-                chunkModules: false,
-                colors: true,
-                hash: false,
-                timings: true,
-                version: false
-            }));
-        }
-
-        done();
-    });
-}
-gulp.task('manual:jsvendor', jsVendorTask);
-
-function cssTask() {
+function scssTask() {
     return gulp.src('./root.scss')
         .pipe(sourcemaps.init())
         .pipe(sass({
             includePaths: [
-                './node_modules/bootstrap/scss/',
-                './node_modules/material-design-icons/iconfont/'
+                './node_modules/bootstrap/scss/'
             ],
             outputStyle: 'compressed'
         }).on('error', sass.logError))
@@ -120,6 +93,13 @@ function cssTask() {
         .pipe(sourcemaps.write('.'))
         .pipe(gulp.dest('./build/css/'))
         .pipe(browserSync.stream({match: '**/*.css'}));
+}
+gulp.task('manual:scss', scssTask);
+
+function cssTask() {
+    return gulp.src([
+        './node_modules/material-design-icons/iconfont/material-icons.css'
+    ]).pipe(gulp.dest('./build/css'));
 }
 gulp.task('manual:css', cssTask);
 
@@ -159,15 +139,15 @@ function browserSyncReloadTask(done) {
 
 function watchTask() {
     gulp.watch(jsWatchPaths, { delay: 200 }, gulp.parallel(jsTask, browserSyncReloadTask));
-    gulp.watch(cssWatchPaths, { delay: 200}, gulp.parallel(cssTask, browserSyncReloadTask));
+    gulp.watch(scssWatchPaths, { delay: 200 }, gulp.parallel(scssTask, browserSyncReloadTask));
     gulp.watch(htmlWatchPaths, gulp.parallel(copyIndexHtmlTask, browserSyncReloadTask));
 }
 
-var buildTask = gulp.parallel(jsTask, jsVendorTask, cssTask, copyFontTask, copyIndexHtmlTask);
+var buildTask = gulp.parallel(jsTask, scssTask, cssTask, copyFontTask, copyIndexHtmlTask);
 
 gulp.task('default', gulp.series(cleanTask, buildTask));
 
-var quickBuildTask = gulp.parallel(jsTask, cssTask, copyIndexHtmlTask);
+var quickBuildTask = gulp.parallel(jsTask, scssTask, copyIndexHtmlTask);
 gulp.task('dirty', gulp.series(quickBuildTask));
 
 gulp.task('dev', gulp.series(cleanTask, buildTask, browserSyncInitTask, watchTask));

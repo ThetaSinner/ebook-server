@@ -1,2 +1,4 @@
-require('./src/js/library.component');
-require('./src/js/lib');
+require('bootstrap');
+require('popper.js');
+
+require('./src/js/app.component');

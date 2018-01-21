@@ -9,23 +9,8 @@
     <title>E-Book Server</title>
 
     <link rel="stylesheet" href="./css/bundle.css" />
-    <script type="text/javascript" src="./js/bundle.js"></script>
 
-    <script type="text/template" id="bookTableTemplate">
-        <div class="row es-book-row">
-            <div class="col-sm-2"><%= title %></div>
-            <div class="col-sm-2"><%= authors %></div>
-            <div class="col-sm-2"><%= publisher %></div>
-            <div class="col-sm-1"><%= datePublished %></div>
-            <div class="col-sm-2"><%= isbn %></div>
-            <div class="col-sm-1"><%= metadata.rating %></div>
-            <div class="col-sm-1"><%= metadata.tags %></div>
-            <div class="col-sm-1 es-icon-button" aria-label="Expand Book">
-                <i class="material-icons" aria-hidden="true">expand_more</i>
-            </div>
-        </div>
-        <div id="expand-<%= id %>"></div>
-    </script>
+    <script type="text/javascript" src="./js/bundle.js"></script>
 
     <script type="text/template" id="bookTemplate">
         <div class="card card-body">
@@ -64,17 +49,7 @@
     </div>
 
     <div class="container">
-        <div class="row">
-            <div class="col-sm-2">Title</div>
-            <div class="col-sm-2">Authors</div>
-            <div class="col-sm-2">Publisher</div>
-            <div class="col-sm-1">Date</div>
-            <div class="col-sm-2">ISBN</div>
-            <div class="col-sm-1">Rating</div>
-            <div class="col-sm-1">Tags</div>
-            <!-- one left over for expand button -->
-        </div>
-        <div id="libraryBind"><!-- backbone target --></div>
+        <div id="app"></div>
     </div>
 </body>
 
