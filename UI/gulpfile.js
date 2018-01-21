@@ -74,6 +74,33 @@ function jsTask(done) {
 }
 gulp.task('manual:js', jsTask);
 
+function jsVendorTask(done) {
+    const config = Object.assign({}, webpackConfig);
+    config.entry = './root-vendor.js';
+    config.output.filename = 'bundle-vendor.js';
+    config.module.loaders[0].query.compact = false; /* gets rid of warnings about large libraries */
+
+    webpack(config, (err, stats) => {
+        if (err) {
+            log.error('Webpack error', err);
+        }
+        else {
+            log('Webpack stats', stats.toString({
+                assets: true,
+                chunks: false,
+                chunkModules: false,
+                colors: true,
+                hash: false,
+                timings: true,
+                version: false
+            }));
+        }
+
+        done();
+    });
+}
+gulp.task('manual:jsvendor', jsVendorTask);
+
 function cssTask() {
     return gulp.src('./root.scss')
         .pipe(sourcemaps.init())
@@ -136,8 +163,11 @@ function watchTask() {
     gulp.watch(htmlWatchPaths, gulp.parallel(copyIndexHtmlTask, browserSyncReloadTask));
 }
 
-var buildTask = gulp.parallel(jsTask, cssTask, copyFontTask, copyIndexHtmlTask);
+var buildTask = gulp.parallel(jsTask, jsVendorTask, cssTask, copyFontTask, copyIndexHtmlTask);
 
 gulp.task('default', gulp.series(cleanTask, buildTask));
+
+var quickBuildTask = gulp.parallel(jsTask, cssTask, copyIndexHtmlTask);
+gulp.task('dirty', gulp.series(quickBuildTask));
 
 gulp.task('dev', gulp.series(cleanTask, buildTask, browserSyncInitTask, watchTask));
