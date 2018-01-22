@@ -138,8 +138,14 @@ function browserSyncReloadTask(done) {
 }
 
 function watchTask() {
-    gulp.watch(jsWatchPaths, { delay: 200 }, gulp.parallel(jsTask, browserSyncReloadTask));
-    gulp.watch(scssWatchPaths, { delay: 200 }, gulp.parallel(scssTask, browserSyncReloadTask));
+    gulp.watch(jsWatchPaths, gulp.parallel(jsTask));
+    gulp.watch(scssWatchPaths, gulp.parallel(scssTask));
+    gulp.watch(htmlWatchPaths, gulp.parallel(copyIndexHtmlTask));
+}
+
+function watchSyncTask() {
+    gulp.watch(jsWatchPaths, gulp.parallel(jsTask, browserSyncReloadTask));
+    gulp.watch(scssWatchPaths, gulp.parallel(scssTask, browserSyncReloadTask));
     gulp.watch(htmlWatchPaths, gulp.parallel(copyIndexHtmlTask, browserSyncReloadTask));
 }
 
@@ -148,6 +154,6 @@ var buildTask = gulp.parallel(jsTask, scssTask, cssTask, copyFontTask, copyIndex
 gulp.task('default', gulp.series(cleanTask, buildTask));
 
 var quickBuildTask = gulp.parallel(jsTask, scssTask, copyIndexHtmlTask);
-gulp.task('dirty', gulp.series(quickBuildTask));
+gulp.task('dirty', gulp.series(quickBuildTask, watchTask));
 
-gulp.task('dev', gulp.series(cleanTask, buildTask, browserSyncInitTask, watchTask));
+gulp.task('dev', gulp.series(cleanTask, buildTask, browserSyncInitTask, watchSyncTask));

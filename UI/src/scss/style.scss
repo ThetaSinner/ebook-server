@@ -1,5 +1,22 @@
-.es-book-row>div {
+%book-row {
+    white-space: nowrap;
     overflow: hidden;
+    text-overflow: ellipsis;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.es-book-row {
+    div {
+        @extend %book-row;
+    }
+}
+
+.es-book-header-row {
+    div {
+        @extend %book-row;
+        font-weight: bold;
+    }
 }
 
 .es-icon-button {
