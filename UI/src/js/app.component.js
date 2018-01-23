@@ -17,6 +17,7 @@ export default class App extends React.Component {
                     title: 'bubbles',
                     authors: ['Gabe Newell', 'Charlie Cavendish'],
                     publisher: 'Action Press',
+                    description: 'This is a book about bubbles by some random people who I don\'t think write books',
                     metadata: {
                         tags: ['fiction', 'futuristic'],
                         rating: 4
@@ -28,6 +29,7 @@ export default class App extends React.Component {
                     title: 'grapes',
                     authors: 'Andy Warhol',
                     publisher: 'Puffin',
+                    description: 'An abstract novel on the topic of grapes by a strange and wonderful artist',
                     metadata: {
                         tags: 'non-fiction',
                         rating: 2
