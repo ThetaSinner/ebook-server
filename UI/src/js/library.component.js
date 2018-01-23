@@ -11,7 +11,7 @@ export default class Library extends React.Component {
 
     render() {
         return (
-            <div className="container">
+            <div>
                 <div className="row es-book-header-row">
                     <div className="col-sm-2">Title</div>
                     <div className="col-sm-2">Authors</div>

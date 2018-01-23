@@ -11,8 +11,8 @@ export default class Book extends React.Component {
     render() {
         const book = this.props.book;
         return (
-            <div className="container-fluid">
-                <div className="container-fluid">
+            <div class="card">
+                <div className="container">
                     <div className="es-title-line">
                         <h3>{book.title}</h3>
                         <span className="es-faded-text">{formatDate(book.datePublished)}</span>
