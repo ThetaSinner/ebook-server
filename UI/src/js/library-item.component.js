@@ -15,7 +15,6 @@ export default class LibraryItem extends React.Component {
     }
 
     render() {
-        console.log(this.state.showBook);
         const showBook = this.state.showBook;
         const book = this.props.book;
         return (
