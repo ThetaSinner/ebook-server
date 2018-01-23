@@ -1,6 +1,8 @@
 import React from 'react';
 import * as _ from 'lodash';
 
+import { formatDate } from './formatter';
+
 export default class Book extends React.Component {
     constructor(props) {
         super(props);
@@ -11,13 +13,16 @@ export default class Book extends React.Component {
         return (
             <div className="container-fluid">
                 <div className="container-fluid">
-                    <h3>{book.title}</h3>
-                    <p>by<span>  </span>
-                        {_.uniq(_.castArray(book.authors)).map((author, index) => (
-                            <span key={author} className="es-author">{author}</span>
+                    <div className="es-title-line">
+                        <h3>{book.title}</h3>
+                        <span className="es-faded-text">{formatDate(book.datePublished)}</span>
+                    </div>
+                    <p><span className="es-faded-text">by  </span>
+                        {this.toAuthorList(book.authors).map((author, index) => (
+                            <span key={book.authors[index]} className="es-author">{author}</span>
                         ))}
                     </p>
-                    <p>Publisher <span className="es-publisher">{book.publisher}</span></p>
+                    <p><span className="es-faded-text">Publisher </span><span>{book.publisher}</span></p>
                 </div>
                 <div className="row">
                     <div className="col-sm-3">
@@ -29,5 +34,19 @@ export default class Book extends React.Component {
                 </div>
             </div>
         );
+    }
+
+    toAuthorList(authors) {
+        var result = _.uniq(_.castArray(authors)).slice();
+
+        if (result.length <= 1) {
+            return result;
+        }
+
+        var back = result.pop();
+        result.forEach((author, index, arr) => arr[index] = author + ',');
+        result.push(back);
+
+        return result;
     }
 }

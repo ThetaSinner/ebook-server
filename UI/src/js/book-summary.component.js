@@ -1,6 +1,8 @@
 import React from 'react';
 import * as _ from 'lodash';
 
+import { formatDateShort } from './formatter';
+
 export default class BookSummary extends React.Component {
     constructor(props) {
         super(props);
@@ -13,7 +15,7 @@ export default class BookSummary extends React.Component {
                 <div className="col-sm-2">{book.title}</div>
                 <div className="col-sm-2">{_.isArray(book.authors) ? _.join(book.authors, ', ') : book.authors}</div>
                 <div className="col-sm-2">{book.publisher}</div>
-                <div className="col-sm-1">{book.datePublished}</div>
+                <div className="col-sm-1">{formatDateShort(book.datePublished)}</div>
                 <div className="col-sm-2">{book.isbn}</div>
                 <div className="col-sm-1">{book.metadata.rating}</div>
                 <div className="col-sm-1">{_.isArray(book.metadata.tags) ? _.join(book.metadata.tags, ', ') : book.metadata.tags}</div>

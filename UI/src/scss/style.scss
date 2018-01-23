@@ -23,11 +23,21 @@
     cursor: pointer;
 }
 
-.es-publisher {
+%faded-text {
     font-weight: lighter;
 }
 
+.es-faded-text {
+    @extend %faded-text;
+}
+
 .es-author {
-    font-weight: lighter;
     padding-right: 10px;
+}
+
+.es-title-line {
+    h3 {
+        display: inline;
+        padding-right: 10px;
+    }
 }
