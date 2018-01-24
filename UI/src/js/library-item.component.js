@@ -18,11 +18,17 @@ export default class LibraryItem extends React.Component {
         const showBook = this.state.showBook;
         const book = this.props.book;
         return (
-            <div>
-                <BookSummary book={book} expanded={showBook} onExpandRow={this.onExpandRow} />
-                {showBook &&
-                    <Book book={book} />
-                }
+            <div className="row">
+                <div className="col-sm-12">
+                    <BookSummary book={book} expanded={showBook} onExpandRow={this.onExpandRow} />
+                    <div class="row">
+                        <div className="col-sm-12">
+                            {showBook &&
+                                <Book book={book} />
+                            }
+                        </div>
+                    </div>
+                </div>
             </div>
         );
     }

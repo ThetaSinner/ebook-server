@@ -22,9 +22,9 @@ export default class Library extends React.Component {
                     <div className="col-sm-1">Tags</div>
                     {/* one left over for expand button */}
                 </div>
-                    {this.props.books.map((book) =>
-                        <LibraryItem key={book.id} book={book} />
-                    )}
+                {this.props.books.map((book) =>
+                    <LibraryItem key={book.id} book={book} />
+                )}
             </div>
         );
     }
