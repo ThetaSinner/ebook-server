@@ -21,7 +21,7 @@ export default class LibraryItem extends React.Component {
             <div className="row">
                 <div className="col-sm-12">
                     <BookSummary book={book} expanded={showBook} onExpandRow={this.onExpandRow} />
-                    <div class="row">
+                    <div className="row">
                         <div className="col-sm-12">
                             {showBook &&
                                 <Book book={book} />

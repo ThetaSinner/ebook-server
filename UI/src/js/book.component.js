@@ -34,7 +34,6 @@ export default class Book extends React.Component {
                         <p>{book.description}</p>
                     </div>
                 </div>
-                <br />
             </div>
         );
     }
