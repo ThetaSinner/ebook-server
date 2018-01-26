@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import $ from 'jquery';
+import * as _ from 'lodash';
 
 export default class BookUpload extends React.Component {
     constructor(props) {
@@ -33,7 +34,30 @@ export default class BookUpload extends React.Component {
     handleUpload(e) {
         e.preventDefault();
 
-        console.log("Will send to server", this.state.files);
+        const formData = new FormData();
+        const files = this.state.files;
+        for (var i = 0; i < files.length; i++) {
+            formData.append('files', files.item(i));
+            console.log(files.item(i).name);
+        }
+
+        console.log(formData);
+
+        $.ajax({
+            url: 'http://localhost:8080/upload',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(data) {
+                console.log(data);
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.log(jqXHR, textStatus, errorThrown);
+            }
+        }).done(function (data) {
+            console.log(data);
+        });
     }
 }
 

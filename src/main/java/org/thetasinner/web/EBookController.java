@@ -3,14 +3,13 @@ package org.thetasinner.web;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.thetasinner.data.EBookDataService;
 import org.thetasinner.data.model.Book;
 import org.thetasinner.data.model.BookMetadata;
-import org.thetasinner.web.model.BookAddRequest;
-import org.thetasinner.web.model.BookMetadataUpdateRequest;
-import org.thetasinner.web.model.BookUpdateRequest;
-import org.thetasinner.web.model.EmptyJsonResponse;
+import org.thetasinner.web.model.*;
 
 import java.util.List;
 
@@ -30,6 +29,18 @@ public class EBookController {
     public @ResponseBody EmptyJsonResponse save(@RequestParam(name = "name", defaultValue = "default") String name) {
         eBookDataService.save(name);
         return new EmptyJsonResponse();
+    }
+
+    @RequestMapping(value = "/upload", method = RequestMethod.POST)
+    public @ResponseBody
+    UploadResponse upload(@RequestParam(name = "files") MultipartFile[] files) {
+        System.out.println("Got a request");
+
+        for (MultipartFile file : files) {
+            System.out.println(file.getOriginalFilename());
+        }
+
+        return new UploadResponse(UploadResponse.Status.Ok);
     }
 
     @RequestMapping(value = "/books", method = RequestMethod.GET)
