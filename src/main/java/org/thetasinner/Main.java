@@ -11,10 +11,11 @@ public class Main {
         SpringApplication.run(Main.class, args);
     }
 
-    /*@Bean
-    public CommonsMultipartResolver  commonsMultipartResolver() {
-        CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
-        multipartResolver.setMaxUploadSize(2000000000);
-        return multipartResolver;
-    }*/
+    @Bean
+    public CommonsMultipartResolver multipartResolver() {
+        CommonsMultipartResolver resolver = new CommonsMultipartResolver();
+        resolver.setMaxUploadSize(-1);
+
+        return resolver;
+    }
 }
