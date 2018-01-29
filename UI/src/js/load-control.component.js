@@ -50,7 +50,9 @@ export default class LoadControl extends React.Component {
         });
     }
 
-    handleLoadLibrary() {
+    handleLoadLibrary(e) {
+        e.preventDefault();
+
         this.props.loadLibrary(this.state.libraryName).then(function () {
             $('#loadControlModal').modal('hide');
         }).catch(function (err) {
