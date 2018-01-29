@@ -29,7 +29,7 @@ export default class LoadControl extends React.Component {
                             </div>
                             <div className="modal-body">
                                 <form>
-                                    <label for="loadLibraryName">Library name</label>
+                                    <label htmlFor="loadLibraryName">Library name</label>
                                     <input type="text" name="loadLibraryName" id="loadLibraryNameId" placeholder="Library name" value={this.state.libraryName} onChange={this.libraryNameChange} className="form-control" />
                                 </form>
                             </div>
@@ -51,12 +51,11 @@ export default class LoadControl extends React.Component {
     }
 
     handleLoadLibrary() {
-        this.props.loadLibrary(this.state.libraryName).then(function (result) {
-            alert(result);
+        this.props.loadLibrary(this.state.libraryName).then(function () {
+            $('#loadControlModal').modal('hide');
         }).catch(function (err) {
+            // TODO output the error into the modal.
             alert(err);
-        })
-
-        $('#loadControlModal').modal('hide');
+        });
     }
 }

@@ -10,6 +10,10 @@ export default class Library extends React.Component {
     }
 
     render() {
+        if (!this.props.books) {
+            return <p>No books here, open a library or add some books!</p>;
+        }
+
         return (
             <div>
                 <div className="row es-book-header-row">
