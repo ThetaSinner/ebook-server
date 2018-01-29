@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import $ from 'jquery';
 
 import Library from './library.component';
+import LibraryControls from './library-controls.component';
 
 export default class App extends React.Component {
     constructor(props) {
@@ -38,10 +39,23 @@ export default class App extends React.Component {
                 }
             ]
         };
+
+        this.state.controlsService = {
+            loadLibrary: this.loadLibrary
+        };
     }
 
     render() {
-        return <Library books={this.state.books} />;
+        return (
+            <div>
+                <LibraryControls service={this.state.controlsService} />
+                <Library books={this.state.books} /> 
+            </div>
+        );
+    }
+
+    loadLibrary(name) {
+        return Promise.resolve('Sucess');
     }
 }
 
