@@ -5,6 +5,11 @@ export default class LoadControl extends React.Component {
     constructor(props) {
         super(props);
 
+        this.state = {
+            libraryName: ''
+        };
+
+        this.libraryNameChange = this.libraryNameChange.bind(this);
         this.handleLoadLibrary = this.handleLoadLibrary.bind(this);
     }
 
@@ -23,7 +28,10 @@ export default class LoadControl extends React.Component {
                                 </button>
                             </div>
                             <div className="modal-body">
-                                <input type="text" name="loadLibraryName" id="loadLibraryNameId" placeholder="Library name" />
+                                <form>
+                                    <label for="loadLibraryName">Library name</label>
+                                    <input type="text" name="loadLibraryName" id="loadLibraryNameId" placeholder="Library name" value={this.state.libraryName} onChange={this.libraryNameChange} className="form-control" />
+                                </form>
                             </div>
                             <div className="modal-footer">
                                 <button type="button" className="btn btn-secondary" data-dismiss="modal">Cancel</button>
@@ -36,10 +44,14 @@ export default class LoadControl extends React.Component {
         );
     }
 
-    handleLoadLibrary() {
-        var libraryName = $('#loadLibraryNameId').val();
+    libraryNameChange(e) {
+        this.setState({
+            libraryName: e.target.value
+        });
+    }
 
-        this.props.loadLibrary(libraryName).then(function (result) {
+    handleLoadLibrary() {
+        this.props.loadLibrary(this.state.libraryName).then(function (result) {
             alert(result);
         }).catch(function (err) {
             alert(err);
