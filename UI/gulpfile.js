@@ -42,7 +42,6 @@ var webpackConfig = {
                 test: /\.js$/,
                 loader: 'babel-loader',
                 query: {
-                    presets: ['env', 'react'],
                     compact: false
                 }
             }

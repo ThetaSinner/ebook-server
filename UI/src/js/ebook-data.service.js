@@ -83,6 +83,12 @@ export default class EBookDataService {
         return Promise.resolve(TestData[libraryName]);
     }
 
+    saveLibrary() {
+        console.log('Will save those right away');
+
+        return Promise.resolve();
+    }
+
     uploadFiles(files) {
         console.log('Will upload those right away');
 

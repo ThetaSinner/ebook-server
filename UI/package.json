@@ -15,8 +15,6 @@
   "license": "GPL-3.0",
   "dependencies": {
     "bootstrap": "^4.0.0-beta.3",
-    "gulp-cssnano": "^2.1.2",
-    "gulp-sass": "^3.1.0",
     "jquery": "^3.2.1",
     "lodash": "^4.17.4",
     "material-design-icons": "^3.0.1",
@@ -25,11 +23,10 @@
     "react-dom": "^16.2.0"
   },
   "devDependencies": {
-    "babel-core": "^6.26.0",
-    "babel-jest": "^22.1.0",
-    "babel-loader": "^7.1.2",
-    "babel-preset-env": "^1.6.1",
-    "babel-preset-react": "^6.24.1",
+    "@babel/core": "^7.0.0-beta.39",
+    "@babel/preset-env": "^7.0.0-beta.39",
+    "@babel/preset-react": "^7.0.0-beta.39",
+    "babel-loader": "^8.0.0-beta.0",
     "browser-sync": "^2.23.5",
     "del": "^3.0.0",
     "eslint": "^4.15.0",
@@ -43,6 +40,8 @@
     "gulp": "github:gulpjs/gulp#v4.0.0-alpha.3",
     "gulp-autoprefixer": "^4.1.0",
     "gulp-concat": "^2.6.1",
+    "gulp-cssnano": "^2.1.2",
+    "gulp-sass": "^3.1.0",
     "gulp-sourcemaps": "^2.6.3",
     "jest": "^22.1.1",
     "react-test-renderer": "^16.2.0",

@@ -15,7 +15,7 @@ export default class LoadControl extends React.Component {
 
     render() {
         return (
-            <div className="d-inline mr-1">
+            <>
                 <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#loadControlModal">Load</button>
 
                 <div className="modal fade" id="loadControlModal" tabIndex="-1" role="dialog" aria-labelledby="loadControlModalLabel" aria-hidden="true">
@@ -40,7 +40,7 @@ export default class LoadControl extends React.Component {
                         </div>
                     </div>
                 </div>
-            </div>
+            </>
         );
     }
 

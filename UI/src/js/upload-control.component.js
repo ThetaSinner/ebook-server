@@ -15,7 +15,7 @@ export default class UploadControl extends React.Component {
 
     render() {
         return (
-            <div className="d-inline mr-1">
+            <>
                 <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#uploadControlModal">Upload</button>
 
                 <div className="modal fade" id="uploadControlModal" tabIndex="-1" role="dialog" aria-labelledby="uploadControlModalLabel" aria-hidden="true">
@@ -40,7 +40,7 @@ export default class UploadControl extends React.Component {
                         </div>
                     </div>
                 </div>
-            </div>
+            </>
         );
     }
 
