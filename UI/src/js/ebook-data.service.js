@@ -82,4 +82,37 @@ export default class EBookDataService {
     loadLibrary(libraryName) {
         return Promise.resolve(TestData[libraryName]);
     }
+
+    uploadFiles(files) {
+        console.log('Will upload those right away');
+
+        return Promise.resolve();
+
+        /*
+        const formData = new FormData();
+        const files = this.state.files;
+        for (var i = 0; i < files.length; i++) {
+            formData.append('files', files.item(i));
+            console.log(files.item(i).name);
+        }
+
+        console.log(formData);
+
+        $.ajax({
+            url: 'http://localhost:8080/upload',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(data) {
+                console.log(data);
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.log(jqXHR, textStatus, errorThrown);
+            }
+        }).done(function (data) {
+            console.log(data);
+        });
+        */
+    }
 }

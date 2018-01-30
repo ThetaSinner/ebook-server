@@ -12,10 +12,12 @@ export default class App extends React.Component {
         super(props);
 
         this.loadLibrary = this.loadLibrary.bind(this);
+        this.uploadFiles = this.uploadFiles.bind(this);
 
         this.state = {
             controlsService: {
-                loadLibrary: this.loadLibrary
+                loadLibrary: this.loadLibrary,
+                uploadFiles: this.uploadFiles
             },
             books: null
         };
@@ -39,6 +41,13 @@ export default class App extends React.Component {
             this.setState({
                 books: library.books
             });
+        });
+    }
+
+    uploadFiles(files) {
+        return this.props.dataService.uploadFiles(files).then(() => {
+            // TODO patch the current library.
+            console.log('done');
         });
     }
 }
