@@ -5,8 +5,6 @@ import LibraryItem from './library-item.component';
 export default class Library extends React.Component {
     constructor(props) {
         super(props);
-
-        
     }
 
     render() {
@@ -14,6 +12,7 @@ export default class Library extends React.Component {
             return <p>No books here, open a library or add some books!</p>;
         }
 
+        const service = this.props.service;
         return (
             <div>
                 <div className="row es-book-header-row">
@@ -27,7 +26,7 @@ export default class Library extends React.Component {
                     {/* one left over for expand button */}
                 </div>
                 {this.props.books.map((book) =>
-                    <LibraryItem key={book.id} book={book} />
+                    <LibraryItem key={book.id} book={book} service={service} />
                 )}
             </div>
         );

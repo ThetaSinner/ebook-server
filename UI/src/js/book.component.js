@@ -6,6 +6,8 @@ import { formatDate } from './formatter';
 export default class Book extends React.Component {
     constructor(props) {
         super(props);
+
+        this.editBook = this.editBook.bind(this);
     }
 
     render() {
@@ -17,6 +19,10 @@ export default class Book extends React.Component {
                         <div className="es-title-line">
                             <h3>{book.title}</h3>
                             <span className="es-faded-text">{formatDate(book.datePublished)}</span>
+
+                            <div className="float-right">
+                                <i className="material-icons es-icon-button" aria-hidden="true" onClick={this.editBook}>mode_edit</i>
+                            </div>
                         </div>
                         <p><span className="es-faded-text">by  </span>
                             {this.toAuthorList(book.authors).map((author, index) => (
@@ -50,5 +56,11 @@ export default class Book extends React.Component {
         result.push(back);
 
         return result;
+    }
+
+    editBook(e) {
+        e.preventDefault();
+
+        this.props.editBook();
     }
 }

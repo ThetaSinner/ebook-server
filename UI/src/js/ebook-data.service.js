@@ -121,4 +121,10 @@ export default class EBookDataService {
         });
         */
     }
+
+    updateBook(book) {
+        console.log('Will update that book right away');
+
+        return Promise.resolve();
+    }
 }

@@ -15,11 +15,16 @@ export default class App extends React.Component {
         this.saveLibrary = this.saveLibrary.bind(this);
         this.uploadFiles = this.uploadFiles.bind(this);
 
+        this.updateBook = this.updateBook.bind(this);
+
         this.state = {
             controlsService: {
                 loadLibrary: this.loadLibrary,
                 saveLibrary: this.saveLibrary,
                 uploadFiles: this.uploadFiles
+            },
+            libraryService: {
+                updateBook: this.updateBook
             },
             books: null
         };
@@ -29,7 +34,7 @@ export default class App extends React.Component {
         return (
             <div>
                 <LibraryControls service={this.state.controlsService} />
-                <Library books={this.state.books} /> 
+                <Library books={this.state.books} service={this.state.libraryService} /> 
             </div>
         );
     }
@@ -52,6 +57,22 @@ export default class App extends React.Component {
 
     uploadFiles(files) {
         return this.props.dataService.uploadFiles(files);
+    }
+
+    updateBook(updatedBook) {
+        return this.props.dataService.updateBook(updatedBook).then(() => {
+            console.log('Overwriting book, dev only');
+
+            this.state.books.forEach((book, index, books) => {
+                if (book.id === updatedBook.id) {
+                    books[index] = book;
+                    
+                    this.setState({
+                        books: books
+                    });
+                }
+            });
+        });
     }
 }
 
