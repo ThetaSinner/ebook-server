@@ -13,6 +13,7 @@ export default class App extends React.Component {
 
         this.loadLibrary = this.loadLibrary.bind(this);
         this.saveLibrary = this.saveLibrary.bind(this);
+        this.addBook = this.addBook.bind(this);
         this.uploadFiles = this.uploadFiles.bind(this);
 
         this.updateBook = this.updateBook.bind(this);
@@ -21,6 +22,7 @@ export default class App extends React.Component {
             controlsService: {
                 loadLibrary: this.loadLibrary,
                 saveLibrary: this.saveLibrary,
+                addBook: this.addBook,
                 uploadFiles: this.uploadFiles
             },
             libraryService: {
@@ -53,6 +55,21 @@ export default class App extends React.Component {
 
     saveLibrary() {
         return this.props.dataService.saveLibrary();
+    }
+
+    addBook(url) {
+        return this.props.dataService.addBook(url).then(() => {
+            let newBooks = this.state.books;
+            newBooks.push({
+                id: 'asdflk2j34098sdf-sfdlkj4353-sdf98' + Math.floor(Math.random() * 1000),
+                url: url,
+                metadata: {}
+            });
+
+            this.setState({
+                books: newBooks
+            });
+        });
     }
 
     uploadFiles(files) {

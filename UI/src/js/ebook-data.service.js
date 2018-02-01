@@ -89,6 +89,12 @@ export default class EBookDataService {
         return Promise.resolve();
     }
 
+    addBook(url) {
+        console.log('Will add book... soon');
+
+        return Promise.resolve();
+    }
+
     uploadFiles(files) {
         console.log('Will upload those right away');
 

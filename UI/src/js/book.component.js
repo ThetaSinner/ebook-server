@@ -45,6 +45,10 @@ export default class Book extends React.Component {
     }
 
     toAuthorList(authors) {
+        if (!authors) {
+            return [];
+        }
+
         var result = _.uniq(_.castArray(authors)).slice();
 
         if (result.length <= 1) {

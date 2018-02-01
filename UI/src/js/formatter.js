@@ -1,6 +1,6 @@
 const dateOptions = { year: 'numeric', month: 'short', day: 'numeric' };
 export function formatDate(date) {
-    if (date === null) {
+    if (!date) {
         return null;
     }
 
@@ -9,7 +9,7 @@ export function formatDate(date) {
 
 const shortDateOptions = { year: 'numeric', month: 'short' };
 export function formatDateShort(date) {
-    if (date === null) {
+    if (!date) {
         return null;
     }
 
