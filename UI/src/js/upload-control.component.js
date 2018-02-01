@@ -28,7 +28,7 @@ export default class UploadControl extends React.Component {
                                 </button>
                             </div>
                             <div className="modal-body">
-                                <form>
+                                <form onSubmit={this.handleUploadFiles}>
                                     <label htmlFor="selectFiles">Choose books to upload</label>
                                     <input type="file" id="selectFiles" accept=".pdf" multiple className="form-control-file" onChange={this.handleSelectedFilesChanged} />
                                 </form>
@@ -47,7 +47,7 @@ export default class UploadControl extends React.Component {
     handleSelectedFilesChanged(e) {
         this.setState({
             files: e.target.files
-        })
+        });
     }
 
     handleUploadFiles(e) {

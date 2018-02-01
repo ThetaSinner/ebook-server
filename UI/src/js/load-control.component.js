@@ -28,7 +28,7 @@ export default class LoadControl extends React.Component {
                                 </button>
                             </div>
                             <div className="modal-body">
-                                <form>
+                                <form onSubmit={this.handleLoadLibrary}>
                                     <label htmlFor="loadLibraryName">Library name</label>
                                     <input type="text" name="loadLibraryName" id="loadLibraryNameId" placeholder="Library name" value={this.state.libraryName} onChange={this.libraryNameChange} className="form-control" />
                                 </form>
