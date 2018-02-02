@@ -17,6 +17,7 @@ export default class App extends React.Component {
         this.addBook = this.addBook.bind(this);
         this.uploadFiles = this.uploadFiles.bind(this);
 
+        this.deleteBook = this.deleteBook.bind(this);
         this.updateBook = this.updateBook.bind(this);
 
         this.state = {
@@ -28,7 +29,8 @@ export default class App extends React.Component {
                 uploadFiles: this.uploadFiles
             },
             libraryService: {
-                updateBook: this.updateBook
+                updateBook: this.updateBook,
+                deleteBook: this.deleteBook
             },
             books: null
         };
@@ -38,7 +40,7 @@ export default class App extends React.Component {
         return (
             <div>
                 <LibraryControls service={this.state.controlsService} />
-                <Library books={this.state.books} service={this.state.libraryService} /> 
+                <Library books={this.state.books} service={this.state.libraryService} />
             </div>
         );
     }
@@ -96,6 +98,18 @@ export default class App extends React.Component {
                         books: books
                     });
                 }
+            });
+        });
+    }
+
+    deleteBook(id) {
+        return this.props.dataService.deleteBook(id).then(() => {
+            var newBooks = this.state.books.filter((book) => {
+                return book.id !== id;
+            });
+
+            this.setState({
+                books: newBooks
             });
         });
     }

@@ -83,7 +83,7 @@ export default class EBookDataService {
         TestData[libraryName] = {
             books: []
         };
-        
+
         return Promise.resolve();
     }
 
@@ -138,6 +138,12 @@ export default class EBookDataService {
 
     updateBook(book) {
         console.log('Will update that book right away');
+
+        return Promise.resolve();
+    }
+
+    deleteBook(id) {
+        console.log('Will delete that book right away', id);
 
         return Promise.resolve();
     }

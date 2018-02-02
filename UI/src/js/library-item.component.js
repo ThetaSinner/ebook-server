@@ -15,6 +15,7 @@ export default class LibraryItem extends React.Component {
 
         this.onExpandRow = this.onExpandRow.bind(this);
         this.editBook = this.editBook.bind(this);
+        this.deleteBook = this.deleteBook.bind(this);
         this.saveBook = this.saveBook.bind(this);
         this.cancelEdit = this.cancelEdit.bind(this);
     }
@@ -30,7 +31,7 @@ export default class LibraryItem extends React.Component {
                     <div className="row">
                         <div className="col-sm-12">
                             {(showBook && !isEditing) &&
-                                <Book book={book} editBook={this.editBook} />
+                                <Book book={book} editBook={this.editBook} deleteBook={this.deleteBook} />
                             }
                             {isEditing &&
                                 <BookEditor book={book} saveBook={this.saveBook} cancelEdit={this.cancelEdit} />
@@ -52,6 +53,10 @@ export default class LibraryItem extends React.Component {
         this.setState({
             isEditing: true
         });
+    }
+
+    deleteBook(id) {
+        this.props.service.deleteBook(id);
     }
 
     saveBook(updatedBook) {
