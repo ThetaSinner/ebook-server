@@ -1,4 +1,4 @@
-const TestData = {
+var TestData = {
     testLibraryA: {
         books: [
             {
@@ -77,6 +77,14 @@ const TestData = {
 export default class EBookDataService {
     constructor(serverUrl) {
         this.serverUrl = serverUrl;
+    }
+
+    createLibrary(libraryName) {
+        TestData[libraryName] = {
+            books: []
+        };
+        
+        return Promise.resolve();
     }
 
     loadLibrary(libraryName) {

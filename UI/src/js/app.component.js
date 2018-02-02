@@ -11,6 +11,7 @@ export default class App extends React.Component {
     constructor(props) {
         super(props);
 
+        this.createLibrary = this.createLibrary.bind(this);
         this.loadLibrary = this.loadLibrary.bind(this);
         this.saveLibrary = this.saveLibrary.bind(this);
         this.addBook = this.addBook.bind(this);
@@ -20,6 +21,7 @@ export default class App extends React.Component {
 
         this.state = {
             controlsService: {
+                createLibrary: this.createLibrary,
                 loadLibrary: this.loadLibrary,
                 saveLibrary: this.saveLibrary,
                 addBook: this.addBook,
@@ -39,6 +41,12 @@ export default class App extends React.Component {
                 <Library books={this.state.books} service={this.state.libraryService} /> 
             </div>
         );
+    }
+
+    createLibrary(name) {
+        return this.props.dataService.createLibrary(name).then(() => {
+            return this.loadLibrary(name);
+        });
     }
 
     loadLibrary(name) {
