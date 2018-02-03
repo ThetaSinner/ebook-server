@@ -52,13 +52,13 @@ export default class App extends React.Component {
     }
 
     loadLibrary(name) {
-        return this.props.dataService.loadLibrary(name).then((library) => {
-            if (!library) {
+        return this.props.dataService.loadLibrary(name).then((books) => {
+            if (!books) {
                 return Promise.reject('Library not found');
             }
 
             this.setState({
-                books: library.books
+                books: books
             });
         });
     }

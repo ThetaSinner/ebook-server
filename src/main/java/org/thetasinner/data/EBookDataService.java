@@ -8,6 +8,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.thetasinner.data.exception.*;
 import org.thetasinner.data.model.Book;
@@ -17,6 +18,7 @@ import org.thetasinner.web.model.BookAddRequest;
 import org.thetasinner.web.model.BookMetadataUpdateRequest;
 import org.thetasinner.web.model.BookUpdateRequest;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -31,6 +33,9 @@ import java.util.Optional;
 public class EBookDataService {
     private static final Logger LOG = LoggerFactory.getLogger(EBookDataService.class);
 
+    @Value("${es.data.path:esdata}")
+    private String dataPath;
+
     private Library library;
 
     private static final ObjectMapper mapper = new ObjectMapper();
@@ -44,7 +49,7 @@ public class EBookDataService {
 
     public void load(String name) {
         try {
-            byte[] encoded = Files.readAllBytes(Paths.get(name + ".json"));
+            byte[] encoded = Files.readAllBytes(Paths.get(dataPath + File.separator + name + ".json"));
             String result = new String(encoded, Charset.defaultCharset());
 
             library = mapper.readValue(result.getBytes(), Library.class);
@@ -64,11 +69,11 @@ public class EBookDataService {
     }
 
     public List<Book> getBooks() {
-        if (library != null && !CollectionUtils.isEmpty(library.getBooks())) {
-            return library.getBooks();
+        if (library == null || CollectionUtils.isEmpty(library.getBooks())) {
+            return new ArrayList<>();
         }
 
-        return new ArrayList<>();
+        return library.getBooks();
     }
 
     public Book getBook(String id) {

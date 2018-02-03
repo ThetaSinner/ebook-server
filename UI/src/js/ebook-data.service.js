@@ -74,6 +74,8 @@ var TestData = {
     }
 };
 
+import $ from 'jquery';
+
 export default class EBookDataService {
     constructor(serverUrl) {
         this.serverUrl = serverUrl;
@@ -88,7 +90,19 @@ export default class EBookDataService {
     }
 
     loadLibrary(libraryName) {
-        return Promise.resolve(TestData[libraryName]);
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: 'http://localhost:8080/load',
+                type: 'GET',
+                data: {
+                    name: libraryName
+                }
+            }).done(() => {
+                resolve();
+            }).fail((jqXHR, textStatus) => {
+                reject(textStatus);
+            });
+        }).then(this._getBooks);
     }
 
     saveLibrary() {
@@ -146,5 +160,18 @@ export default class EBookDataService {
         console.log('Will delete that book right away', id);
 
         return Promise.resolve();
+    }
+
+    _getBooks() {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: 'http://localhost:8080/books',
+                type: 'GET'
+            }).done((result) => {
+                resolve(result);
+            }).fail((jqXHR, textStatus) => {
+                reject(textStatus);
+            });
+        });
     }
 }
