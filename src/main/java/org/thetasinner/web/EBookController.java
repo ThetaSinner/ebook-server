@@ -30,9 +30,14 @@ public class EBookController {
         return new EmptyJsonResponse();
     }
 
+    @RequestMapping(value = "/create", method = RequestMethod.POST)
+    public @ResponseBody EmptyJsonResponse create(@RequestParam(name = "name") String name) {
+        eBookDataService.create(name);
+        return new EmptyJsonResponse();
+    }
+
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
-    public @ResponseBody
-    UploadResponse upload(@RequestParam(name = "files") MultipartFile[] files) {
+    public @ResponseBody UploadResponse upload(@RequestParam(name = "files") MultipartFile[] files) {
         System.out.println("Got a request");
 
         for (MultipartFile file : files) {

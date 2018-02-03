@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.ListUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,9 +32,7 @@ import java.util.Optional;
 public class EBookDataService {
     private static final Logger LOG = LoggerFactory.getLogger(EBookDataService.class);
 
-    @Value("${es.data.path:esdata}")
     private String dataPath;
-
     private Library library;
 
     private static final ObjectMapper mapper = new ObjectMapper();
@@ -47,9 +44,24 @@ public class EBookDataService {
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
     }
 
+    @Value("${es.data.path:esdata}")
+    private void setDataPath(String param) {
+        if (param.charAt(param.length() - 1) != File.separatorChar) {
+            param += File.separator;
+        }
+        dataPath = param;
+
+        if (!Files.exists(Paths.get(dataPath))) {
+            File f = new File(dataPath);
+            if (!f.mkdirs()) {
+                throw new IllegalStateException("The directory specified by es.data.path does not exist and cannot be created");
+            }
+        }
+    }
+
     public void load(String name) {
         try {
-            byte[] encoded = Files.readAllBytes(Paths.get(dataPath + File.separator + name + ".json"));
+            byte[] encoded = Files.readAllBytes(Paths.get(dataPath + name + File.separator + "library.json"));
             String result = new String(encoded, Charset.defaultCharset());
 
             library = mapper.readValue(result.getBytes(), Library.class);
@@ -65,6 +77,30 @@ public class EBookDataService {
         } catch (IOException e) {
             LOG.error("Failed to save e-book library", e);
             throw new EBookDataServiceException("Failed to save e-book library", e);
+        }
+    }
+
+    public void create(String name) {
+        String path = dataPath + name + File.separator;
+        Path newLibraryPath = Paths.get(path);
+        if (Files.exists(newLibraryPath)) {
+            throw new EBookDataServiceException(String.format("Will not create new library with name [%s] because the name is already in use", name));
+        }
+
+        File dir = new File(path);
+        if (!dir.mkdirs()) {
+            throw new EBookDataServiceException(String.format("Unable to create directory for name [%s], check this is a valid directory name and you have permission to create it", name));
+        }
+
+        String libraryPath = path + "library.json";
+        Library newLibrary = new Library();
+        try (FileWriter writer = new FileWriter(libraryPath)) {
+            mapper.writeValue(writer, newLibrary);
+        }
+        catch (IOException e) {
+            // An IO exception here is NOT expected because the path has been checked but if it does happen then some sort
+            // or recovery is needed. Can either delete the library folder or create a library validation and repair feature.
+            throw new EBookDataServiceException(String.format("Failed to create library data file for new library with name [%s]", name));
         }
     }
 

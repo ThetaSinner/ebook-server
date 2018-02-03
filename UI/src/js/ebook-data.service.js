@@ -82,11 +82,19 @@ export default class EBookDataService {
     }
 
     createLibrary(libraryName) {
-        TestData[libraryName] = {
-            books: []
-        };
-
-        return Promise.resolve();
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: 'http://localhost:8080/create',
+                type: 'POST',
+                data: {
+                    name: libraryName
+                }
+            }).done(() => {
+                resolve();
+            }).fail((jqXHR, textStatus) => {
+                reject(textStatus);
+            });
+        });
     }
 
     loadLibrary(libraryName) {
