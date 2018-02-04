@@ -1,119 +1,69 @@
 package org.thetasinner.data;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import org.apache.commons.collections4.CollectionUtils;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.Claim;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.thetasinner.data.exception.*;
+import org.thetasinner.data.exception.EBookDataServiceException;
 import org.thetasinner.data.model.Book;
 import org.thetasinner.data.model.BookMetadata;
-import org.thetasinner.data.model.Library;
+import org.thetasinner.data.storage.ILibraryStorage;
 import org.thetasinner.web.model.BookAddRequest;
 import org.thetasinner.web.model.BookMetadataUpdateRequest;
 import org.thetasinner.web.model.BookUpdateRequest;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class EBookDataService {
     private static final Logger LOG = LoggerFactory.getLogger(EBookDataService.class);
 
-    private String dataPath;
-    private Library library;
+    @Autowired
+    private ILibraryStorage storage;
 
-    private static final ObjectMapper mapper = new ObjectMapper();
+    public String load(String token, String name) {
+        if (StringUtils.isEmpty(name)) {
+            throw new EBookDataServiceException("Provide a name");
+        }
 
-    public EBookDataService() {
-        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true);
-        mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
-
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        String updatedToken = createOrUpdateToken(token, name);
+        storage.load(name);
+        return updatedToken;
     }
 
-    @Value("${es.data.path:esdata}")
-    private void setDataPath(String param) {
-        if (param.charAt(param.length() - 1) != File.separatorChar) {
-            param += File.separator;
-        }
-        dataPath = param;
+    public void save(String token, String name) {
+        checkCanUseLibrary(token, name);
 
-        if (!Files.exists(Paths.get(dataPath))) {
-            File f = new File(dataPath);
-            if (!f.mkdirs()) {
-                throw new IllegalStateException("The directory specified by es.data.path does not exist and cannot be created");
-            }
-        }
+        storage.save(name);
     }
 
-    public void load(String name) {
-        try {
-            byte[] encoded = Files.readAllBytes(Paths.get(dataPath + name + File.separator + "library.json"));
-            String result = new String(encoded, Charset.defaultCharset());
-
-            library = mapper.readValue(result.getBytes(), Library.class);
-        } catch (IOException e) {
-            LOG.error("Failed to load e-book library", e);
-            throw new EBookDataServiceException("Failed to load e-book library", e);
+    public String create(String token, String name) {
+        if (StringUtils.isEmpty(name)) {
+            throw new EBookDataServiceException(("Provide a name"));
         }
+
+        String updatedToken = createOrUpdateToken(token, name);
+        storage.create(name);
+        return updatedToken;
     }
 
-    public void save(String name) {
-        try (FileWriter writer = new FileWriter(name + ".json")) {
-            mapper.writeValue(writer, library);
-        } catch (IOException e) {
-            LOG.error("Failed to save e-book library", e);
-            throw new EBookDataServiceException("Failed to save e-book library", e);
-        }
-    }
+    public List<Book> getBooks(String token, String name) {
+        checkCanUseLibrary(token, name);
 
-    public void create(String name) {
-        String path = dataPath + name + File.separator;
-        Path newLibraryPath = Paths.get(path);
-        if (Files.exists(newLibraryPath)) {
-            throw new EBookDataServiceException(String.format("Will not create new library with name [%s] because the name is already in use", name));
-        }
+        List<Book> books = storage.getBooks(name);
 
-        File dir = new File(path);
-        if (!dir.mkdirs()) {
-            throw new EBookDataServiceException(String.format("Unable to create directory for name [%s], check this is a valid directory name and you have permission to create it", name));
-        }
-
-        String libraryPath = path + "library.json";
-        Library newLibrary = new Library();
-        try (FileWriter writer = new FileWriter(libraryPath)) {
-            mapper.writeValue(writer, newLibrary);
-        }
-        catch (IOException e) {
-            // An IO exception here is NOT expected because the path has been checked but if it does happen then some sort
-            // or recovery is needed. Can either delete the library folder or create a library validation and repair feature.
-            throw new EBookDataServiceException(String.format("Failed to create library data file for new library with name [%s]", name));
-        }
-    }
-
-    public List<Book> getBooks() {
-        if (library == null || CollectionUtils.isEmpty(library.getBooks())) {
-            return new ArrayList<>();
-        }
-
-        return library.getBooks();
+        return books == null ? new ArrayList<>() : books;
     }
 
     public Book getBook(String id) {
-        if (id == null) {
+        /*if (id == null) {
             throw new InvalidRequestException("Missing request param: id");
         }
 
@@ -129,11 +79,12 @@ public class EBookDataService {
         }
         else {
             throw new EBookNotFoundException("Book not found");
-        }
+        }*/
+        throw new EBookDataServiceException("not implemented");
     }
 
     public Book createBook(BookAddRequest bookAddRequest) {
-        if (bookAddRequest == null || bookAddRequest.getPath() == null) {
+        /*if (bookAddRequest == null || bookAddRequest.getPath() == null) {
             throw new InvalidRequestException("Invalid add book request");
         }
 
@@ -147,11 +98,12 @@ public class EBookDataService {
 
         library.getBooks().add(book);
 
-        return book;
+        return book;*/
+        throw new EBookDataServiceException("not implemented");
     }
 
     public BookMetadata getBookMetadata(String id) {
-        if (id == null) {
+        /*if (id == null) {
             throw new InvalidRequestException("Missing request param: id");
         }
 
@@ -162,11 +114,12 @@ public class EBookDataService {
         }
         else {
             throw new MetadataNotFoundException("Book does not have metadata");
-        }
+        }*/
+        throw new EBookDataServiceException("not implemented");
     }
 
     public BookMetadata createBookMetadata(String id, BookMetadata metadata) {
-        if (id == null) {
+        /*if (id == null) {
             throw new InvalidRequestException("Missing request param: id");
         }
 
@@ -178,29 +131,32 @@ public class EBookDataService {
         }
         else {
             throw new EBookDataServiceException("Won't create metadata because this book already has metadata");
-        }
+        }*/
+        throw new EBookDataServiceException("not implemented");
     }
 
     public void deleteBook(String id) {
-        if (id == null) {
+        /*if (id == null) {
             throw new InvalidRequestException("Missing request param: id");
         }
 
-        library.getBooks().removeIf(b -> id.equals(b.getId()));
+        library.getBooks().removeIf(b -> id.equals(b.getId()));*/
+        throw new EBookDataServiceException("not implemented");
     }
 
     public void deleteBookMetadata(String id) {
-        if (id == null) {
+        /*if (id == null) {
             throw new InvalidRequestException("Missing request param: id");
         }
 
         Book book = getBook(id);
 
-        book.setMetadata(null);
+        book.setMetadata(null);*/
+        throw new EBookDataServiceException("not implemented");
     }
 
     public Book updateBook(String id, BookUpdateRequest bookUpdateRequest) {
-        if (id == null) {
+        /*if (id == null) {
             throw new InvalidRequestException("Missing request param: id");
         }
 
@@ -231,11 +187,12 @@ public class EBookDataService {
             updateBookMetadata(id, bookUpdateRequest.getBookMetadataUpdateRequest());
         }
 
-        return book;
+        return book;*/
+        throw new EBookDataServiceException("not implemented");
     }
 
     public BookMetadata updateBookMetadata(String id, BookMetadataUpdateRequest bookMetadataUpdateRequest) {
-        if (id == null) {
+        /*if (id == null) {
             throw new InvalidRequestException("Missing request param: id");
         }
 
@@ -253,6 +210,67 @@ public class EBookDataService {
             bookMetadata.setRating(bookMetadataUpdateRequest.getRating());
         }
 
-        return bookMetadata;
+        return bookMetadata;*/
+        throw new EBookDataServiceException("not implemented");
+    }
+
+    private String createOrUpdateToken(String token, String name) {
+        String newToken;
+        try {
+            if (StringUtils.isEmpty(token)) {
+                // TODO extract all of this and create a property.
+                Algorithm algorithm = Algorithm.HMAC256("mysecret");
+                newToken = JWT.create()
+                        .withIssuer("ebook-server")
+                        .withArrayClaim("libraries", new String[]{name})
+                        .sign(algorithm);
+            }
+            else {
+                List<String> claimedLibraries = getClaimedLibraries(token);
+                claimedLibraries.add(name);
+
+                Algorithm algorithm = Algorithm.HMAC256("mysecret");
+                newToken = JWT.create()
+                        .withIssuer("ebook-server")
+                        .withArrayClaim("libraries", claimedLibraries.toArray(new String[claimedLibraries.size()]))
+                        .sign(algorithm);
+            }
+        }
+        catch (UnsupportedEncodingException e) {
+            throw new EBookDataServiceException("Error creating token");
+        }
+
+        return newToken;
+    }
+
+    private void checkCanUseLibrary(String token, String name) {
+        if (StringUtils.isEmpty(token) || StringUtils.isEmpty(name)) {
+            throw new EBookDataServiceException("Provide name and token");
+        }
+
+        List<String> claimedLibraries = getClaimedLibraries(token);
+        if (!claimedLibraries.contains(name)) {
+            throw new EBookDataServiceException("Unauthorized library access");
+        }
+    }
+
+    private List<String> getClaimedLibraries(String token) {
+        if (StringUtils.isEmpty(token)) {
+            return new ArrayList<>();
+        }
+
+        DecodedJWT decoded = JWT.decode(token);
+
+        String issuer = decoded.getIssuer();
+        if (!"ebook-server".equals(issuer)) {
+            throw new EBookDataServiceException("Invalid token");
+        }
+
+        Claim librariesClaim = decoded.getClaim("libraries");
+        if (librariesClaim.isNull()) {
+            throw new EBookDataServiceException("Invalid token");
+        }
+
+        return librariesClaim.asList(String.class);
     }
 }

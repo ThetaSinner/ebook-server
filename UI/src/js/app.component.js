@@ -47,7 +47,9 @@ export default class App extends React.Component {
 
     createLibrary(name) {
         return this.props.dataService.createLibrary(name).then(() => {
-            return this.loadLibrary(name);
+            this.setState({
+                books: []
+            });
         });
     }
 

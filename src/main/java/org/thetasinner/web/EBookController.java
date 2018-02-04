@@ -19,21 +19,21 @@ public class EBookController {
     private EBookDataService eBookDataService;
 
     @RequestMapping(value = "/load", method = RequestMethod.GET)
-    public @ResponseBody EmptyJsonResponse load(@RequestParam(name = "name", defaultValue = "default") String name) {
-        eBookDataService.load(name);
-        return new EmptyJsonResponse();
+    public @ResponseBody LoadResponse load(@RequestParam(name = "token") String token, @RequestParam(name = "name") String name) {
+        String newToken = eBookDataService.load(token, name);
+        return new LoadResponse(newToken);
     }
 
     @RequestMapping(value = "/save", method = RequestMethod.GET)
-    public @ResponseBody EmptyJsonResponse save(@RequestParam(name = "name", defaultValue = "default") String name) {
-        eBookDataService.save(name);
+    public @ResponseBody EmptyJsonResponse save(@RequestParam(name = "token") String token, @RequestParam(name = "name") String name) {
+        eBookDataService.save(token, name);
         return new EmptyJsonResponse();
     }
 
     @RequestMapping(value = "/create", method = RequestMethod.POST)
-    public @ResponseBody EmptyJsonResponse create(@RequestParam(name = "name") String name) {
-        eBookDataService.create(name);
-        return new EmptyJsonResponse();
+    public @ResponseBody LoadResponse create(@RequestParam(name = "token") String token, @RequestParam(name = "name") String name) {
+        String newToken = eBookDataService.create(token, name);
+        return new LoadResponse(newToken);
     }
 
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
@@ -48,8 +48,8 @@ public class EBookController {
     }
 
     @RequestMapping(value = "/books", method = RequestMethod.GET)
-    public @ResponseBody List<Book> getBooks() {
-        return eBookDataService.getBooks();
+    public @ResponseBody List<Book> getBooks(@RequestParam(name = "token") String token, @RequestParam(name = "name") String name) {
+        return eBookDataService.getBooks(token, name);
     }
 
     @RequestMapping(value = "/books/{id}", method = RequestMethod.GET)

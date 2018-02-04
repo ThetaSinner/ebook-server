@@ -78,18 +78,27 @@ import $ from 'jquery';
 
 export default class EBookDataService {
     constructor(serverUrl) {
+        this.token = null;
+        // The server supports multiple libraries being open, just need to support switching on the UI.
+        this.activeLibraryName = null;
         this.serverUrl = serverUrl;
+
+        this._getBooks = this._getBooks.bind(this);
     }
 
     createLibrary(libraryName) {
+        const that = this;
         return new Promise((resolve, reject) => {
             $.ajax({
                 url: 'http://localhost:8080/create',
                 type: 'POST',
                 data: {
+                    token: that.token,
                     name: libraryName
                 }
-            }).done(() => {
+            }).done((response) => {
+                that.token = response.token;
+                that.activeLibraryName = libraryName;
                 resolve();
             }).fail((jqXHR, textStatus) => {
                 reject(textStatus);
@@ -98,14 +107,18 @@ export default class EBookDataService {
     }
 
     loadLibrary(libraryName) {
+        const that = this;
         return new Promise((resolve, reject) => {
             $.ajax({
                 url: 'http://localhost:8080/load',
                 type: 'GET',
                 data: {
+                    token: that.token,
                     name: libraryName
                 }
-            }).done(() => {
+            }).done((response) => {
+                that.token = response.token;
+                that.activeLibraryName = libraryName;
                 resolve();
             }).fail((jqXHR, textStatus) => {
                 reject(textStatus);
@@ -114,9 +127,22 @@ export default class EBookDataService {
     }
 
     saveLibrary() {
-        console.log('Will save those right away');
-
-        return Promise.resolve();
+        const that = this;
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: 'http://localhost:8080/save',
+                type: 'GET',
+                data: {
+                    token: that.token,
+                    name: that.activeLibraryName
+                }
+            }).done((response) => {
+                that.token = response.token;
+                resolve();
+            }).fail((jqXHR, textStatus) => {
+                reject(textStatus);
+            });
+        });
     }
 
     addBook(url) {
@@ -171,10 +197,15 @@ export default class EBookDataService {
     }
 
     _getBooks() {
+        const that = this;
         return new Promise((resolve, reject) => {
             $.ajax({
                 url: 'http://localhost:8080/books',
-                type: 'GET'
+                type: 'GET',
+                data: {
+                    token: that.token,
+                    name: that.activeLibraryName
+                }
             }).done((result) => {
                 resolve(result);
             }).fail((jqXHR, textStatus) => {
