@@ -17,8 +17,8 @@ export default class BookEditor extends React.Component {
             publisher: book.publisher,
             datePublished: book.datePublished,
             description: book.description,
-            metadataTags: displayHelper.toCommaList(book.metadata.tags),
-            metadataRating: book.metadata.rating
+            metadataTags: displayHelper.toCommaList(book.metadata && book.metadata.tags),
+            metadataRating: book.metadata ? book.metadata.rating : ''
         };
 
         this.saveBook = this.saveBook.bind(this);

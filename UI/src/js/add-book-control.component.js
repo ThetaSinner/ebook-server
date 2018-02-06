@@ -6,10 +6,12 @@ export default class AddBookControl extends React.Component {
         super(props);
 
         this.state = {
-            url: ''
+            url: '',
+            type: 'WebLink'
         };
 
         this.handleUrlChanged = this.handleUrlChanged.bind(this);
+        this.handleTypeChanged = this.handleTypeChanged.bind(this);
         this.handleAddBook = this.handleAddBook.bind(this);
     }
 
@@ -30,7 +32,14 @@ export default class AddBookControl extends React.Component {
                             <div className="modal-body">
                                 <form onSubmit={this.handleAddBook}>
                                     <label htmlFor="inputUrl">Input the URL for the book</label>
-                                    <input type="text" id="inputUrl" multiple className="form-control" onChange={this.handleUrlChanged} />
+                                    <input type="text" id="inputUrl" multiple className="form-control" value={this.state.url} onChange={this.handleUrlChanged} />
+
+                                    <label htmlFor="selectType">What type of URL is this?</label>
+                                    <select id="selectType" className="custom-select" value={this.state.type} onChange={this.handleTypeChanged}>
+                                        <option value="LocalUnmanaged">A file on your computer</option>
+                                        <option value="WebLink">A link to a book somewhere on the internet</option>
+                                        <option value="Other">Something else</option>
+                                    </select>
                                 </form>
                             </div>
                             <div className="modal-footer">
@@ -50,10 +59,16 @@ export default class AddBookControl extends React.Component {
         });
     }
 
+    handleTypeChanged(e) {
+        this.setState({
+            type: e.target.value
+        });
+    }
+
     handleAddBook(e) {
         e.preventDefault();
 
-        this.props.addBook(this.state.url).then(() => {
+        this.props.addBook(this.state.url, this.state.type).then(() => {
             $('#addBookControlModal').modal('hide');
         }).catch((err) => {
             // TODO

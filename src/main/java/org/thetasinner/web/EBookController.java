@@ -58,8 +58,8 @@ public class EBookController {
     }
 
     @RequestMapping(value = "/books", method = RequestMethod.POST)
-    public @ResponseBody Book createBook(@RequestBody BookAddRequest bookAddRequest) {
-        return eBookDataService.createBook(bookAddRequest);
+    public @ResponseBody Book createBook(@RequestBody RequestBase<BookAddRequest> request) {
+        return eBookDataService.createBook(request.getToken(), request.getName(), request.getRequest());
     }
 
     @RequestMapping(value = "/books/{id}", method = RequestMethod.PATCH)

@@ -136,8 +136,7 @@ export default class EBookDataService {
                     token: that.token,
                     name: that.activeLibraryName
                 }
-            }).done((response) => {
-                that.token = response.token;
+            }).done(() => {
                 resolve();
             }).fail((jqXHR, textStatus) => {
                 reject(textStatus);
@@ -145,10 +144,28 @@ export default class EBookDataService {
         });
     }
 
-    addBook(url) {
-        console.log('Will add book... soon');
-
-        return Promise.resolve();
+    addBook(url, type) {
+        const that = this;
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: 'http://localhost:8080/books',
+                type: 'POST',
+                contentType: 'application/json',
+                dataType: "json",
+                data: JSON.stringify({
+                    token: that.token,
+                    name: that.activeLibraryName,
+                    request: {
+                        url: url,
+                        type: type
+                    }
+                })
+            }).done((response) => {
+                resolve(response);
+            }).fail((jqXHR, textStatus) => {
+                reject(textStatus);
+            });
+        });
     }
 
     uploadFiles(files) {

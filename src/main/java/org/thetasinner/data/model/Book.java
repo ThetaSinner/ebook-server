@@ -9,6 +9,7 @@ import java.util.List;
 public class Book {
     private String id;
     private String isbn;
+    private TypedUrl url;
     private String title;
     @JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
     private List<String> authors = new ArrayList<>();
@@ -30,6 +31,14 @@ public class Book {
 
     public void setIsbn(String isbn) {
         this.isbn = isbn;
+    }
+
+    public TypedUrl getUrl() {
+        return url;
+    }
+
+    public void setUrl(TypedUrl url) {
+        this.url = url;
     }
 
     public String getTitle() {

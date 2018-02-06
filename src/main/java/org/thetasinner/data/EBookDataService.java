@@ -10,16 +10,24 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.thetasinner.data.exception.EBookDataServiceException;
+import org.thetasinner.data.exception.EBookFileNotFoundException;
+import org.thetasinner.data.exception.InvalidRequestException;
 import org.thetasinner.data.model.Book;
 import org.thetasinner.data.model.BookMetadata;
+import org.thetasinner.data.model.TypedUrl;
 import org.thetasinner.data.storage.ILibraryStorage;
 import org.thetasinner.web.model.BookAddRequest;
 import org.thetasinner.web.model.BookMetadataUpdateRequest;
 import org.thetasinner.web.model.BookUpdateRequest;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.thetasinner.web.model.BookAddRequest.Type.LocalUnmanaged;
 
 @Service
 public class EBookDataService {
@@ -83,23 +91,32 @@ public class EBookDataService {
         throw new EBookDataServiceException("not implemented");
     }
 
-    public Book createBook(BookAddRequest bookAddRequest) {
-        /*if (bookAddRequest == null || bookAddRequest.getPath() == null) {
+    public Book createBook(String token, String name, BookAddRequest bookAddRequest) {
+        checkCanUseLibrary(token, name);
+
+        if (bookAddRequest == null || bookAddRequest.getUrl() == null || bookAddRequest.getType() == null) {
             throw new InvalidRequestException("Invalid add book request");
         }
 
-        Path path = Paths.get(bookAddRequest.getPath());
-        if (!Files.exists(path)) {
-            throw new EBookFileNotFoundException("Won't add book because the file does not exist");
+        Book book = null;
+        switch (bookAddRequest.getType()) {
+            case LocalUnmanaged:
+                Path path = Paths.get(bookAddRequest.getUrl());
+                if (!Files.exists(path)) {
+                    throw new EBookFileNotFoundException("Won't add book because the file does not exist");
+                }
+
+                book = storage.createBook(name, bookAddRequest.getUrl(), TypedUrl.Type.LocalUnmanaged);
+                break;
+            case WebLink:
+                book = storage.createBook(name, bookAddRequest.getUrl(), TypedUrl.Type.WebLink);
+                break;
+            case Other:
+                book = storage.createBook(name, bookAddRequest.getUrl(), TypedUrl.Type.Other);
+                break;
         }
 
-        Book book = new Book();
-        book.setTitle(path.getFileName().toString());
-
-        library.getBooks().add(book);
-
-        return book;*/
-        throw new EBookDataServiceException("not implemented");
+        return book;
     }
 
     public BookMetadata getBookMetadata(String id) {

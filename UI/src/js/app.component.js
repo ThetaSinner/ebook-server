@@ -69,14 +69,10 @@ export default class App extends React.Component {
         return this.props.dataService.saveLibrary();
     }
 
-    addBook(url) {
-        return this.props.dataService.addBook(url).then(() => {
+    addBook(url, type) {
+        return this.props.dataService.addBook(url, type).then((newBook) => {
             let newBooks = this.state.books;
-            newBooks.push({
-                id: 'asdflk2j34098sdf-sfdlkj4353-sdf98' + Math.floor(Math.random() * 1000),
-                url: url,
-                metadata: {}
-            });
+            newBooks.push(newBook);
 
             this.setState({
                 books: newBooks

@@ -15,7 +15,7 @@ export default class BookSummary extends React.Component {
 
         const book = this.props.book;
         const authors = displayHelper.toCommaList(book.authors);
-        const tags = displayHelper.toCommaList(book.metadata.tags);
+        const tags = displayHelper.toCommaList(book.metadata && book.metadata.tags);
         return (
             <div className="row es-book-row">
                 <div className="col-sm-2" data-toggle="tooltip" data-placement="bottom" title={book.title}>{book.title}</div>
@@ -23,7 +23,7 @@ export default class BookSummary extends React.Component {
                 <div className="col-sm-2" data-toggle="tooltip" data-placement="bottom" title={book.publisher}>{book.publisher}</div>
                 <div className="col-sm-1">{formatDateShort(book.datePublished)}</div>
                 <div className="col-sm-2">{book.isbn}</div>
-                <div className="col-sm-1">{book.metadata.rating}</div>
+                <div className="col-sm-1">{book.metadata && book.metadata.rating}</div>
                 <div className="col-sm-1" data-toggle="tooltip" data-placement="bottom" title={tags}>{tags}</div>
                 <div className="col-sm-1 text-center es-icon-button" aria-label="Expand Book" onClick={this.props.onExpandRow}>
                     <i className="material-icons" aria-hidden="true">{this.props.expanded ? 'expand_less' : 'expand_more'}</i>

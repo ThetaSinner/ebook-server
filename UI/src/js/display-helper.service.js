@@ -2,6 +2,10 @@ import * as _ from 'lodash';
 
 export default class DisplayHelper {
     toCommaList(arr) {
+        if (!arr) {
+            return '';
+        }
+
         let result = _.join(_.castArray(arr), ', ');
 
         return _.trimEnd(result, ', ');

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.thetasinner.data.exception.EBookDataServiceException;
 import org.thetasinner.data.model.Book;
 import org.thetasinner.data.model.Library;
+import org.thetasinner.data.model.TypedUrl;
 import org.thetasinner.data.storage.ILibraryStorage;
 
 import java.io.File;
@@ -20,7 +21,9 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class FileLibraryStorage implements ILibraryStorage {
@@ -129,6 +132,18 @@ public class FileLibraryStorage implements ILibraryStorage {
     public List<Book> getBooks(String name) {
         Library library = cache.get(name);
         return library.getBooks();
+    }
+
+    @Override
+    public Book createBook(String name, String url, TypedUrl.Type type) {
+        Book book = new Book();
+        book.setId(UUID.randomUUID().toString());
+        book.setUrl(new TypedUrl(url, type));
+
+        Library library = cache.get(name);
+        library.getBooks().add(book);
+
+        return book;
     }
 
     private String getLibraryPath(String name) {
