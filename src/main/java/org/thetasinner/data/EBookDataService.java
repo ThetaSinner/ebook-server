@@ -4,7 +4,6 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,13 +13,12 @@ import org.springframework.web.multipart.MultipartFile;
 import org.thetasinner.data.exception.EBookDataServiceException;
 import org.thetasinner.data.exception.EBookFileNotFoundException;
 import org.thetasinner.data.exception.InvalidRequestException;
-import org.thetasinner.data.storage.StorageException;
 import org.thetasinner.data.model.Book;
 import org.thetasinner.data.model.BookMetadata;
 import org.thetasinner.data.model.TypedUrl;
 import org.thetasinner.data.storage.ILibraryStorage;
+import org.thetasinner.data.storage.StorageException;
 import org.thetasinner.web.model.BookAddRequest;
-import org.thetasinner.web.model.BookMetadataUpdateRequest;
 import org.thetasinner.web.model.BookUpdateRequest;
 
 import java.io.UnsupportedEncodingException;
@@ -98,27 +96,6 @@ public class EBookDataService {
         return books == null ? new ArrayList<>() : books;
     }
 
-    public Book getBook(String id) {
-        /*if (id == null) {
-            throw new InvalidRequestException("Missing request param: id");
-        }
-
-        Optional<Book> book = library.getBooks()
-                .stream()
-                .filter(b -> id.equals(b.getId()))
-                .findFirst();
-
-        // TODO Find first is not necessarily safe to use if multiple books were to have the same id.
-
-        if (book.isPresent()) {
-            return book.get();
-        }
-        else {
-            throw new EBookNotFoundException("Book not found");
-        }*/
-        throw new EBookDataServiceException("not implemented");
-    }
-
     public Book createBook(String token, String name, BookAddRequest bookAddRequest) {
         checkCanUseLibrary(token, name);
 
@@ -189,17 +166,6 @@ public class EBookDataService {
         throw new EBookDataServiceException("not implemented");
     }
 
-    public void deleteBookMetadata(String id) {
-        /*if (id == null) {
-            throw new InvalidRequestException("Missing request param: id");
-        }
-
-        Book book = getBook(id);
-
-        book.setMetadata(null);*/
-        throw new EBookDataServiceException("not implemented");
-    }
-
     public Book updateBook(String id, String token, String name, BookUpdateRequest bookUpdateRequest) {
         if (StringUtils.isEmpty(id)) {
             throw new InvalidRequestException("Missing request param: id");
@@ -212,29 +178,6 @@ public class EBookDataService {
         checkCanUseLibrary(token, name);
 
         return storage.updateBook(id, name, bookUpdateRequest);
-    }
-
-    public BookMetadata updateBookMetadata(String id, BookMetadataUpdateRequest bookMetadataUpdateRequest) {
-        /*if (id == null) {
-            throw new InvalidRequestException("Missing request param: id");
-        }
-
-        if (bookMetadataUpdateRequest == null) {
-            throw new InvalidRequestException("Missing request body");
-        }
-
-        BookMetadata bookMetadata = getBookMetadata(id);
-
-        if (!CollectionUtils.isEmpty(bookMetadataUpdateRequest.getTags())) {
-            bookMetadata.getTags().addAll(bookMetadataUpdateRequest.getTags());
-        }
-
-        if (bookMetadataUpdateRequest.getRating() != null) {
-            bookMetadata.setRating(bookMetadataUpdateRequest.getRating());
-        }
-
-        return bookMetadata;*/
-        throw new EBookDataServiceException("not implemented");
     }
 
     private String createOrUpdateToken(String token, String name) {
