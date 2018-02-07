@@ -8,11 +8,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.multipart.MultipartFile;
 import org.thetasinner.data.exception.EBookDataServiceException;
 import org.thetasinner.data.model.Book;
 import org.thetasinner.data.model.Library;
 import org.thetasinner.data.model.TypedUrl;
 import org.thetasinner.data.storage.ILibraryStorage;
+import org.thetasinner.data.storage.StorageException;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -21,7 +23,6 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.locks.ReentrantLock;
@@ -144,6 +145,38 @@ public class FileLibraryStorage implements ILibraryStorage {
         library.getBooks().add(book);
 
         return book;
+    }
+
+    @Override
+    public void store(String name, MultipartFile file) throws StorageException {
+        String filename = org.springframework.util.StringUtils.cleanPath(file.getOriginalFilename());
+        if (filename.contains("..") || filename.contains("\\") || filename.contains("/")) {
+            // Security check to make sure a path embedded in the filename can't escape the storage location.
+            // Or accidentally orphan itself by having a path the server can't find again.
+            throw new StorageException("Won't store file which contains path component.");
+        }
+
+        UUID uuid = UUID.randomUUID();
+        String storagePath = getLibraryDirectory(name) + uuid + File.separator;
+        if (!new File(storagePath).mkdirs()) {
+            throw new StorageException(String.format("Could not create a directory to store the new file in [%s]", filename));
+        }
+
+        String fileStoragePath = storagePath + filename;
+
+        try {
+            Files.copy(file.getInputStream(), Paths.get(fileStoragePath));
+        }
+        catch (IOException e) {
+            throw new StorageException("Error saving the file", e);
+        }
+
+        // Once everything else is in place, add the book to the library.
+        Book book = new Book();
+        book.setId(uuid.toString());
+        book.setUrl(new TypedUrl(fileStoragePath, TypedUrl.Type.LocalManaged));
+        book.setTitle(filename);
+        cache.get(name).getBooks().add(book);
     }
 
     private String getLibraryPath(String name) {

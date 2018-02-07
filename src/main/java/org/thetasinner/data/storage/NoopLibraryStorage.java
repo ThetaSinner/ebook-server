@@ -1,5 +1,6 @@
 package org.thetasinner.data.storage;
 
+import org.springframework.web.multipart.MultipartFile;
 import org.thetasinner.data.model.Book;
 import org.thetasinner.data.model.TypedUrl;
 
@@ -29,5 +30,10 @@ public class NoopLibraryStorage implements ILibraryStorage {
     @Override
     public Book createBook(String name, String url, TypedUrl.Type type) {
         return null;
+    }
+
+    @Override
+    public void store(String name, MultipartFile file) throws StorageException {
+
     }
 }

@@ -75,6 +75,7 @@ var TestData = {
 };
 
 import $ from 'jquery';
+import { formatDate } from './formatter';
 
 export default class EBookDataService {
     constructor(serverUrl) {
@@ -169,36 +170,29 @@ export default class EBookDataService {
     }
 
     uploadFiles(files) {
-        console.log('Will upload those right away');
-
-        return Promise.resolve();
-
-        /*
         const formData = new FormData();
-        const files = this.state.files;
         for (var i = 0; i < files.length; i++) {
             formData.append('files', files.item(i));
-            console.log(files.item(i).name);
         }
 
-        console.log(formData);
-
-        $.ajax({
-            url: 'http://localhost:8080/upload',
-            type: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function(data) {
+        formData.append('token', this.token);
+        formData.append('name', this.activeLibraryName);
+        
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: 'http://localhost:8080/upload',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false
+            }).done(function (data) {
                 console.log(data);
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                console.log(jqXHR, textStatus, errorThrown);
-            }
-        }).done(function (data) {
-            console.log(data);
-        });
-        */
+                resolve();
+            }).fail(function (err) {
+                alert(err);
+                reject();
+            });
+        }).then(this._getBooks);
     }
 
     updateBook(book) {

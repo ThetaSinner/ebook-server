@@ -37,14 +37,10 @@ public class EBookController {
     }
 
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
-    public @ResponseBody UploadResponse upload(@RequestParam(name = "files") MultipartFile[] files) {
-        System.out.println("Got a request");
+    public @ResponseBody UploadResponse upload(@RequestParam(name = "token") String token, @RequestParam(name = "name") String name, @RequestParam(name = "files") MultipartFile[] files) {
+        List<Integer> failedUploadIndices = eBookDataService.storeAll(token, name, files);
 
-        for (MultipartFile file : files) {
-            System.out.println(file.getOriginalFilename());
-        }
-
-        return new UploadResponse(UploadResponse.Status.Ok);
+        return new UploadResponse(failedUploadIndices);
     }
 
     @RequestMapping(value = "/books", method = RequestMethod.GET)

@@ -2,24 +2,21 @@ package org.thetasinner.web.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import java.util.List;
+
 @JsonSerialize
 public class UploadResponse {
-    public enum Status {
-        Ok,
-        Err
+    private List<Integer> failedUploadIndices;
+
+    public UploadResponse(List<Integer> failedUploadIndices) {
+        this.failedUploadIndices = failedUploadIndices;
     }
 
-    private Status status;
-
-    public UploadResponse(Status status) {
-        this.status = status;
+    public List<Integer> getFailedUploadIndices() {
+        return failedUploadIndices;
     }
 
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
+    public void setFailedUploadIndices(List<Integer> failedUploadIndices) {
+        this.failedUploadIndices = failedUploadIndices;
     }
 }

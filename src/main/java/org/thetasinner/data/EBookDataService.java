@@ -9,9 +9,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.thetasinner.data.exception.EBookDataServiceException;
 import org.thetasinner.data.exception.EBookFileNotFoundException;
 import org.thetasinner.data.exception.InvalidRequestException;
+import org.thetasinner.data.storage.StorageException;
 import org.thetasinner.data.model.Book;
 import org.thetasinner.data.model.BookMetadata;
 import org.thetasinner.data.model.TypedUrl;
@@ -26,8 +28,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.thetasinner.web.model.BookAddRequest.Type.LocalUnmanaged;
 
 @Service
 public class EBookDataService {
@@ -60,6 +60,33 @@ public class EBookDataService {
         String updatedToken = createOrUpdateToken(token, name);
         storage.create(name);
         return updatedToken;
+    }
+
+    public List<Integer> storeAll(String token, String name, MultipartFile[] files) {
+        checkCanUseLibrary(token, name);
+
+        List<Integer> failed = new ArrayList<>();
+
+        int storeIndex = 0;
+        for (MultipartFile file : files) {
+            try {
+                store(name, file);
+                storeIndex++;
+            }
+            catch (StorageException e) {
+                failed.add(storeIndex);
+            }
+        }
+
+        return failed;
+    }
+
+    private void store(String name, MultipartFile file) throws StorageException {
+        if (file.isEmpty()) {
+            throw new StorageException("File is empty");
+        }
+
+        storage.store(name, file);
     }
 
     public List<Book> getBooks(String token, String name) {

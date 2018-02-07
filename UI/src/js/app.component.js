@@ -81,7 +81,15 @@ export default class App extends React.Component {
     }
 
     uploadFiles(files) {
-        return this.props.dataService.uploadFiles(files);
+        return this.props.dataService.uploadFiles(files).then((books) => {
+            if (!books) {
+                return Promise.reject('Library not found');
+            }
+
+            this.setState({
+                books: books
+            });
+        });
     }
 
     updateBook(updatedBook) {
