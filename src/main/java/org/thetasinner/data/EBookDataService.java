@@ -14,7 +14,6 @@ import org.thetasinner.data.exception.EBookDataServiceException;
 import org.thetasinner.data.exception.EBookFileNotFoundException;
 import org.thetasinner.data.exception.InvalidRequestException;
 import org.thetasinner.data.model.Book;
-import org.thetasinner.data.model.BookMetadata;
 import org.thetasinner.data.model.TypedUrl;
 import org.thetasinner.data.storage.ILibraryStorage;
 import org.thetasinner.data.storage.StorageException;
@@ -122,39 +121,6 @@ public class EBookDataService {
         }
 
         return book;
-    }
-
-    public BookMetadata getBookMetadata(String id) {
-        /*if (id == null) {
-            throw new InvalidRequestException("Missing request param: id");
-        }
-
-        Book book = getBook(id);
-
-        if (book.getMetadata() != null) {
-            return book.getMetadata();
-        }
-        else {
-            throw new MetadataNotFoundException("Book does not have metadata");
-        }*/
-        throw new EBookDataServiceException("not implemented");
-    }
-
-    public BookMetadata createBookMetadata(String id, BookMetadata metadata) {
-        /*if (id == null) {
-            throw new InvalidRequestException("Missing request param: id");
-        }
-
-        Book book = getBook(id);
-
-        if (book.getMetadata() == null) {
-            book.setMetadata(metadata);
-            return metadata;
-        }
-        else {
-            throw new EBookDataServiceException("Won't create metadata because this book already has metadata");
-        }*/
-        throw new EBookDataServiceException("not implemented");
     }
 
     public void deleteBook(String id) {
