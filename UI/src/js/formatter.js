@@ -4,6 +4,15 @@ export function formatDate(date) {
         return null;
     }
 
+    if (typeof date === 'string') {
+        try {
+            date = new Date(date);
+        }
+        catch (err) {
+            return '';
+        }
+    }
+
     return date.toLocaleDateString('en-GB', dateOptions)
 }
 
@@ -13,5 +22,14 @@ export function formatDateShort(date) {
         return null;
     }
 
+    if (typeof date === 'string') {
+        try {
+            date = new Date(date);
+        }
+        catch (err) {
+            return '';
+        }
+    }
+    
     return date.toLocaleDateString('en-GB', shortDateOptions)
 }

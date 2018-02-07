@@ -33,7 +33,7 @@ export default class BookEditor extends React.Component {
                 <div className="row">
                     <div className="col-sm-12">
                         <form>
-                        <div className="form-group">
+                            <div className="form-group">
                                 <label htmlFor="editIsbn">ISBN</label>
                                 <input type="text" id="editIsbn" name="isbn" className="form-control" value={this.state.isbn} onChange={this.handleChange} />
                             </div>
@@ -92,6 +92,7 @@ export default class BookEditor extends React.Component {
             book.publisher = this.state.publisher;
             book.datePublished = new Date(this.state.datePublished);
             book.description = this.state.description;
+            book.metadata = {};
             book.metadata.tags = this.state.metadataTags;
             book.metadata.rating = this.state.metadataRating;
 

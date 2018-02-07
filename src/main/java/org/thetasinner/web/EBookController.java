@@ -59,8 +59,8 @@ public class EBookController {
     }
 
     @RequestMapping(value = "/books/{id}", method = RequestMethod.PATCH)
-    public @ResponseBody Book updateBook(@RequestParam(name = "id") String id, @RequestBody BookUpdateRequest bookUpdateRequest) {
-        return eBookDataService.updateBook(id, bookUpdateRequest);
+    public @ResponseBody Book updateBook(@PathVariable("id") String id, @RequestBody RequestBase<BookUpdateRequest> bookUpdateRequest) {
+        return eBookDataService.updateBook(id, bookUpdateRequest.getToken(), bookUpdateRequest.getName(), bookUpdateRequest.getRequest());
     }
 
     @RequestMapping(value = "/books/{id}", method = RequestMethod.DELETE)

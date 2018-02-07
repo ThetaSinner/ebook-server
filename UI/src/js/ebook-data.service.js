@@ -196,9 +196,52 @@ export default class EBookDataService {
     }
 
     updateBook(book) {
-        console.log('Will update that book right away');
+        var updateRequest = {};
+        if (book.title) {
+            updateRequest.title = book.title;
+        }
+        if (book.authors) {
+            updateRequest.authors = book.authors;
+        }
+        if (book.publisher) {
+            updateRequest.publisher = book.publisher;
+        }
+        if (book.datePublished) {
+            updateRequest.datePublished = book.datePublished;
+        }
 
-        return Promise.resolve();
+        var metadata = book.metadata;
+        if (metadata) {
+            updateRequest.bookMetadataUpdateRequest = {};
+            
+            if (metadata.tags) {
+                updateRequest.bookMetadataUpdateRequest.tags = metadata.tags;
+            }
+            if (metadata.rating) {
+                updateRequest.bookMetadataUpdateRequest.rating = metadata.rating;
+            }
+        }
+
+        const that = this;
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: 'http://localhost:8080/books/' + book.id,
+                type: 'PATCH',
+                contentType: 'application/json',
+                dataType: "json",
+                data: JSON.stringify({
+                    token: that.token,
+                    name: that.activeLibraryName,
+                    request: updateRequest
+                })
+            }).done(function (data) {
+                console.log(data);
+                resolve();
+            }).fail(function (err) {
+                alert(err);
+                reject();
+            });
+        }).then(this._getBooks);
     }
 
     deleteBook(id) {

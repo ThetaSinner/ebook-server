@@ -18,11 +18,11 @@ public class BookMetadata {
         this.tags = tags;
     }
 
-    public byte getRating() {
+    public Byte getRating() {
         return rating;
     }
 
-    public void setRating(byte rating) {
+    public void setRating(Byte rating) {
         this.rating = rating;
     }
 }

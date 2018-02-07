@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -199,8 +200,8 @@ public class EBookDataService {
         throw new EBookDataServiceException("not implemented");
     }
 
-    public Book updateBook(String id, BookUpdateRequest bookUpdateRequest) {
-        /*if (id == null) {
+    public Book updateBook(String id, String token, String name, BookUpdateRequest bookUpdateRequest) {
+        if (StringUtils.isEmpty(id)) {
             throw new InvalidRequestException("Missing request param: id");
         }
 
@@ -208,31 +209,9 @@ public class EBookDataService {
             throw new InvalidRequestException("Missing request body");
         }
 
-        Book book = getBook(id);
+        checkCanUseLibrary(token, name);
 
-        if (bookUpdateRequest.getTitle() != null) {
-            book.setTitle(bookUpdateRequest.getTitle());
-        }
-
-        if (!CollectionUtils.isEmpty(bookUpdateRequest.getAuthors())) {
-            book.getAuthors().addAll(bookUpdateRequest.getAuthors());
-        }
-
-        if (bookUpdateRequest.getPublisher() != null) {
-            book.setPublisher(bookUpdateRequest.getPublisher());
-        }
-
-        if (bookUpdateRequest.getDatePublished() != null) {
-            book.setDatePublished(bookUpdateRequest.getDatePublished());
-        }
-
-        if (bookUpdateRequest.getBookMetadataUpdateRequest() != null) {
-            // TODO this causes an extra scan to find the book
-            updateBookMetadata(id, bookUpdateRequest.getBookMetadataUpdateRequest());
-        }
-
-        return book;*/
-        throw new EBookDataServiceException("not implemented");
+        return storage.updateBook(id, name, bookUpdateRequest);
     }
 
     public BookMetadata updateBookMetadata(String id, BookMetadataUpdateRequest bookMetadataUpdateRequest) {

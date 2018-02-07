@@ -3,6 +3,7 @@ package org.thetasinner.data.storage;
 import org.springframework.web.multipart.MultipartFile;
 import org.thetasinner.data.model.Book;
 import org.thetasinner.data.model.TypedUrl;
+import org.thetasinner.web.model.BookUpdateRequest;
 
 import java.util.List;
 
@@ -35,5 +36,10 @@ public class NoopLibraryStorage implements ILibraryStorage {
     @Override
     public void store(String name, MultipartFile file) throws StorageException {
 
+    }
+
+    @Override
+    public Book updateBook(String id, String name, BookUpdateRequest bookUpdateRequest) {
+        return null;
     }
 }

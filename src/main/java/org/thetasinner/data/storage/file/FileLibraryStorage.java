@@ -4,17 +4,22 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.multipart.MultipartFile;
 import org.thetasinner.data.exception.EBookDataServiceException;
+import org.thetasinner.data.exception.EBookNotFoundException;
 import org.thetasinner.data.model.Book;
+import org.thetasinner.data.model.BookMetadata;
 import org.thetasinner.data.model.Library;
 import org.thetasinner.data.model.TypedUrl;
 import org.thetasinner.data.storage.ILibraryStorage;
 import org.thetasinner.data.storage.StorageException;
+import org.thetasinner.web.model.BookMetadataUpdateRequest;
+import org.thetasinner.web.model.BookUpdateRequest;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -23,7 +28,9 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -177,6 +184,69 @@ public class FileLibraryStorage implements ILibraryStorage {
         book.setUrl(new TypedUrl(fileStoragePath, TypedUrl.Type.LocalManaged));
         book.setTitle(filename);
         cache.get(name).getBooks().add(book);
+    }
+
+    @Override
+    public Book updateBook(String id, String name, BookUpdateRequest bookUpdateRequest) {
+        Book book = getBook(id, name);
+
+        if (bookUpdateRequest.getTitle() != null) {
+            book.setTitle(bookUpdateRequest.getTitle());
+        }
+
+        if (!CollectionUtils.isEmpty(bookUpdateRequest.getAuthors())) {
+            book.getAuthors().addAll(bookUpdateRequest.getAuthors());
+        }
+
+        if (bookUpdateRequest.getPublisher() != null) {
+            book.setPublisher(bookUpdateRequest.getPublisher());
+        }
+
+        if (bookUpdateRequest.getDatePublished() != null) {
+            book.setDatePublished(bookUpdateRequest.getDatePublished());
+        }
+
+        if (bookUpdateRequest.getBookMetadataUpdateRequest() != null) {
+            updateBookMetadata(book, bookUpdateRequest.getBookMetadataUpdateRequest());
+        }
+
+        return book;
+    }
+
+    private void updateBookMetadata(Book book, BookMetadataUpdateRequest bookMetadataUpdateRequest) {
+        BookMetadata bookMetadata = book.getMetadata();
+        if (bookMetadata == null) {
+            bookMetadata = new BookMetadata();
+            book.setMetadata(bookMetadata);
+        }
+
+        if (!CollectionUtils.isEmpty(bookMetadataUpdateRequest.getTags())) {
+            if (bookMetadata.getTags() == null) {
+                bookMetadata.setTags(new ArrayList<>());
+            }
+
+            bookMetadata.getTags().addAll(bookMetadataUpdateRequest.getTags());
+        }
+
+        if (bookMetadataUpdateRequest.getRating() != null) {
+            bookMetadata.setRating(bookMetadataUpdateRequest.getRating());
+        }
+    }
+
+    private Book getBook(String id, String name) {
+        Optional<Book> book = cache.get(name).getBooks()
+                .stream()
+                .filter(b -> id.equals(b.getId()))
+                .findFirst();
+
+        // TODO Find first is not necessarily safe to use if multiple books were to have the same id.
+
+        if (book.isPresent()) {
+            return book.get();
+        }
+        else {
+            throw new EBookNotFoundException("Book not found");
+        }
     }
 
     private String getLibraryPath(String name) {

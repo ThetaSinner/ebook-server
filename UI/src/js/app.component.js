@@ -93,17 +93,13 @@ export default class App extends React.Component {
     }
 
     updateBook(updatedBook) {
-        return this.props.dataService.updateBook(updatedBook).then(() => {
-            console.log('Overwriting book, dev only');
+        return this.props.dataService.updateBook(updatedBook).then((books) => {
+            if (!books) {
+                return Promise.reject('Library not found');
+            }
 
-            this.state.books.forEach((book, index, books) => {
-                if (book.id === updatedBook.id) {
-                    books[index] = book;
-                    
-                    this.setState({
-                        books: books
-                    });
-                }
+            this.setState({
+                books: books
             });
         });
     }
