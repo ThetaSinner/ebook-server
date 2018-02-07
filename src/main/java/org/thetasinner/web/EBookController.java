@@ -1,13 +1,10 @@
 package org.thetasinner.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.thetasinner.data.EBookDataService;
 import org.thetasinner.data.model.Book;
-import org.thetasinner.data.model.BookMetadata;
 import org.thetasinner.web.model.*;
 
 import java.util.List;
@@ -59,8 +56,8 @@ public class EBookController {
     }
 
     @RequestMapping(value = "/books/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity deleteBook(@RequestParam(name = "id") String id) {
-        eBookDataService.deleteBook(id);
-        return new ResponseEntity(HttpStatus.OK);
+    public @ResponseBody EmptyJsonResponse deleteBook(@PathVariable("id") String id, @RequestParam(name = "token") String token, @RequestParam(name = "name") String name) {
+        eBookDataService.deleteBook(id, token, name);
+        return new EmptyJsonResponse();
     }
 }

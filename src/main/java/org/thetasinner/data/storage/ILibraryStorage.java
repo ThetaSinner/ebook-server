@@ -21,4 +21,6 @@ public interface ILibraryStorage {
     void store(String name, MultipartFile file) throws StorageException;
 
     Book updateBook(String id, String name, BookUpdateRequest bookUpdateRequest);
+
+    void deleteBook(String id, String name);
 }

@@ -213,6 +213,11 @@ public class FileLibraryStorage implements ILibraryStorage {
         return book;
     }
 
+    @Override
+    public void deleteBook(String id, String name) {
+        cache.get(name).getBooks().removeIf(b -> id.equals(b.getId()));
+    }
+
     private void updateBookMetadata(Book book, BookMetadataUpdateRequest bookMetadataUpdateRequest) {
         BookMetadata bookMetadata = book.getMetadata();
         if (bookMetadata == null) {

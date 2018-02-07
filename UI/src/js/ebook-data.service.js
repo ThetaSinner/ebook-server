@@ -245,9 +245,25 @@ export default class EBookDataService {
     }
 
     deleteBook(id) {
-        console.log('Will delete that book right away', id);
-
-        return Promise.resolve();
+        const that = this;
+        const params = $.param({
+            token: that.token,
+            name: that.activeLibraryName
+        });
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: 'http://localhost:8080/books/' + id + '?' + params,
+                type: 'DELETE',
+                contentType: 'application/json',
+                dataType: "json"
+            }).done(function (data) {
+                console.log(data);
+                resolve();
+            }).fail(function (err) {
+                console.error(err);
+                reject();
+            });
+        }).then(this._getBooks);
     }
 
     _getBooks() {

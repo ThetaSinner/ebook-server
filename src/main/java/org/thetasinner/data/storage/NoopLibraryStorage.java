@@ -42,4 +42,9 @@ public class NoopLibraryStorage implements ILibraryStorage {
     public Book updateBook(String id, String name, BookUpdateRequest bookUpdateRequest) {
         return null;
     }
+
+    @Override
+    public void deleteBook(String id, String name) {
+
+    }
 }

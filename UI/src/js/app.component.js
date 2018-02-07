@@ -105,13 +105,13 @@ export default class App extends React.Component {
     }
 
     deleteBook(id) {
-        return this.props.dataService.deleteBook(id).then(() => {
-            var newBooks = this.state.books.filter((book) => {
-                return book.id !== id;
-            });
+        return this.props.dataService.deleteBook(id).then((books) => {
+            if (!books) {
+                return Promise.reject('Library not found');
+            }
 
             this.setState({
-                books: newBooks
+                books: books
             });
         });
     }

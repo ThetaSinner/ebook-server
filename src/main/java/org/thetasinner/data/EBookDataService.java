@@ -123,13 +123,14 @@ public class EBookDataService {
         return book;
     }
 
-    public void deleteBook(String id) {
-        /*if (id == null) {
+    public void deleteBook(String id, String token, String name) {
+        if (StringUtils.isBlank(id)) {
             throw new InvalidRequestException("Missing request param: id");
         }
 
-        library.getBooks().removeIf(b -> id.equals(b.getId()));*/
-        throw new EBookDataServiceException("not implemented");
+        checkCanUseLibrary(token, name);
+
+        storage.deleteBook(id, name);
     }
 
     public Book updateBook(String id, String token, String name, BookUpdateRequest bookUpdateRequest) {
