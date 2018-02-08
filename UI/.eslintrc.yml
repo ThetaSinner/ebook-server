@@ -1,14 +1,18 @@
 env:
   browser: true
+  commonjs: true
   es6: true
-  jquery: true
-  jest: true
-  node: true
-extends: 
-  - 'eslint:recommended'
-  - 'plugin:backbone/recommended'
+extends: 'eslint:recommended'
+parser: babel-eslint
+parserOptions:
+  ecmaVersion: 6
+  sourceType: module
+  ecmaFeatures:
+    experimentalObjectRestSpread: true
+    modules: true
+    jsx: true
 plugins:
-  - backbone
+  - react
 rules:
   indent:
     - error
@@ -22,16 +26,3 @@ rules:
   semi:
     - error
     - always
-  backbone/initialize-on-top:
-    - 1
-    # Note that the newline groups the next elements
-    -
-      View:
-        - tagName
-        - className
-        - el # modification from the default
-        - events
-      Model:
-        - defaults
-      Collection:
-        - model

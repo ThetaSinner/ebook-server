@@ -1,6 +1,8 @@
 import React from 'react';
 
+/* eslint-disable no-unused-vars */
 import LibraryItem from './library-item.component';
+/* eslint-enable no-unused-vars */
 
 export default class Library extends React.Component {
     constructor(props) {

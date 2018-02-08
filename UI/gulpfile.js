@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 var gulp = require('gulp');
 var log = require('fancy-log');
 

@@ -13,7 +13,7 @@ export function formatDate(date) {
         }
     }
 
-    return date.toLocaleDateString('en-GB', dateOptions)
+    return date.toLocaleDateString('en-GB', dateOptions);
 }
 
 const shortDateOptions = { year: 'numeric', month: 'short' };
@@ -31,5 +31,5 @@ export function formatDateShort(date) {
         }
     }
     
-    return date.toLocaleDateString('en-GB', shortDateOptions)
+    return date.toLocaleDateString('en-GB', shortDateOptions);
 }

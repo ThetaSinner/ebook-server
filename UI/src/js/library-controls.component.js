@@ -1,10 +1,12 @@
 import React from 'react';
 
+/* eslint-disable no-unused-vars */
 import CreateLibraryControl from './create-library-control.component';
 import LoadControl from './load-control.component';
 import SaveControl from './save-control.component';
 import UploadControl from './upload-control.component';
 import AddBookControl from './add-book-control.component';
+/* eslint-enable no-unused-vars */
 
 export default class LibraryControls extends React.Component {
     constructor(props) {
@@ -17,6 +19,7 @@ export default class LibraryControls extends React.Component {
         const saveLibrary = this.props.service.saveLibrary;
         const addBook = this.props.service.addBook;
         const uploadFiles = this.props.service.uploadFiles;
+        /* eslint-disable quotes */
         return (
             <>
                 <div className="d-inline mr-5">
@@ -45,5 +48,6 @@ export default class LibraryControls extends React.Component {
                 </div>
             </>
         );
+        /* eslint-enable quotes */
     }
 }

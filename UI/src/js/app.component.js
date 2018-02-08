@@ -2,8 +2,10 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import $ from 'jquery';
 
+/* eslint-disable no-unused-vars */
 import Library from './library.component';
 import LibraryControls from './library-controls.component';
+/* eslint-enable no-unused-vars */
 
 import EBookDataService from './ebook-data.service';
 

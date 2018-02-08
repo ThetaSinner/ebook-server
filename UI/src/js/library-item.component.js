@@ -1,8 +1,10 @@
 import React from 'react';
 
+/* eslint-disable no-unused-vars */
 import BookSummary from './book-summary.component';
 import BookEditor from './book-editor.component';
 import Book from './book.component';
+/* eslint-enable no-unused-vars */
 
 export default class LibraryItem extends React.Component {
     constructor(props) {
@@ -44,7 +46,7 @@ export default class LibraryItem extends React.Component {
     }
 
     onExpandRow() {
-        this.setState((prevState, props) => ({
+        this.setState((prevState) => ({
             showBook: !prevState.showBook
         }));
     }

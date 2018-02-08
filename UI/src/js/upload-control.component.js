@@ -1,19 +1,26 @@
 import React from 'react';
 import $ from 'jquery';
 
+/* eslint-disable no-unused-vars */
+import ErrorText from './error-text.component';
+/* eslint-enable no-unused-vars */
+
 export default class UploadControl extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            files: []
+            files: [],
+            errorText: null
         };
 
         this.handleSelectedFilesChanged = this.handleSelectedFilesChanged.bind(this);
+        this.handleCancel = this.handleCancel.bind(this);
         this.handleUploadFiles = this.handleUploadFiles.bind(this);
     }
 
     render() {
+        /* eslint-disable quotes */
         return (
             <>
                 <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#uploadControlModal">Upload</button>
@@ -28,13 +35,16 @@ export default class UploadControl extends React.Component {
                                 </button>
                             </div>
                             <div className="modal-body">
+                                <div className="mb-1">
+                                    <ErrorText errorText={this.state.errorText} />
+                                </div>
                                 <form onSubmit={this.handleUploadFiles}>
                                     <label htmlFor="selectFiles">Choose books to upload</label>
                                     <input type="file" id="selectFiles" accept=".pdf" multiple className="form-control-file" onChange={this.handleSelectedFilesChanged} />
                                 </form>
                             </div>
                             <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                <button type="button" className="btn btn-secondary" data-dismiss="modal" onClick={this.handleCancel}>Cancel</button>
                                 <button type="button" className="btn btn-primary" onClick={this.handleUploadFiles}>Ok</button>
                             </div>
                         </div>
@@ -42,11 +52,19 @@ export default class UploadControl extends React.Component {
                 </div>
             </>
         );
+        /* eslint-enable quotes */
     }
 
     handleSelectedFilesChanged(e) {
         this.setState({
-            files: e.target.files
+            files: e.target.files,
+            errorText: null
+        });
+    }
+
+    handleCancel() {
+        this.setState({
+            errorText: null
         });
     }
 
@@ -55,9 +73,15 @@ export default class UploadControl extends React.Component {
 
         this.props.uploadFiles(this.state.files).then(() => {
             $('#uploadControlModal').modal('hide');
+
+            this.setState({
+                files: [],
+                errorText: null
+            });
         }).catch((err) => {
-            // TODO
-            console.error(err);
+            this.setState({
+                errorText: err
+            });
         });
     }
 }

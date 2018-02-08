@@ -1,21 +1,28 @@
 import React from 'react';
 import $ from 'jquery';
 
+/* eslint-disable no-unused-vars */
+import ErrorText from './error-text.component';
+/* eslint-enable no-unused-vars */
+
 export default class AddBookControl extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
             url: '',
-            type: 'WebLink'
+            type: 'WebLink',
+            errorText: null
         };
 
         this.handleUrlChanged = this.handleUrlChanged.bind(this);
         this.handleTypeChanged = this.handleTypeChanged.bind(this);
+        this.handleCancel = this.handleCancel.bind(this);
         this.handleAddBook = this.handleAddBook.bind(this);
     }
 
     render() {
+        /* eslint-disable quotes */
         return (
             <>
                 <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#addBookControlModal">Add</button>
@@ -30,6 +37,9 @@ export default class AddBookControl extends React.Component {
                                 </button>
                             </div>
                             <div className="modal-body">
+                                <div className="mb-1">
+                                    <ErrorText errorText={this.state.errorText} />
+                                </div>
                                 <form onSubmit={this.handleAddBook}>
                                     <label htmlFor="inputUrl">Input the URL for the book</label>
                                     <input type="text" id="inputUrl" multiple className="form-control" value={this.state.url} onChange={this.handleUrlChanged} />
@@ -43,7 +53,7 @@ export default class AddBookControl extends React.Component {
                                 </form>
                             </div>
                             <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                <button type="button" className="btn btn-secondary" data-dismiss="modal" onClick={this.handleCancel}>Cancel</button>
                                 <button type="button" className="btn btn-primary" onClick={this.handleAddBook}>Ok</button>
                             </div>
                         </div>
@@ -51,28 +61,42 @@ export default class AddBookControl extends React.Component {
                 </div>
             </>
         );
+        /* eslint-enable quotes */
     }
 
     handleUrlChanged(e) {
         this.setState({
-            url: e.target.value
+            url: e.target.value,
+            errorText: null
         });
     }
 
     handleTypeChanged(e) {
         this.setState({
-            type: e.target.value
+            type: e.target.value,
+            errorText: null
         });
     }
 
-    handleAddBook(e) {
-        e.preventDefault();
+    handleCancel() {
+        this.setState({
+            errorText: null
+        });
+    }
 
+    handleAddBook() {
         this.props.addBook(this.state.url, this.state.type).then(() => {
             $('#addBookControlModal').modal('hide');
+
+            this.setState({
+                url: '',
+                type: 'WebLink',
+                errorText: null
+            });
         }).catch((err) => {
-            // TODO
-            console.error(err);
+            this.setState({
+                errorText: err
+            });
         });
     }
 }

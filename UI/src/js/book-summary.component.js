@@ -1,8 +1,7 @@
 import React from 'react';
-import * as _ from 'lodash';
 import $ from 'jquery';
 
-import { formatDate, formatDateShort } from './formatter';
+import { formatDateShort } from './formatter';
 import DisplayHelper from './display-helper.service';
 
 export default class BookSummary extends React.Component {

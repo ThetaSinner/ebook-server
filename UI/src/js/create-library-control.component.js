@@ -1,19 +1,26 @@
 import React from 'react';
 import $ from 'jquery';
 
+/* eslint-disable no-unused-vars */
+import ErrorText from './error-text.component';
+/* eslint-enable no-unused-vars */
+
 export default class CreateLibraryControl extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            libraryName: ''
+            libraryName: '',
+            errorText: null
         };
 
         this.libraryNameChange = this.libraryNameChange.bind(this);
+        this.handleCancel = this.handleCancel.bind(this);
         this.handleCreateLibrary = this.handleCreateLibrary.bind(this);
     }
 
     render() {
+        /* eslint-disable quotes */
         return (
             <>
                 <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#createLibraryControlModal">Create</button>
@@ -28,13 +35,16 @@ export default class CreateLibraryControl extends React.Component {
                                 </button>
                             </div>
                             <div className="modal-body">
+                                <div className="mb-1">
+                                    <ErrorText errorText={this.state.errorText} />
+                                </div>
                                 <form onSubmit={this.handleCreateLibrary}>
                                     <label htmlFor="createLibraryName">Library name</label>
                                     <input type="text" name="createLibraryName" id="createLibraryNameId" placeholder="Library name" value={this.state.libraryName} onChange={this.libraryNameChange} className="form-control" />
                                 </form>
                             </div>
                             <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                <button type="button" className="btn btn-secondary" data-dismiss="modal" onClick={this.handleCancel}>Cancel</button>
                                 <button type="button" className="btn btn-primary" onClick={this.handleCreateLibrary}>Ok</button>
                             </div>
                         </div>
@@ -42,22 +52,34 @@ export default class CreateLibraryControl extends React.Component {
                 </div>
             </>
         );
+        /* eslint-enable quotes */
     }
 
     libraryNameChange(e) {
         this.setState({
-            libraryName: e.target.value
+            libraryName: e.target.value,
+            errorText: null
         });
     }
 
-    handleCreateLibrary(e) {
-        e.preventDefault();
+    handleCancel() {
+        this.setState({
+            errorText: null
+        });
+    }
 
+    handleCreateLibrary() {
         this.props.createLibrary(this.state.libraryName).then(() => {
             $('#createLibraryControlModal').modal('hide');
-        }).catch(function (err) {
-            // TODO output the error into the modal.
-            alert(err);
+
+            this.setState({
+                libraryName: '',
+                errorText: null
+            });
+        }).catch((err) => {
+            this.setState({
+                errorText: err
+            });
         });
     }
 }

@@ -13,6 +13,7 @@ export default class Book extends React.Component {
 
     render() {
         const book = this.props.book;
+        /* eslint-disable quotes */
         return (
             <>
                 <div className="container-fluid card">
@@ -48,7 +49,7 @@ export default class Book extends React.Component {
                         </div>
                     </div>
                 </div>
-
+                
                 <div className="modal fade" id="confirmDeleteModal" tabIndex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
                     <div className="modal-dialog" role="document">
                         <div className="modal-content">
@@ -67,6 +68,7 @@ export default class Book extends React.Component {
                 </div>
             </>
         );
+        /* eslint-enable quotes */
     }
 
     toAuthorList(authors) {
@@ -93,7 +95,7 @@ export default class Book extends React.Component {
         this.props.editBook();
     }
 
-    deleteBook(e) {
+    deleteBook() {
         this.props.deleteBook(this.props.book.id);
     }
 }

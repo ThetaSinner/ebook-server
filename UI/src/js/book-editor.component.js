@@ -1,5 +1,4 @@
 import React from 'react';
-import * as _ from 'lodash';
 
 import DisplayHelper from './display-helper.service';
 
@@ -101,7 +100,6 @@ export default class BookEditor extends React.Component {
         catch (e) {
             alert(e);
         }
-
     }
 
     cancelEdit(e) {
