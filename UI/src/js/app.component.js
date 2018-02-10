@@ -5,6 +5,7 @@ import $ from 'jquery';
 /* eslint-disable no-unused-vars */
 import Library from './library.component';
 import LibraryControls from './library-controls.component';
+import LibrarySelect from './library-select.component';
 /* eslint-enable no-unused-vars */
 
 import EBookDataService from './ebook-data.service';
@@ -13,6 +14,7 @@ export default class App extends React.Component {
     constructor(props) {
         super(props);
 
+        this.listLibraries = this.listLibraries.bind(this);
         this.createLibrary = this.createLibrary.bind(this);
         this.loadLibrary = this.loadLibrary.bind(this);
         this.saveLibrary = this.saveLibrary.bind(this);
@@ -23,28 +25,44 @@ export default class App extends React.Component {
         this.updateBook = this.updateBook.bind(this);
 
         this.state = {
-            controlsService: {
-                createLibrary: this.createLibrary,
-                loadLibrary: this.loadLibrary,
-                saveLibrary: this.saveLibrary,
-                addBook: this.addBook,
-                uploadFiles: this.uploadFiles
-            },
-            libraryService: {
-                updateBook: this.updateBook,
-                deleteBook: this.deleteBook
-            },
+            libraries: [],
             books: null
         };
     }
 
+    componentDidMount() {
+        this.listLibraries().then((libraries) => {
+            this.setState({
+                libraries: libraries
+            });
+        });
+    }
+
     render() {
+        const controlsService = {
+            createLibrary: this.createLibrary,
+            loadLibrary: this.loadLibrary,
+            saveLibrary: this.saveLibrary,
+            addBook: this.addBook,
+            uploadFiles: this.uploadFiles
+        };
+
+        const libraryService = {
+            updateBook: this.updateBook,
+            deleteBook: this.deleteBook
+        };
+
         return (
             <div>
-                <LibraryControls service={this.state.controlsService} />
-                <Library books={this.state.books} service={this.state.libraryService} />
+                <LibraryControls service={controlsService} />
+                <LibrarySelect libraries={this.state.libraries} />
+                <Library books={this.state.books} service={libraryService} />
             </div>
         );
+    }
+
+    listLibraries() {
+        return this.props.dataService.listLibraries();
     }
 
     createLibrary(name) {

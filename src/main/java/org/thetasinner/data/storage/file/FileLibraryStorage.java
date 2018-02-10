@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -216,6 +217,21 @@ public class FileLibraryStorage implements ILibraryStorage {
     @Override
     public void deleteBook(String id, String name) {
         cache.get(name).getBooks().removeIf(b -> id.equals(b.getId()));
+    }
+
+    @Override
+    public List<String> getLibraries() {
+        List<String> libraries = new ArrayList<>();
+        String libraryDirectory = getLibraryDirectory("");
+        try (DirectoryStream<Path> paths = Files.newDirectoryStream(Paths.get(libraryDirectory))) {
+            for (Path path : paths) {
+                libraries.add(path.getFileName().toString());
+            }
+        } catch (IOException e) {
+            throw new EBookDataServiceException("Failed to get a list of library directories", e);
+        }
+
+        return libraries;
     }
 
     private void updateBookMetadata(Book book, BookMetadataUpdateRequest bookMetadataUpdateRequest) {

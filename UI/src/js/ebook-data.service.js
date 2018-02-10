@@ -22,6 +22,20 @@ export default class EBookDataService {
         this._getBooks = this._getBooks.bind(this);
     }
 
+    listLibraries() {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: 'http://localhost:8080/libraries',
+                type: 'GET',
+                timeout: 1500
+            }).done((response) => {
+                resolve(response);
+            }).fail((jqXHR) => {
+                reject(processAjaxError(jqXHR));
+            });
+        });
+    }
+
     createLibrary(libraryName) {
         const that = this;
         return new Promise((resolve, reject) => {

@@ -23,4 +23,6 @@ public interface ILibraryStorage {
     Book updateBook(String id, String name, BookUpdateRequest bookUpdateRequest);
 
     void deleteBook(String id, String name);
+
+    List<String> getLibraries();
 }

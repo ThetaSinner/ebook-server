@@ -40,6 +40,11 @@ public class EBookController {
         return new UploadResponse(failedUploadIndices);
     }
 
+    @RequestMapping(value = "/libraries", method = RequestMethod.GET)
+    public @ResponseBody List<String> getBooks() {
+        return eBookDataService.getLibraries();
+    }
+
     @RequestMapping(value = "/books", method = RequestMethod.GET)
     public @ResponseBody List<Book> getBooks(@RequestParam(name = "token") String token, @RequestParam(name = "name") String name) {
         return eBookDataService.getBooks(token, name);

@@ -206,4 +206,8 @@ public class EBookDataService {
 
         return librariesClaim.asList(String.class);
     }
+
+    public List<String> getLibraries() {
+        return storage.getLibraries();
+    }
 }
