@@ -160,7 +160,9 @@ public class EBookDataService {
             }
             else {
                 List<String> claimedLibraries = getClaimedLibraries(token);
-                claimedLibraries.add(name);
+                if (!claimedLibraries.contains(name)) {
+                    claimedLibraries.add(name);
+                }
 
                 Algorithm algorithm = Algorithm.HMAC256("mysecret");
                 newToken = JWT.create()

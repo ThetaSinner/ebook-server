@@ -26,6 +26,7 @@ export default class App extends React.Component {
 
         this.state = {
             libraries: [],
+            loadedLibraries: [],
             books: null
         };
     }
@@ -54,8 +55,8 @@ export default class App extends React.Component {
 
         return (
             <div>
+                <LibrarySelect libraries={this.state.libraries} loadedLibraries={this.state.loadedLibraries} loadLibrary={this.loadLibrary} />
                 <LibraryControls service={controlsService} />
-                <LibrarySelect libraries={this.state.libraries} />
                 <Library books={this.state.books} service={libraryService} />
             </div>
         );
@@ -74,7 +75,13 @@ export default class App extends React.Component {
     }
 
     loadLibrary(name) {
-        return this.props.dataService.loadLibrary(name).then((books) => {
+        return this.props.dataService.loadLibrary(name).then((loadedLibraries) => {
+            this.setState({
+                loadedLibraries: loadedLibraries
+            });
+
+            return this.props.dataService._getBooks();
+        }).then((books) => {
             if (!books) {
                 return Promise.reject('Library not found');
             }

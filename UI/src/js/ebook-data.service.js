@@ -1,4 +1,5 @@
 import $ from 'jquery';
+import jwt_decode from 'jwt-decode';
 
 function processAjaxError(jqXHR) {
     if (jqXHR.statusText === 'timeout') {
@@ -71,11 +72,12 @@ export default class EBookDataService {
             }).done((response) => {
                 that.token = response.token;
                 that.activeLibraryName = libraryName;
-                resolve();
+                var decoded = jwt_decode(that.token);
+                resolve(decoded && decoded.libraries ? decoded.libraries : []);
             }).fail((jqXHR) => {
                 reject(processAjaxError(jqXHR));
             });
-        }).then(this._getBooks);
+        });
     }
 
     saveLibrary() {

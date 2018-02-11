@@ -74,7 +74,8 @@ public class FileLibraryStorage implements ILibraryStorage {
             acquireLibraryLock.lock();
 
             if (cache.has(name)) {
-                throw new EBookDataServiceException("That library is already loaded");
+                // The library is already loaded, so there's nothing to do.
+                return;
             }
 
             byte[] encoded = Files.readAllBytes(Paths.get(getLibraryPath(name)));
