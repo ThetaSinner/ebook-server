@@ -17,11 +17,18 @@ export default class LibraryControls extends React.Component {
         const createLibrary = this.props.service.createLibrary;
         const loadLibrary = this.props.service.loadLibrary;
         const saveLibrary = this.props.service.saveLibrary;
+
         const addBook = this.props.service.addBook;
         const uploadFiles = this.props.service.uploadFiles;
+
+        const startSelectingLibrary = this.props.service.startSelectingLibrary;
+
         /* eslint-disable quotes */
         return (
             <>
+                <div className="d-inline mr-5" onClick={startSelectingLibrary}>
+                    <i className="material-icons es-icon-button" aria-hidden="true">navigate_before</i>
+                </div>
                 <div className="d-inline mr-5">
                     <span>Library </span>
 

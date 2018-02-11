@@ -9,6 +9,7 @@
   },
   "scripts": {
     "build": "gulp",
+    "serve": "serve ./build --port 4343 --open",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "ThetaSinner",
@@ -21,7 +22,8 @@
     "material-design-icons": "^3.0.1",
     "popper.js": "^1.12.9",
     "react": "^16.2.0",
-    "react-dom": "^16.2.0"
+    "react-dom": "^16.2.0",
+    "serve": "^6.4.9"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0-beta.39",

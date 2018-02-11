@@ -24,7 +24,10 @@ export default class App extends React.Component {
         this.deleteBook = this.deleteBook.bind(this);
         this.updateBook = this.updateBook.bind(this);
 
+        this.startSelectingLibrary = this.startSelectingLibrary.bind(this);
+
         this.state = {
+            selectingLibrary: true,
             libraries: [],
             loadedLibraries: [],
             books: null
@@ -45,7 +48,8 @@ export default class App extends React.Component {
             loadLibrary: this.loadLibrary,
             saveLibrary: this.saveLibrary,
             addBook: this.addBook,
-            uploadFiles: this.uploadFiles
+            uploadFiles: this.uploadFiles,
+            startSelectingLibrary: this.startSelectingLibrary
         };
 
         const libraryService = {
@@ -53,13 +57,28 @@ export default class App extends React.Component {
             deleteBook: this.deleteBook
         };
 
+        const selectingLibrary = this.state.selectingLibrary;
+
+        /* eslint-disable quotes */
         return (
-            <div>
-                <LibrarySelect libraries={this.state.libraries} loadedLibraries={this.state.loadedLibraries} loadLibrary={this.loadLibrary} />
-                <LibraryControls service={controlsService} />
-                <Library books={this.state.books} service={libraryService} />
-            </div>
+            <>
+                {selectingLibrary &&                 
+                    <LibrarySelect 
+                        libraries={this.state.libraries} 
+                        loadedLibraries={this.state.loadedLibraries} 
+                        
+                        loadLibrary={this.loadLibrary} 
+                    />
+                }
+                {!selectingLibrary && 
+                    <>
+                        <LibraryControls service={controlsService} />
+                        <Library books={this.state.books} service={libraryService} />
+                    </>
+                }
+            </>
         );
+        /* eslint-enable quotes */
     }
 
     listLibraries() {
@@ -77,7 +96,8 @@ export default class App extends React.Component {
     loadLibrary(name) {
         return this.props.dataService.loadLibrary(name).then((loadedLibraries) => {
             this.setState({
-                loadedLibraries: loadedLibraries
+                loadedLibraries: loadedLibraries,
+                selectingLibrary: false
             });
 
             return this.props.dataService._getBooks();
@@ -140,6 +160,12 @@ export default class App extends React.Component {
             this.setState({
                 books: books
             });
+        });
+    }
+
+    startSelectingLibrary() {
+        this.setState({
+            selectingLibrary: true
         });
     }
 }
