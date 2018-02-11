@@ -15,8 +15,8 @@ function processAjaxError(jqXHR) {
 
 export default class EBookDataService {
     constructor(serverUrl) {
-        this.token = null;
-        // The server supports multiple libraries being open, just need to support switching on the UI.
+        this._token = localStorage.getItem('es-token');
+        
         this.activeLibraryName = null;
         this.serverUrl = serverUrl;
 
@@ -44,12 +44,12 @@ export default class EBookDataService {
                 url: 'http://localhost:8080/create',
                 type: 'POST',
                 data: {
-                    token: that.token,
+                    token: that._token,
                     name: libraryName
                 },
                 timeout: 3000
             }).done((response) => {
-                that.token = response.token;
+                that._setToken(response.token);
                 that.activeLibraryName = libraryName;
                 resolve();
             }).fail((jqXHR) => {
@@ -65,14 +65,21 @@ export default class EBookDataService {
                 url: 'http://localhost:8080/load',
                 type: 'GET',
                 data: {
-                    token: that.token,
+                    token: that._token,
                     name: libraryName
                 },
                 timeout: 3000
             }).done((response) => {
-                that.token = response.token;
                 that.activeLibraryName = libraryName;
-                var decoded = jwt_decode(that.token);
+
+                that._setToken(response.token);
+                var decoded = null;
+                try {
+                    decoded = jwt_decode(that._token);
+                }
+                catch (e) {
+                    // TODO It's a problem if we can't decode the token. Should probably stop talking to this server...
+                }
                 resolve(decoded && decoded.libraries ? decoded.libraries : []);
             }).fail((jqXHR) => {
                 reject(processAjaxError(jqXHR));
@@ -87,7 +94,7 @@ export default class EBookDataService {
                 url: 'http://localhost:8080/save',
                 type: 'GET',
                 data: {
-                    token: that.token,
+                    token: that._token,
                     name: that.activeLibraryName
                 },
                 timeout: 3000
@@ -108,7 +115,7 @@ export default class EBookDataService {
                 contentType: 'application/json',
                 dataType: 'json',
                 data: JSON.stringify({
-                    token: that.token,
+                    token: that._token,
                     name: that.activeLibraryName,
                     request: {
                         url: url,
@@ -130,7 +137,7 @@ export default class EBookDataService {
             formData.append('files', files.item(i));
         }
 
-        formData.append('token', this.token);
+        formData.append('token', this._token);
         formData.append('name', this.activeLibraryName);
         
         return new Promise((resolve, reject) => {
@@ -185,7 +192,7 @@ export default class EBookDataService {
                 contentType: 'application/json', // TODO wrong content type for patch
                 dataType: 'json',
                 data: JSON.stringify({
-                    token: that.token,
+                    token: that._token,
                     name: that.activeLibraryName,
                     request: updateRequest
                 }),
@@ -202,7 +209,7 @@ export default class EBookDataService {
     deleteBook(id) {
         const that = this;
         const params = $.param({
-            token: that.token,
+            token: that._token,
             name: that.activeLibraryName
         });
         return new Promise((resolve, reject) => {
@@ -227,7 +234,7 @@ export default class EBookDataService {
                 url: 'http://localhost:8080/books',
                 type: 'GET',
                 data: {
-                    token: that.token,
+                    token: that._token,
                     name: that.activeLibraryName
                 },
                 timeout: 3000
@@ -236,6 +243,24 @@ export default class EBookDataService {
             }).fail((jqXHR) => {
                 reject(processAjaxError(jqXHR));
             });
+        });
+    }
+
+    _setToken(token) {
+        localStorage.setItem('es-token', token);
+        this._token = token;
+    }
+
+    _getLoadedLibraries() {
+        return new Promise((resolve, reject) => {
+            try {
+                var decoded = jwt_decode(this._token);
+                resolve(decoded && decoded.libraries ? decoded.libraries : []);
+            }
+            catch (e) {
+                // TODO It's a problem if we can't decode the token. Should probably stop talking to this server...
+                reject();
+            }
         });
     }
 }

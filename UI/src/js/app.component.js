@@ -25,6 +25,7 @@ export default class App extends React.Component {
         this.updateBook = this.updateBook.bind(this);
 
         this.startSelectingLibrary = this.startSelectingLibrary.bind(this);
+        this.getLoadedLibraries = this.getLoadedLibraries.bind(this);
 
         this.state = {
             selectingLibrary: true,
@@ -38,6 +39,12 @@ export default class App extends React.Component {
         this.listLibraries().then((libraries) => {
             this.setState({
                 libraries: libraries
+            });
+        });
+
+        this.getLoadedLibraries().then((loadedLibraries) => {
+            this.setState({
+                loadedLibraries: loadedLibraries
             });
         });
     }
@@ -167,6 +174,10 @@ export default class App extends React.Component {
         this.setState({
             selectingLibrary: true
         });
+    }
+
+    getLoadedLibraries() {
+        return this.props.dataService._getLoadedLibraries();
     }
 }
 
