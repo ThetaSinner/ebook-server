@@ -8,8 +8,6 @@ import org.thetasinner.web.model.BookUpdateRequest;
 import java.util.List;
 
 public interface ILibraryStorage {
-    void load(String name);
-
     void save(String name);
 
     void create(String name);

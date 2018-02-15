@@ -68,8 +68,7 @@ public class FileLibraryStorage implements ILibraryStorage {
         }
     }
 
-    @Override
-    public void load(String name) {
+    private void load(String name) {
         try {
             acquireLibraryLock.lock();
 
@@ -113,12 +112,12 @@ public class FileLibraryStorage implements ILibraryStorage {
             String path = getLibraryDirectory(name);
             Path newLibraryPath = Paths.get(path);
             if (Files.exists(newLibraryPath)) {
-                throw new EBookDataServiceException(String.format("Will not create new library with name [%s] because the name is already in use", name));
+                throw new EBookDataServiceException(String.format("Will not createLibrary new library with name [%s] because the name is already in use", name));
             }
 
             File dir = new File(path);
             if (!dir.mkdirs()) {
-                throw new EBookDataServiceException(String.format("Unable to create directory for name [%s], check this is a valid directory name and you have permission to create it", name));
+                throw new EBookDataServiceException(String.format("Unable to createLibrary directory for name [%s], check this is a valid directory name and you have permission to createLibrary it", name));
             }
 
             String libraryPath = getLibraryPath(name);
@@ -129,8 +128,8 @@ public class FileLibraryStorage implements ILibraryStorage {
             }
             catch (IOException e) {
                 // An IO exception here is NOT expected because the path has been checked but if it does happen then some sort
-                // or recovery is needed. Can either delete the library folder or create a library validation and repair feature.
-                throw new EBookDataServiceException(String.format("Failed to create library data file for new library with name [%s]", name));
+                // or recovery is needed. Can either delete the library folder or createLibrary a library validation and repair feature.
+                throw new EBookDataServiceException(String.format("Failed to createLibrary library data file for new library with name [%s]", name));
             }
         }
         finally {
@@ -168,7 +167,7 @@ public class FileLibraryStorage implements ILibraryStorage {
         UUID uuid = UUID.randomUUID();
         String storagePath = getLibraryDirectory(name) + uuid + File.separator;
         if (!new File(storagePath).mkdirs()) {
-            throw new StorageException(String.format("Could not create a directory to store the new file in [%s]", filename));
+            throw new StorageException(String.format("Could not createLibrary a directory to store the new file in [%s]", filename));
         }
 
         String fileStoragePath = storagePath + filename;
@@ -281,7 +280,7 @@ public class FileLibraryStorage implements ILibraryStorage {
 
     private Library getLibrary(String name) {
         if (!cache.has(name)) {
-            throw new EBookDataServiceException("That library isn't loaded");
+            load(name);
         }
 
         return cache.get(name);

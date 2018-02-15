@@ -1,9 +1,5 @@
 package org.thetasinner.data;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.interfaces.Claim;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,15 +13,20 @@ import org.thetasinner.data.model.Book;
 import org.thetasinner.data.model.TypedUrl;
 import org.thetasinner.data.storage.ILibraryStorage;
 import org.thetasinner.data.storage.StorageException;
+import org.thetasinner.web.events.ChangeEventData;
+import org.thetasinner.web.events.LibraryChangeService;
 import org.thetasinner.web.model.BookAddRequest;
 import org.thetasinner.web.model.BookUpdateRequest;
+import org.thetasinner.web.model.CommitLibrary;
+import org.thetasinner.web.model.CommitRequest;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.thetasinner.web.events.ChangeEventData.ChangeType.*;
 
 @Service
 public class EBookDataService {
@@ -34,35 +35,34 @@ public class EBookDataService {
     @Autowired
     private ILibraryStorage storage;
 
-    public String load(String token, String name) {
-        if (StringUtils.isEmpty(name)) {
-            throw new EBookDataServiceException("Provide a name");
+    @Autowired
+    private LibraryChangeService libraryChangeService;
+
+    public void commit(CommitRequest commitRequest) {
+        if (commitRequest.getCommitAll() || commitRequest.getCommitAndUnloadAll()) {
+            // TODO
         }
-
-        String updatedToken = createOrUpdateToken(token, name);
-        storage.load(name);
-        return updatedToken;
+        else {
+            List<CommitLibrary> commitLibraries = commitRequest.getCommitLibraries();
+            if (commitLibraries == null) {
+                throw new EBookDataServiceException("Cannot update no libraries");
+            }
+            commitLibraries.forEach(request -> {
+                storage.save(request.getLibraryName());
+                // TODO handle unload
+            });
+        }
     }
 
-    public void save(String token, String name) {
-        checkCanUseLibrary(token, name);
-
-        storage.save(name);
-    }
-
-    public String create(String token, String name) {
+    public void createLibrary(String name) {
         if (StringUtils.isEmpty(name)) {
             throw new EBookDataServiceException(("Provide a name"));
         }
 
-        String updatedToken = createOrUpdateToken(token, name);
         storage.create(name);
-        return updatedToken;
     }
 
-    public List<Integer> storeAll(String token, String name, MultipartFile[] files) {
-        checkCanUseLibrary(token, name);
-
+    public List<Integer> storeAll(String name, MultipartFile[] files) {
         List<Integer> failed = new ArrayList<>();
 
         int storeIndex = 0;
@@ -87,17 +87,13 @@ public class EBookDataService {
         storage.store(name, file);
     }
 
-    public List<Book> getBooks(String token, String name) {
-        checkCanUseLibrary(token, name);
-
+    public List<Book> getBooks(String name) {
         List<Book> books = storage.getBooks(name);
 
         return books == null ? new ArrayList<>() : books;
     }
 
-    public Book createBook(String token, String name, BookAddRequest bookAddRequest) {
-        checkCanUseLibrary(token, name);
-
+    public Book createBook(String name, BookAddRequest bookAddRequest) {
         if (bookAddRequest == null || bookAddRequest.getUrl() == null || bookAddRequest.getType() == null) {
             throw new InvalidRequestException("Invalid add book request");
         }
@@ -120,20 +116,26 @@ public class EBookDataService {
                 break;
         }
 
+        // Publish book created change event.
+        ChangeEventData eventData = new ChangeEventData(BookCreated, book.getId());
+        libraryChangeService.publish(name, eventData);
+
         return book;
     }
 
-    public void deleteBook(String id, String token, String name) {
+    public void deleteBook(String id, String name) {
         if (StringUtils.isBlank(id)) {
             throw new InvalidRequestException("Missing request param: id");
         }
 
-        checkCanUseLibrary(token, name);
-
         storage.deleteBook(id, name);
+
+        // Publish book deleted change event.
+        ChangeEventData eventData = new ChangeEventData(BookDeleted, id);
+        libraryChangeService.publish(name, eventData);
     }
 
-    public Book updateBook(String id, String token, String name, BookUpdateRequest bookUpdateRequest) {
+    public Book updateBook(String id, String name, BookUpdateRequest bookUpdateRequest) {
         if (StringUtils.isEmpty(id)) {
             throw new InvalidRequestException("Missing request param: id");
         }
@@ -142,71 +144,13 @@ public class EBookDataService {
             throw new InvalidRequestException("Missing request body");
         }
 
-        checkCanUseLibrary(token, name);
+        Book book = storage.updateBook(id, name, bookUpdateRequest);
 
-        return storage.updateBook(id, name, bookUpdateRequest);
-    }
+        // Publish book updated change event.
+        ChangeEventData eventData = new ChangeEventData(BookUpdated, id);
+        libraryChangeService.publish(name, eventData);
 
-    private String createOrUpdateToken(String token, String name) {
-        String newToken;
-        try {
-            if (StringUtils.isEmpty(token)) {
-                // TODO extract all of this and create a property.
-                Algorithm algorithm = Algorithm.HMAC256("mysecret");
-                newToken = JWT.create()
-                        .withIssuer("ebook-server")
-                        .withArrayClaim("libraries", new String[]{name})
-                        .sign(algorithm);
-            }
-            else {
-                List<String> claimedLibraries = getClaimedLibraries(token);
-                if (!claimedLibraries.contains(name)) {
-                    claimedLibraries.add(name);
-                }
-
-                Algorithm algorithm = Algorithm.HMAC256("mysecret");
-                newToken = JWT.create()
-                        .withIssuer("ebook-server")
-                        .withArrayClaim("libraries", claimedLibraries.toArray(new String[claimedLibraries.size()]))
-                        .sign(algorithm);
-            }
-        }
-        catch (UnsupportedEncodingException e) {
-            throw new EBookDataServiceException("Error creating token");
-        }
-
-        return newToken;
-    }
-
-    private void checkCanUseLibrary(String token, String name) {
-        if (StringUtils.isEmpty(token) || StringUtils.isEmpty(name)) {
-            throw new EBookDataServiceException("Provide name and token");
-        }
-
-        List<String> claimedLibraries = getClaimedLibraries(token);
-        if (!claimedLibraries.contains(name)) {
-            throw new EBookDataServiceException("Unauthorized library access");
-        }
-    }
-
-    private List<String> getClaimedLibraries(String token) {
-        if (StringUtils.isEmpty(token)) {
-            return new ArrayList<>();
-        }
-
-        DecodedJWT decoded = JWT.decode(token);
-
-        String issuer = decoded.getIssuer();
-        if (!"ebook-server".equals(issuer)) {
-            throw new EBookDataServiceException("Invalid token");
-        }
-
-        Claim librariesClaim = decoded.getClaim("libraries");
-        if (librariesClaim.isNull()) {
-            throw new EBookDataServiceException("Invalid token");
-        }
-
-        return librariesClaim.asList(String.class);
+        return book;
     }
 
     public List<String> getLibraries() {

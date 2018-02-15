@@ -15,54 +15,48 @@ public class EBookController {
     @Autowired
     private EBookDataService eBookDataService;
 
-    @RequestMapping(value = "/load", method = RequestMethod.GET)
-    public @ResponseBody LoadResponse load(@RequestParam(name = "token") String token, @RequestParam(name = "name") String name) {
-        String newToken = eBookDataService.load(token, name);
-        return new LoadResponse(newToken);
-    }
-
-    @RequestMapping(value = "/save", method = RequestMethod.GET)
-    public @ResponseBody EmptyJsonResponse save(@RequestParam(name = "token") String token, @RequestParam(name = "name") String name) {
-        eBookDataService.save(token, name);
+    @RequestMapping(value = "/libraries/commit", method = RequestMethod.POST)
+    public @ResponseBody EmptyJsonResponse commit(@RequestBody CommitRequest commitRequest) {
+        eBookDataService.commit(commitRequest);
         return new EmptyJsonResponse();
     }
 
-    @RequestMapping(value = "/create", method = RequestMethod.POST)
-    public @ResponseBody LoadResponse create(@RequestParam(name = "token") String token, @RequestParam(name = "name") String name) {
-        String newToken = eBookDataService.create(token, name);
-        return new LoadResponse(newToken);
+    @RequestMapping(value = "/libraries", method = RequestMethod.POST)
+    public @ResponseBody EmptyJsonResponse create(@RequestParam(name = "name") String name) {
+        eBookDataService.createLibrary(name);
+        return new EmptyJsonResponse();
     }
 
-    @RequestMapping(value = "/upload", method = RequestMethod.POST)
-    public @ResponseBody UploadResponse upload(@RequestParam(name = "token") String token, @RequestParam(name = "name") String name, @RequestParam(name = "files") MultipartFile[] files) {
-        List<Integer> failedUploadIndices = eBookDataService.storeAll(token, name, files);
+    @RequestMapping(value = "/libraries/upload", method = RequestMethod.POST)
+    public @ResponseBody UploadResponse upload(@RequestParam(name = "name") String name, @RequestParam(name = "files") MultipartFile[] files) {
+        List<Integer> failedUploadIndices = eBookDataService.storeAll(name, files);
 
         return new UploadResponse(failedUploadIndices);
     }
 
     @RequestMapping(value = "/libraries", method = RequestMethod.GET)
-    public @ResponseBody List<String> getBooks() {
+    public @ResponseBody List<String> getLibraries() {
         return eBookDataService.getLibraries();
     }
 
     @RequestMapping(value = "/books", method = RequestMethod.GET)
-    public @ResponseBody List<Book> getBooks(@RequestParam(name = "token") String token, @RequestParam(name = "name") String name) {
-        return eBookDataService.getBooks(token, name);
+    public @ResponseBody List<Book> getBooks(@RequestParam(name = "name") String name) {
+        return eBookDataService.getBooks(name);
     }
 
     @RequestMapping(value = "/books", method = RequestMethod.POST)
     public @ResponseBody Book createBook(@RequestBody RequestBase<BookAddRequest> request) {
-        return eBookDataService.createBook(request.getToken(), request.getName(), request.getRequest());
+        return eBookDataService.createBook(request.getName(), request.getRequest());
     }
 
     @RequestMapping(value = "/books/{id}", method = RequestMethod.PATCH)
     public @ResponseBody Book updateBook(@PathVariable("id") String id, @RequestBody RequestBase<BookUpdateRequest> bookUpdateRequest) {
-        return eBookDataService.updateBook(id, bookUpdateRequest.getToken(), bookUpdateRequest.getName(), bookUpdateRequest.getRequest());
+        return eBookDataService.updateBook(id, bookUpdateRequest.getName(), bookUpdateRequest.getRequest());
     }
 
     @RequestMapping(value = "/books/{id}", method = RequestMethod.DELETE)
-    public @ResponseBody EmptyJsonResponse deleteBook(@PathVariable("id") String id, @RequestParam(name = "token") String token, @RequestParam(name = "name") String name) {
-        eBookDataService.deleteBook(id, token, name);
+    public @ResponseBody EmptyJsonResponse deleteBook(@PathVariable("id") String id, @RequestParam(name = "name") String name) {
+        eBookDataService.deleteBook(id, name);
         return new EmptyJsonResponse();
     }
 }
