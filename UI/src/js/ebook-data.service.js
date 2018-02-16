@@ -37,13 +37,11 @@ export default class EBookDataService {
     }
 
     createLibrary(libraryName) {
-        const that = this;
         return new Promise((resolve, reject) => {
             $.ajax({
                 url: 'http://localhost:8080/libraries',
                 type: 'POST',
                 data: {
-                    token: that._token,
                     name: libraryName
                 },
                 timeout: 3000

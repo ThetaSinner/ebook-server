@@ -23,7 +23,7 @@ export default class CreateLibraryControl extends React.Component {
         /* eslint-disable quotes */
         return (
             <>
-                <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#createLibraryControlModal">Create</button>
+                <i className="material-icons es-icon-button" aria-hidden="true" data-toggle="modal" data-target="#createLibraryControlModal">add</i>
 
                 <div className="modal fade" id="createLibraryControlModal" tabIndex="-1" role="dialog" aria-labelledby="createLibraryControlModalLabel" aria-hidden="true">
                     <div className="modal-dialog" role="document">

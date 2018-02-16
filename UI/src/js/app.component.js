@@ -44,7 +44,6 @@ export default class App extends React.Component {
 
     render() {
         const controlsService = {
-            createLibrary: this.createLibrary,
             loadLibrary: this.loadLibrary,
             saveLibrary: this.saveLibrary,
             addBook: this.addBook,
@@ -66,7 +65,8 @@ export default class App extends React.Component {
                     <LibrarySelect 
                         libraries={this.state.libraries}
                         
-                        navigateToLibrary={this.navigateToLibrary} 
+                        navigateToLibrary={this.navigateToLibrary}
+                        createLibrary={this.createLibrary}
                     />
                 }
                 {!selectingLibrary && 
@@ -86,8 +86,10 @@ export default class App extends React.Component {
 
     createLibrary(name) {
         return this.props.dataService.createLibrary(name).then(() => {
+            return this.props.dataService.listLibraries();
+        }).then((libraries) => {
             this.setState({
-                books: []
+                libraries: libraries
             });
         });
     }
