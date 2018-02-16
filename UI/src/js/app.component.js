@@ -142,7 +142,9 @@ export default class App extends React.Component {
     }
 
     updateBook(updatedBook) {
-        return this.props.dataService.updateBook(updatedBook).then((books) => {
+        return this.props.dataService.updateBook(updatedBook).then(() => {
+            return this.props.dataService.getBooks();
+        }).then((books) => {
             if (!books) {
                 return Promise.reject('Library not found');
             }
@@ -154,7 +156,9 @@ export default class App extends React.Component {
     }
 
     deleteBook(id) {
-        return this.props.dataService.deleteBook(id).then((books) => {
+        return this.props.dataService.deleteBook(id).then(() => {
+            return this.props.dataService.getBooks();
+        }).then((books) => {
             if (!books) {
                 return Promise.reject('Library not found');
             }

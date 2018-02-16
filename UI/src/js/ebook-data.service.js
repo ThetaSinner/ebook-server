@@ -129,6 +129,9 @@ export default class EBookDataService {
 
     updateBook(book) {
         var updateRequest = {};
+        if (book.isbn) {
+            updateRequest.isbn = book.isbn;
+        }
         if (book.title) {
             updateRequest.title = book.title;
         }
@@ -140,6 +143,9 @@ export default class EBookDataService {
         }
         if (book.datePublished) {
             updateRequest.datePublished = book.datePublished;
+        }
+        if (book.description) {
+            updateRequest.description = book.description;
         }
 
         var metadata = book.metadata;

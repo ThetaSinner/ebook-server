@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 
 public class FileLibraryStorage implements ILibraryStorage {
     private static final Logger LOG = LoggerFactory.getLogger(FileLibraryStorage.class);
@@ -195,8 +196,15 @@ public class FileLibraryStorage implements ILibraryStorage {
             book.setTitle(bookUpdateRequest.getTitle());
         }
 
+        if (bookUpdateRequest.getIsbn() != null) {
+            book.setIsbn(bookUpdateRequest.getIsbn());
+        }
+
         if (!CollectionUtils.isEmpty(bookUpdateRequest.getAuthors())) {
-            book.getAuthors().addAll(bookUpdateRequest.getAuthors());
+            // Ensure the list of authors only contains unique values.
+            book.setAuthors(
+                bookUpdateRequest.getAuthors().stream().distinct().collect(Collectors.toList())
+            );
         }
 
         if (bookUpdateRequest.getPublisher() != null) {
@@ -205,6 +213,10 @@ public class FileLibraryStorage implements ILibraryStorage {
 
         if (bookUpdateRequest.getDatePublished() != null) {
             book.setDatePublished(bookUpdateRequest.getDatePublished());
+        }
+
+        if (bookUpdateRequest.getDescription() != null) {
+            book.setDescription(bookUpdateRequest.getDescription());
         }
 
         if (bookUpdateRequest.getBookMetadataUpdateRequest() != null) {
@@ -216,6 +228,7 @@ public class FileLibraryStorage implements ILibraryStorage {
 
     @Override
     public void deleteBook(String id, String name) {
+        // TODO If this entry was a file then it should be deleted here.
         getLibrary(name).getBooks().removeIf(b -> id.equals(b.getId()));
     }
 
@@ -242,11 +255,10 @@ public class FileLibraryStorage implements ILibraryStorage {
         }
 
         if (!CollectionUtils.isEmpty(bookMetadataUpdateRequest.getTags())) {
-            if (bookMetadata.getTags() == null) {
-                bookMetadata.setTags(new ArrayList<>());
-            }
-
-            bookMetadata.getTags().addAll(bookMetadataUpdateRequest.getTags());
+            // Ensure the list of tags only contains unique values.
+            bookMetadata.setTags(
+                bookMetadataUpdateRequest.getTags().stream().distinct().collect(Collectors.toList())
+            );
         }
 
         if (bookMetadataUpdateRequest.getRating() != null) {

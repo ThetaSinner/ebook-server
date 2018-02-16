@@ -12,7 +12,11 @@ export default class DisplayHelper {
     }
 
     fromCommaList(str) {
-        let result = _.split(str);
+        let result = _.split(str, ',');
+
+        result.forEach((value, index, arr) => {
+            arr[index] = _.trim(value);
+        });
 
         return result.length == 1 ? result[0] : result;
     }

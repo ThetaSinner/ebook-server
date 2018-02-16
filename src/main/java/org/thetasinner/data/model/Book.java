@@ -1,11 +1,13 @@
 package org.thetasinner.data.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+@Data
 public class Book {
     private String id;
     private String isbn;
@@ -15,69 +17,6 @@ public class Book {
     private List<String> authors = new ArrayList<>();
     private String publisher;
     private Date datePublished;
+    private String description;
     private BookMetadata metadata;
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getIsbn() {
-        return isbn;
-    }
-
-    public void setIsbn(String isbn) {
-        this.isbn = isbn;
-    }
-
-    public TypedUrl getUrl() {
-        return url;
-    }
-
-    public void setUrl(TypedUrl url) {
-        this.url = url;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public List<String> getAuthors() {
-        return authors;
-    }
-
-    public void setAuthors(List<String> authors) {
-        this.authors = authors;
-    }
-
-    public String getPublisher() {
-        return publisher;
-    }
-
-    public void setPublisher(String publisher) {
-        this.publisher = publisher;
-    }
-
-    public Date getDatePublished() {
-        return datePublished;
-    }
-
-    public void setDatePublished(Date datePublished) {
-        this.datePublished = datePublished;
-    }
-
-    public BookMetadata getMetadata() {
-        return metadata;
-    }
-
-    public void setMetadata(BookMetadata metadata) {
-        this.metadata = metadata;
-    }
 }

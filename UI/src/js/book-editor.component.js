@@ -10,14 +10,14 @@ export default class BookEditor extends React.Component {
 
         const book = props.book;
         this.state = {
-            isbn: book.isbn,
-            title: book.title,
+            isbn: book.isbn ? book.isbn : '',
+            title: book.title ? book.title : '',
             authors: displayHelper.toCommaList(book.authors),
-            publisher: book.publisher,
-            datePublished: book.datePublished,
-            description: book.description,
+            publisher: book.publisher ? book.publisher : '',
+            datePublished: book.datePublished ? book.datePublished : '',
+            description: book.description ? book.description : '',
             metadataTags: displayHelper.toCommaList(book.metadata && book.metadata.tags),
-            metadataRating: book.metadata ? book.metadata.rating : ''
+            metadataRating: book.metadata && book.metadata.rating ? book.metadata.rating : ''
         };
 
         this.saveBook = this.saveBook.bind(this);
@@ -68,9 +68,9 @@ export default class BookEditor extends React.Component {
                             </div>
                         </form>
 
-                        <div>
-                            <i className="material-icons es-icon-button" aria-hidden="true" onClick={this.saveBook}>save</i>
-                            <i className="material-icons es-icon-button" aria-hidden="true" onClick={this.cancelEdit}>cancel</i>
+                        <div className="float-right">
+                            <i className="mr-2 material-icons es-icon-button-large" aria-hidden="true" onClick={this.saveBook}>done</i>
+                            <i className="material-icons es-icon-button-large" aria-hidden="true" onClick={this.cancelEdit}>cancel</i>
                         </div>
                     </div>
                 </div>
@@ -92,7 +92,7 @@ export default class BookEditor extends React.Component {
             book.datePublished = new Date(this.state.datePublished);
             book.description = this.state.description;
             book.metadata = {};
-            book.metadata.tags = this.state.metadataTags;
+            book.metadata.tags = displayHelper.fromCommaList(this.state.metadataTags);
             book.metadata.rating = this.state.metadataRating;
 
             this.props.saveBook(book);

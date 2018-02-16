@@ -24,12 +24,8 @@ export default class Book extends React.Component {
                                 <span className="es-faded-text">{formatDate(book.datePublished)}</span>
 
                                 <div className="float-right">
-                                    <button type="button" className="btn btn-primary mr-1 mt-1" onClick={this.editBook}>
-                                        <i className="material-icons es-icon-button" aria-hidden="true">mode_edit</i>
-                                    </button>
-                                    <button type="button" className="btn btn-primary mt-1" data-toggle="modal" data-target="#confirmDeleteModal">
-                                        <i className="material-icons" aria-hidden="true">delete</i>
-                                    </button>
+                                    <i className="mr-2 mt-1 material-icons es-icon-button-large" aria-hidden="true" onClick={this.editBook}>mode_edit</i>
+                                    <i className="mt-1 material-icons es-icon-button-large" aria-hidden="true" data-toggle="modal" data-target="#confirmDeleteModal">delete</i>
                                 </div>
                             </div>
                             <p><span className="es-faded-text">by  </span>
