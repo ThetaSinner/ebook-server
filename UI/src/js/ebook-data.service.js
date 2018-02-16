@@ -1,5 +1,4 @@
 import $ from 'jquery';
-import jwt_decode from 'jwt-decode';
 
 function processAjaxError(jqXHR) {
     if (jqXHR.statusText === 'timeout') {
@@ -15,12 +14,12 @@ function processAjaxError(jqXHR) {
 
 export default class EBookDataService {
     constructor(serverUrl) {
-        this._token = localStorage.getItem('es-token');
-        
         this.activeLibraryName = null;
-        this.serverUrl = serverUrl;
+        this.serverUrl = serverUrl; // TODO
+    }
 
-        this._getBooks = this._getBooks.bind(this);
+    setActiveLibraryName(libraryName) {
+        this.activeLibraryName = libraryName;
     }
 
     listLibraries() {
@@ -41,46 +40,15 @@ export default class EBookDataService {
         const that = this;
         return new Promise((resolve, reject) => {
             $.ajax({
-                url: 'http://localhost:8080/create',
+                url: 'http://localhost:8080/libraries',
                 type: 'POST',
                 data: {
                     token: that._token,
                     name: libraryName
                 },
                 timeout: 3000
-            }).done((response) => {
-                that._setToken(response.token);
-                that.activeLibraryName = libraryName;
+            }).done(() => {
                 resolve();
-            }).fail((jqXHR) => {
-                reject(processAjaxError(jqXHR));
-            });
-        });
-    }
-
-    loadLibrary(libraryName) {
-        const that = this;
-        return new Promise((resolve, reject) => {
-            $.ajax({
-                url: 'http://localhost:8080/load',
-                type: 'GET',
-                data: {
-                    token: that._token,
-                    name: libraryName
-                },
-                timeout: 3000
-            }).done((response) => {
-                that.activeLibraryName = libraryName;
-
-                that._setToken(response.token);
-                var decoded = null;
-                try {
-                    decoded = jwt_decode(that._token);
-                }
-                catch (e) {
-                    // TODO It's a problem if we can't decode the token. Should probably stop talking to this server...
-                }
-                resolve(decoded && decoded.libraries ? decoded.libraries : []);
             }).fail((jqXHR) => {
                 reject(processAjaxError(jqXHR));
             });
@@ -91,12 +59,18 @@ export default class EBookDataService {
         const that = this;
         return new Promise((resolve, reject) => {
             $.ajax({
-                url: 'http://localhost:8080/save',
-                type: 'GET',
-                data: {
-                    token: that._token,
-                    name: that.activeLibraryName
-                },
+                url: 'http://localhost:8080/libraries/commit',
+                type: 'POST',
+                contentType: 'application/json',
+                dataType: 'json',
+                data: JSON.stringify({
+                    commitLibraries: [
+                        {
+                            libraryName: that.activeLibraryName,
+                            unload: false
+                        }
+                    ]
+                }),
                 timeout: 3000
             }).done(() => {
                 resolve();
@@ -115,7 +89,6 @@ export default class EBookDataService {
                 contentType: 'application/json',
                 dataType: 'json',
                 data: JSON.stringify({
-                    token: that._token,
                     name: that.activeLibraryName,
                     request: {
                         url: url,
@@ -137,12 +110,11 @@ export default class EBookDataService {
             formData.append('files', files.item(i));
         }
 
-        formData.append('token', this._token);
         formData.append('name', this.activeLibraryName);
         
         return new Promise((resolve, reject) => {
             $.ajax({
-                url: 'http://localhost:8080/upload',
+                url: 'http://localhost:8080/libraries/upload',
                 type: 'POST',
                 data: formData,
                 processData: false,
@@ -192,7 +164,6 @@ export default class EBookDataService {
                 contentType: 'application/json', // TODO wrong content type for patch
                 dataType: 'json',
                 data: JSON.stringify({
-                    token: that._token,
                     name: that.activeLibraryName,
                     request: updateRequest
                 }),
@@ -203,13 +174,12 @@ export default class EBookDataService {
             }).fail(function (jqXHR) {
                 reject(processAjaxError(jqXHR));
             });
-        }).then(this._getBooks);
+        });
     }
 
     deleteBook(id) {
         const that = this;
         const params = $.param({
-            token: that._token,
             name: that.activeLibraryName
         });
         return new Promise((resolve, reject) => {
@@ -224,17 +194,16 @@ export default class EBookDataService {
             }).fail(function (jqXHR) {
                 reject(processAjaxError(jqXHR));
             });
-        }).then(this._getBooks);
+        });
     }
 
-    _getBooks() {
+    getBooks() {
         const that = this;
         return new Promise((resolve, reject) => {
             $.ajax({
                 url: 'http://localhost:8080/books',
                 type: 'GET',
                 data: {
-                    token: that._token,
                     name: that.activeLibraryName
                 },
                 timeout: 3000
@@ -243,24 +212,6 @@ export default class EBookDataService {
             }).fail((jqXHR) => {
                 reject(processAjaxError(jqXHR));
             });
-        });
-    }
-
-    _setToken(token) {
-        localStorage.setItem('es-token', token);
-        this._token = token;
-    }
-
-    _getLoadedLibraries() {
-        return new Promise((resolve, reject) => {
-            try {
-                var decoded = jwt_decode(this._token);
-                resolve(decoded && decoded.libraries ? decoded.libraries : []);
-            }
-            catch (e) {
-                // TODO It's a problem if we can't decode the token. Should probably stop talking to this server...
-                reject();
-            }
         });
     }
 }

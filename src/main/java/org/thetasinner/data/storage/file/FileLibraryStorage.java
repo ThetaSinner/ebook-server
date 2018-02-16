@@ -139,7 +139,7 @@ public class FileLibraryStorage implements ILibraryStorage {
 
     @Override
     public List<Book> getBooks(String name) {
-        Library library = cache.get(name);
+        Library library = getLibrary(name);
         return library.getBooks();
     }
 
@@ -149,7 +149,7 @@ public class FileLibraryStorage implements ILibraryStorage {
         book.setId(UUID.randomUUID().toString());
         book.setUrl(new TypedUrl(url, type));
 
-        Library library = cache.get(name);
+        Library library = getLibrary(name);
         library.getBooks().add(book);
 
         return book;
@@ -184,7 +184,7 @@ public class FileLibraryStorage implements ILibraryStorage {
         book.setId(uuid.toString());
         book.setUrl(new TypedUrl(fileStoragePath, TypedUrl.Type.LocalManaged));
         book.setTitle(filename);
-        cache.get(name).getBooks().add(book);
+        getLibrary(name).getBooks().add(book);
     }
 
     @Override
@@ -216,7 +216,7 @@ public class FileLibraryStorage implements ILibraryStorage {
 
     @Override
     public void deleteBook(String id, String name) {
-        cache.get(name).getBooks().removeIf(b -> id.equals(b.getId()));
+        getLibrary(name).getBooks().removeIf(b -> id.equals(b.getId()));
     }
 
     @Override
@@ -255,7 +255,7 @@ public class FileLibraryStorage implements ILibraryStorage {
     }
 
     private Book getBook(String id, String name) {
-        Optional<Book> book = cache.get(name).getBooks()
+        Optional<Book> book = getLibrary(name).getBooks()
                 .stream()
                 .filter(b -> id.equals(b.getId()))
                 .findFirst();

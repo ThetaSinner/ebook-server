@@ -4,7 +4,7 @@ export default class LibrarySelect extends React.Component {
     constructor(props) {
         super(props);
 
-        this.loadLibrary = this.loadLibrary.bind(this);
+        this.navigateToLibrary = this.navigateToLibrary.bind(this);
     }
 
     render() {
@@ -17,13 +17,8 @@ export default class LibrarySelect extends React.Component {
             <div className="container">
                 {this.props.libraries.map((library) =>
                     <div key={library} className="row es-row-highlight">
-                        <div className="col-sm-11" onClick={() => this.loadLibrary(library)}>
+                        <div className="col-sm-12" onClick={() => this.navigateToLibrary(library)}>
                             <span>{library}</span>
-                        </div>
-                        <div className="col-sm-1">
-                            <i className="material-icons" aria-hidden="true">
-                                {this.props.loadedLibraries.indexOf(library) != -1 ? 'lock_open' : 'lock'}
-                            </i>
                         </div>
                     </div>
                 )}
@@ -31,7 +26,7 @@ export default class LibrarySelect extends React.Component {
         );
     }
 
-    loadLibrary(library) {
-        this.props.loadLibrary(library);
+    navigateToLibrary(library) {
+        this.props.navigateToLibrary(library);
     }
 }

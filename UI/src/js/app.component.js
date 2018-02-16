@@ -16,7 +16,7 @@ export default class App extends React.Component {
 
         this.listLibraries = this.listLibraries.bind(this);
         this.createLibrary = this.createLibrary.bind(this);
-        this.loadLibrary = this.loadLibrary.bind(this);
+        this.navigateToLibrary = this.navigateToLibrary.bind(this);
         this.saveLibrary = this.saveLibrary.bind(this);
         this.addBook = this.addBook.bind(this);
         this.uploadFiles = this.uploadFiles.bind(this);
@@ -30,7 +30,6 @@ export default class App extends React.Component {
         this.state = {
             selectingLibrary: true,
             libraries: [],
-            loadedLibraries: [],
             books: null
         };
     }
@@ -39,12 +38,6 @@ export default class App extends React.Component {
         this.listLibraries().then((libraries) => {
             this.setState({
                 libraries: libraries
-            });
-        });
-
-        this.getLoadedLibraries().then((loadedLibraries) => {
-            this.setState({
-                loadedLibraries: loadedLibraries
             });
         });
     }
@@ -71,10 +64,9 @@ export default class App extends React.Component {
             <>
                 {selectingLibrary &&                 
                     <LibrarySelect 
-                        libraries={this.state.libraries} 
-                        loadedLibraries={this.state.loadedLibraries} 
+                        libraries={this.state.libraries}
                         
-                        loadLibrary={this.loadLibrary} 
+                        navigateToLibrary={this.navigateToLibrary} 
                     />
                 }
                 {!selectingLibrary && 
@@ -100,15 +92,13 @@ export default class App extends React.Component {
         });
     }
 
-    loadLibrary(name) {
-        return this.props.dataService.loadLibrary(name).then((loadedLibraries) => {
-            this.setState({
-                loadedLibraries: loadedLibraries,
-                selectingLibrary: false
-            });
+    navigateToLibrary(name) {
+        this.setState({
+            selectingLibrary: false
+        });
 
-            return this.props.dataService._getBooks();
-        }).then((books) => {
+        this.props.dataService.setActiveLibraryName(name);
+        return this.props.dataService.getBooks().then((books) => {
             if (!books) {
                 return Promise.reject('Library not found');
             }
