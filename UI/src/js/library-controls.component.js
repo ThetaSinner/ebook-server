@@ -1,7 +1,6 @@
 import React from 'react';
 
 /* eslint-disable no-unused-vars */
-import SaveControl from './save-control.component';
 import UploadControl from './upload-control.component';
 import AddBookControl from './add-book-control.component';
 /* eslint-enable no-unused-vars */
@@ -23,19 +22,15 @@ export default class LibraryControls extends React.Component {
         return (
             <>
                 <div className="d-inline mr-5" onClick={startSelectingLibrary}>
-                    <i className="material-icons es-icon-button" aria-hidden="true">navigate_before</i>
+                    <i className="material-icons es-icon-button-large" aria-hidden="true">navigate_before</i>
                 </div>
                 <div className="d-inline mr-5">
-                    <span>Library </span>
-
                     <div className="d-inline mr-1">
-                        <SaveControl saveLibrary={saveLibrary} />
+                        <i className="material-icons es-icon-button-large" aria-hidden="true" onClick={saveLibrary} data-toggle="tooltip" data-placement="bottom" title="Save library">save</i>
                     </div>
                 </div>
                 
                 <div className="d-inline">
-                    <span>Books </span>
-
                     <div className="d-inline mr-1">
                         <AddBookControl addBook={addBook} />
                     </div>

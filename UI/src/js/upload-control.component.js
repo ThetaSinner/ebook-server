@@ -23,7 +23,9 @@ export default class UploadControl extends React.Component {
         /* eslint-disable quotes */
         return (
             <>
-                <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#uploadControlModal">Upload</button>
+                <div className="d-inline" data-toggle="modal" data-target="#uploadControlModal">
+                    <i className="material-icons es-icon-button-large" aria-hidden="true" data-toggle="tooltip" data-placement="bottom" title="Upload books">file_upload</i>
+                </div>
 
                 <div className="modal fade" id="uploadControlModal" tabIndex="-1" role="dialog" aria-labelledby="uploadControlModalLabel" aria-hidden="true">
                     <div className="modal-dialog" role="document">

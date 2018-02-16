@@ -25,7 +25,9 @@ export default class AddBookControl extends React.Component {
         /* eslint-disable quotes */
         return (
             <>
-                <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#addBookControlModal">Add</button>
+                <div className="d-inline" data-toggle="modal" data-target="#addBookControlModal">
+                    <i className="material-icons es-icon-button-large" aria-hidden="true" data-toggle="tooltip" data-placement="bottom" title="Add book">add</i>
+                </div>
 
                 <div className="modal fade" id="addBookControlModal" tabIndex="-1" role="dialog" aria-labelledby="addBookControlModalLabel" aria-hidden="true">
                     <div className="modal-dialog" role="document">
