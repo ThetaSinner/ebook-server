@@ -112,6 +112,7 @@ export default class App extends React.Component {
     }
 
     saveLibrary() {
+        // TODO notify somehow when this suceeds
         return this.props.dataService.saveLibrary();
     }
 
@@ -127,7 +128,9 @@ export default class App extends React.Component {
     }
 
     uploadFiles(files) {
-        return this.props.dataService.uploadFiles(files).then((books) => {
+        return this.props.dataService.uploadFiles(files).then(() => {
+            return this.props.dataService.getBooks();
+        }).then((books) => {
             if (!books) {
                 return Promise.reject('Library not found');
             }
@@ -164,7 +167,8 @@ export default class App extends React.Component {
 
     startSelectingLibrary() {
         this.setState({
-            selectingLibrary: true
+            selectingLibrary: true,
+            books: []
         });
     }
 

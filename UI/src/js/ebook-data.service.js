@@ -124,7 +124,7 @@ export default class EBookDataService {
             }).fail(function (jqXHR) {
                 reject(processAjaxError(jqXHR));
             });
-        }).then(this._getBooks);
+        });
     }
 
     updateBook(book) {

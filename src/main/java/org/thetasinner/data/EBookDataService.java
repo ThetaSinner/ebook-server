@@ -39,7 +39,9 @@ public class EBookDataService {
     private LibraryChangeService libraryChangeService;
 
     public void commit(CommitRequest commitRequest) {
-        if (commitRequest.getCommitAll() || commitRequest.getCommitAndUnloadAll()) {
+        boolean commitAll = Boolean.TRUE.equals(commitRequest.getCommitAll());
+        boolean commitAndUnloadAll = Boolean.TRUE.equals(commitRequest.getCommitAndUnloadAll());
+        if (commitAll || commitAndUnloadAll) {
             // TODO
         }
         else {

@@ -42,8 +42,13 @@ public class EventsController {
     @EventListener
     public void onLibraryChanged(LibraryChangeEvent libraryChangeEvent) {
         String libraryName = libraryChangeEvent.getLibraryName();
+        CopyOnWriteArrayList<SseEmitter> sseEmitters = subscriptions.get(libraryName);
+        if (sseEmitters == null) {
+            return;
+        }
+
         List<SseEmitter> deadEmitters = new ArrayList<>();
-        subscriptions.get(libraryName).forEach(emitter -> {
+        sseEmitters.forEach(emitter -> {
             try {
                 SseEmitter.SseEventBuilder eventBuilder = SseEmitter.event()
                         .name("change")
@@ -55,6 +60,6 @@ public class EventsController {
             }
         });
 
-        subscriptions.get(libraryName).removeAll(deadEmitters);
+        sseEmitters.removeAll(deadEmitters);
     }
 }
