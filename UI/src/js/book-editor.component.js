@@ -51,7 +51,7 @@ export default class BookEditor extends React.Component {
                             </div>
                             <div className="form-group">
                                 <label htmlFor="editDatePublished">Date Published</label>
-                                <input type="text" id="editDatePublished" name="datePublished" className="form-control" value={this.state.datePublished} onChange={this.handleChange} />
+                                <input type="date" id="editDatePublished" name="datePublished" className="form-control" value={this.state.datePublished} onChange={this.handleChange} />
                             </div>
                             <div className="form-group">
                                 <label htmlFor="editDescription">Description</label>
