@@ -182,7 +182,7 @@ export default class App extends React.Component {
 }
 
 $(function() {
-    const dataService = new EBookDataService();
+    const dataService = new EBookDataService('http://localhost:8121');
 
     ReactDOM.render(
         <App dataService={dataService} />,

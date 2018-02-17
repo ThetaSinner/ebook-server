@@ -15,7 +15,7 @@ function processAjaxError(jqXHR) {
 export default class EBookDataService {
     constructor(serverUrl) {
         this.activeLibraryName = null;
-        this.serverUrl = serverUrl; // TODO
+        this.serverUrl = serverUrl;
     }
 
     setActiveLibraryName(libraryName) {
@@ -25,7 +25,7 @@ export default class EBookDataService {
     listLibraries() {
         return new Promise((resolve, reject) => {
             $.ajax({
-                url: 'http://localhost:8080/libraries',
+                url: this.serverUrl + '/libraries',
                 type: 'GET',
                 timeout: 1500
             }).done((response) => {
@@ -39,7 +39,7 @@ export default class EBookDataService {
     createLibrary(libraryName) {
         return new Promise((resolve, reject) => {
             $.ajax({
-                url: 'http://localhost:8080/libraries',
+                url: this.serverUrl + '/libraries',
                 type: 'POST',
                 data: {
                     name: libraryName
@@ -57,7 +57,7 @@ export default class EBookDataService {
         const that = this;
         return new Promise((resolve, reject) => {
             $.ajax({
-                url: 'http://localhost:8080/libraries/commit',
+                url: this.serverUrl + '/libraries/commit',
                 type: 'POST',
                 contentType: 'application/json',
                 dataType: 'json',
@@ -82,7 +82,7 @@ export default class EBookDataService {
         const that = this;
         return new Promise((resolve, reject) => {
             $.ajax({
-                url: 'http://localhost:8080/books',
+                url: this.serverUrl + '/books',
                 type: 'POST',
                 contentType: 'application/json',
                 dataType: 'json',
@@ -112,7 +112,7 @@ export default class EBookDataService {
         
         return new Promise((resolve, reject) => {
             $.ajax({
-                url: 'http://localhost:8080/libraries/upload',
+                url: this.serverUrl + '/libraries/upload',
                 type: 'POST',
                 data: formData,
                 processData: false,
@@ -163,7 +163,7 @@ export default class EBookDataService {
         const that = this;
         return new Promise((resolve, reject) => {
             $.ajax({
-                url: 'http://localhost:8080/books/' + book.id,
+                url: this.serverUrl + '/books/' + book.id,
                 type: 'PATCH',
                 contentType: 'application/json', // TODO wrong content type for patch
                 dataType: 'json',
@@ -188,7 +188,7 @@ export default class EBookDataService {
         });
         return new Promise((resolve, reject) => {
             $.ajax({
-                url: 'http://localhost:8080/books/' + id + '?' + params,
+                url: this.serverUrl + '/books/' + id + '?' + params,
                 type: 'DELETE',
                 contentType: 'application/json',
                 dataType: 'json',
@@ -205,7 +205,7 @@ export default class EBookDataService {
         const that = this;
         return new Promise((resolve, reject) => {
             $.ajax({
-                url: 'http://localhost:8080/books',
+                url: this.serverUrl + '/books',
                 type: 'GET',
                 data: {
                     name: that.activeLibraryName
