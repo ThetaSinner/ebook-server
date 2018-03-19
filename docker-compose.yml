@@ -1,0 +1,15 @@
+version: '3'
+services:
+  web:
+    image: nginx:alpine
+    ports:
+      - "8081:80"
+    volumes:
+      - "./ui/:/usr/share/nginx/html/"
+  server:
+    image: tomcat:9.0.6-jre9
+    ports:
+      - "8080:8080"
+    volumes:
+      - "./app:/usr/local/tomcat/webapps"
+      - "D:\\Dropbox\\E-Books\\ebookserver\\esdata:/var/esdata"
