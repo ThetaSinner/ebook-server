@@ -5,6 +5,8 @@ import org.thetasinner.data.model.Book;
 import org.thetasinner.data.model.TypedUrl;
 import org.thetasinner.web.model.BookUpdateRequest;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.List;
 
 public interface ILibraryStorage {
@@ -23,4 +25,6 @@ public interface ILibraryStorage {
     void deleteBook(String id, String name);
 
     List<String> getLibraries();
+
+    FileInputStream getBookInputStream(String id, String name) throws FileNotFoundException;
 }

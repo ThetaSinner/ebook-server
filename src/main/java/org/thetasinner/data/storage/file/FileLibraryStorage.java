@@ -21,9 +21,7 @@ import org.thetasinner.data.storage.StorageException;
 import org.thetasinner.web.model.BookMetadataUpdateRequest;
 import org.thetasinner.web.model.BookUpdateRequest;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -245,6 +243,23 @@ public class FileLibraryStorage implements ILibraryStorage {
         }
 
         return libraries;
+    }
+
+    @Override
+    public FileInputStream getBookInputStream(String id, String name) throws FileNotFoundException {
+        Book book = getBook(id, name);
+
+        TypedUrl typedUrl = book.getUrl();
+        if (typedUrl.getType() != TypedUrl.Type.LocalManaged && typedUrl.getType() != TypedUrl.Type.LocalUnmanaged) {
+            throw new EBookDataServiceException("Not a local book");
+        }
+
+        File file = new File(typedUrl.getValue());
+        if (!file.canRead()) {
+            throw new EBookDataServiceException("File is not accessible");
+        }
+
+        return new FileInputStream(file);
     }
 
     private void updateBookMetadata(Book book, BookMetadataUpdateRequest bookMetadataUpdateRequest) {

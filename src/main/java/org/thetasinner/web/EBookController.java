@@ -7,6 +7,8 @@ import org.thetasinner.data.EBookDataService;
 import org.thetasinner.data.model.Book;
 import org.thetasinner.web.model.*;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 
 @CrossOrigin(origins = "*")
@@ -47,6 +49,18 @@ public class EBookController {
     @RequestMapping(value = "/books", method = RequestMethod.POST)
     public @ResponseBody Book createBook(@RequestBody RequestBase<BookAddRequest> request) {
         return eBookDataService.createBook(request.getName(), request.getRequest());
+    }
+
+    @RequestMapping(value = "/books/{id}", method = RequestMethod.GET)
+    public void getBook(@PathVariable("id") String id, @RequestParam(name = "name") String name, HttpServletResponse response) {
+        try {
+            final String contentType = eBookDataService.getBook(id, name, response.getOutputStream());
+            response.setContentType(contentType);
+            response.flushBuffer();
+        }
+        catch (IOException e) {
+            throw new EbookControllerException("Failed to get book", e);
+        }
     }
 
     @RequestMapping(value = "/books/{id}", method = RequestMethod.PATCH)

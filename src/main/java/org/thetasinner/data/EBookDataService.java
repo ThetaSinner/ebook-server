@@ -1,5 +1,6 @@
 package org.thetasinner.data;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +21,11 @@ import org.thetasinner.web.model.BookUpdateRequest;
 import org.thetasinner.web.model.CommitLibrary;
 import org.thetasinner.web.model.CommitRequest;
 
+import javax.servlet.ServletOutputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -157,5 +163,11 @@ public class EBookDataService {
 
     public List<String> getLibraries() {
         return storage.getLibraries();
+    }
+
+    public String getBook(String id, String name, OutputStream outputStream) throws IOException {
+        FileInputStream inputStream = storage.getBookInputStream(id, name);
+        IOUtils.copy(inputStream, outputStream);
+        return "application/pdf";
     }
 }
