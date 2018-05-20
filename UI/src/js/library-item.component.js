@@ -25,6 +25,7 @@ export default class LibraryItem extends React.Component {
     render() {
         const showBook = this.state.showBook;
         const isEditing = this.state.isEditing;
+        const getReadLink = this.props.service.getReadLink;
         const book = this.props.book;
         return (
             <div className="row">
@@ -33,7 +34,7 @@ export default class LibraryItem extends React.Component {
                     <div className="row">
                         <div className="col-sm-12">
                             {(showBook && !isEditing) &&
-                                <Book book={book} editBook={this.editBook} deleteBook={this.deleteBook} />
+                                <Book book={book} editBook={this.editBook} deleteBook={this.deleteBook} getReadLink={getReadLink} />
                             }
                             {isEditing &&
                                 <BookEditor book={book} saveBook={this.saveBook} cancelEdit={this.cancelEdit} />

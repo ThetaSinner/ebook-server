@@ -218,4 +218,8 @@ export default class EBookDataService {
             });
         });
     }
+
+    getLocalReadLink(id) {
+        return this.serverUrl + '/books/' + id + '?name=' + this.activeLibraryName;
+    }
 }

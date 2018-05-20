@@ -27,6 +27,8 @@ export default class App extends React.Component {
         this.startSelectingLibrary = this.startSelectingLibrary.bind(this);
         this.getLoadedLibraries = this.getLoadedLibraries.bind(this);
 
+        this.getReadLink = this.getReadLink.bind(this);
+
         this.state = {
             selectingLibrary: true,
             libraries: [],
@@ -53,7 +55,8 @@ export default class App extends React.Component {
 
         const libraryService = {
             updateBook: this.updateBook,
-            deleteBook: this.deleteBook
+            deleteBook: this.deleteBook,
+            getReadLink: this.getReadLink
         };
 
         const selectingLibrary = this.state.selectingLibrary;
@@ -178,6 +181,31 @@ export default class App extends React.Component {
 
     getLoadedLibraries() {
         return this.props.dataService._getLoadedLibraries();
+    }
+
+    getReadLink(id) {
+        if (!this.state.books) {
+            return null;
+        }
+
+        const book = this.state.books.find(book => {
+            return book.id === id;
+        });
+
+        if (!book) {
+            return null;
+        }
+
+        if (book.url.type === 'LocalManaged' || book.url.type === 'LocalUnmanaged') {
+            return this.props.dataService.getLocalReadLink(id);
+        }
+        else if (book.url.type === 'WebLink') {
+            return book.url.value;
+        }
+
+        // TODO Need to just print the "other" type links somewhere on the page.
+
+        return null;
     }
 }
 
