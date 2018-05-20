@@ -183,7 +183,7 @@ export default class App extends React.Component {
         return this.props.dataService._getLoadedLibraries();
     }
 
-    getReadLink(id) {
+    getReadLink(id, title) {
         if (!this.state.books) {
             return null;
         }
@@ -197,7 +197,7 @@ export default class App extends React.Component {
         }
 
         if (book.url.type === 'LocalManaged' || book.url.type === 'LocalUnmanaged') {
-            return this.props.dataService.getLocalReadLink(id);
+            return this.props.dataService.getLocalReadLink(id, title);
         }
         else if (book.url.type === 'WebLink') {
             return book.url.value;

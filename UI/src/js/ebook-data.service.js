@@ -219,7 +219,7 @@ export default class EBookDataService {
         });
     }
 
-    getLocalReadLink(id) {
-        return this.serverUrl + '/books/' + id + '?name=' + this.activeLibraryName;
+    getLocalReadLink(id, title) {
+        return this.serverUrl + '/books/' + title + '?name=' + this.activeLibraryName + '&id=' + id;
     }
 }

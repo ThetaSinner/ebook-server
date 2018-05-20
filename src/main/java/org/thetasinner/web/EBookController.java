@@ -51,8 +51,10 @@ public class EBookController {
         return eBookDataService.createBook(request.getName(), request.getRequest());
     }
 
-    @RequestMapping(value = "/books/{id}", method = RequestMethod.GET)
-    public void getBook(@PathVariable("id") String id, @RequestParam(name = "name") String name, HttpServletResponse response) {
+    // Note that the title is used by the browser as a page title - therefore you can display any name you like from the
+    // browser by using the path variable.
+    @RequestMapping(value = "/books/{title}", method = RequestMethod.GET)
+    public void getBook(@RequestParam("id") String id, @RequestParam(name = "name") String name, HttpServletResponse response) {
         try {
             final String contentType = eBookDataService.getBook(id, name, response.getOutputStream());
             response.setContentType(contentType);

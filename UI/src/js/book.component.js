@@ -13,7 +13,7 @@ export default class Book extends React.Component {
 
     render() {
         const book = this.props.book;
-        const readLink = this.props.getReadLink(book.id);
+        const readLink = this.props.getReadLink(book.id, book.title);
         /* eslint-disable quotes */
         return (
             <>
@@ -25,7 +25,7 @@ export default class Book extends React.Component {
                                 <span className="es-faded-text">{formatDate(book.datePublished)}</span>
 
                                 <div className="float-right">
-                                    {readLink && 
+                                    {readLink &&
                                         <a href={readLink} target="_blank">
                                             <i className="mr-2 mt-1 material-icons es-icon-button-large" aria-hidden="true">book</i>
                                         </a>
