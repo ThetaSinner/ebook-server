@@ -117,7 +117,7 @@ export default class EBookDataService {
                 data: formData,
                 processData: false,
                 contentType: false,
-                timeout: 3000
+                timeout: 5 * 60 * 1000
             }).done(function (/*data*/) {
                 // TODO retry if any files failed? or notify
                 resolve();
