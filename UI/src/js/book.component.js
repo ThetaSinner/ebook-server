@@ -1,4 +1,5 @@
 import React from 'react';
+import $ from 'jquery';
 import * as _ from 'lodash';
 
 import { formatDate } from './formatter';
@@ -26,7 +27,7 @@ export default class Book extends React.Component {
 
                                 <div className="float-right">
                                     {readLink &&
-                                        <a href={readLink} target="_blank">
+                                        <a href={readLink} target="_blank" className="es-link-icon-button" data-toggle="tooltip" data-placement="bottom" title="Open for reading">
                                             <i className="mr-2 mt-1 material-icons es-icon-button-large" aria-hidden="true">book</i>
                                         </a>
                                     }
@@ -99,5 +100,11 @@ export default class Book extends React.Component {
 
     deleteBook() {
         this.props.deleteBook(this.props.book.id);
+    }
+
+    componentDidMount() {
+        $(document).ready(function(){
+            $('[data-toggle="tooltip"]').tooltip();
+        });
     }
 }
