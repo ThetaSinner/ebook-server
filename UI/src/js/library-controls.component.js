@@ -4,11 +4,18 @@ import React from 'react';
 import UploadControl from './upload-control.component';
 import AddBookControl from './add-book-control.component';
 import LibraryInfo from './library-info.component';
+import LibraryFilter from './library-filter.component';
 /* eslint-enable no-unused-vars */
 
 export default class LibraryControls extends React.Component {
     constructor(props) {
         super(props);
+
+        this.state = {
+            isFiltering: false
+        };
+
+        this.toggleFilter = this.toggleFilter.bind(this);
     }
 
     render() {
@@ -20,6 +27,9 @@ export default class LibraryControls extends React.Component {
         const startSelectingLibrary = this.props.service.startSelectingLibrary;
 
         const libraryData = this.props.libraryData;
+
+        const toggleFilter = this.toggleFilter;
+        const isFiltering = this.state.isFiltering;
 
         /* eslint-disable quotes */
         return (
@@ -40,13 +50,30 @@ export default class LibraryControls extends React.Component {
                     <div className="d-inline mr-1">
                         <UploadControl uploadFiles={uploadFiles} />
                     </div>
+                    <div className="d-inline">
+                        <div className="d-inline" onClick={toggleFilter}>
+                            <i className={"material-icons es-icon-button-large" + (isFiltering ? " es-icon-button-toggled" : "")} aria-hidden="true" data-toggle="tooltip" data-placement="bottom" title="Toggle filter">filter_list</i>
+                        </div>
+                    </div>
                 </div>
 
                 <div className="d-inline float-right mr-3">
                     <LibraryInfo libraryData={libraryData} />
                 </div>
+
+                {isFiltering &&
+                    <div>
+                        <LibraryFilter />
+                    </div>
+                }
             </>
         );
         /* eslint-enable quotes */
+    }
+
+    toggleFilter() {
+        this.setState(prevState => ({
+            isFiltering: !prevState.isFiltering
+        }));
     }
 }
