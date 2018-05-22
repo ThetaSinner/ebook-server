@@ -59,6 +59,11 @@ export default class App extends React.Component {
             getReadLink: this.getReadLink
         };
 
+        const libraryData = {
+            name: this.props.dataService.getLibraryDisplayName(),
+            numberOfBooks: this.state.books ? this.state.books.length : 0
+        };
+
         const selectingLibrary = this.state.selectingLibrary;
 
         /* eslint-disable quotes */
@@ -74,7 +79,7 @@ export default class App extends React.Component {
                 }
                 {!selectingLibrary && 
                     <>
-                        <LibraryControls service={controlsService} />
+                        <LibraryControls service={controlsService} libraryData={libraryData} />
                         <Library books={this.state.books} service={libraryService} />
                     </>
                 }

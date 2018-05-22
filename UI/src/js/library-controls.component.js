@@ -3,6 +3,7 @@ import React from 'react';
 /* eslint-disable no-unused-vars */
 import UploadControl from './upload-control.component';
 import AddBookControl from './add-book-control.component';
+import LibraryInfo from './library-info.component';
 /* eslint-enable no-unused-vars */
 
 export default class LibraryControls extends React.Component {
@@ -17,6 +18,8 @@ export default class LibraryControls extends React.Component {
         const uploadFiles = this.props.service.uploadFiles;
 
         const startSelectingLibrary = this.props.service.startSelectingLibrary;
+
+        const libraryData = this.props.libraryData;
 
         /* eslint-disable quotes */
         return (
@@ -37,6 +40,10 @@ export default class LibraryControls extends React.Component {
                     <div className="d-inline mr-1">
                         <UploadControl uploadFiles={uploadFiles} />
                     </div>
+                </div>
+
+                <div className="d-inline float-right mr-3">
+                    <LibraryInfo libraryData={libraryData} />
                 </div>
             </>
         );

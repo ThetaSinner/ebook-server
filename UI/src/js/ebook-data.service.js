@@ -222,4 +222,8 @@ export default class EBookDataService {
     getLocalReadLink(id, title) {
         return this.serverUrl + '/books/' + title + '?name=' + this.activeLibraryName + '&id=' + id;
     }
+
+    getLibraryDisplayName() {
+        return this.activeLibraryName;
+    }
 }
