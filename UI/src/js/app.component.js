@@ -6,6 +6,7 @@ import $ from 'jquery';
 import Library from './library.component';
 import LibraryControls from './library-controls.component';
 import LibrarySelect from './library-select.component';
+import applyFilterQuery from './filter-query.service';
 /* eslint-enable no-unused-vars */
 
 import EBookDataService from './ebook-data.service';
@@ -20,6 +21,7 @@ export default class App extends React.Component {
         this.saveLibrary = this.saveLibrary.bind(this);
         this.addBook = this.addBook.bind(this);
         this.uploadFiles = this.uploadFiles.bind(this);
+        this.updateFilterQuery = this.updateFilterQuery.bind(this);
 
         this.deleteBook = this.deleteBook.bind(this);
         this.updateBook = this.updateBook.bind(this);
@@ -32,7 +34,9 @@ export default class App extends React.Component {
         this.state = {
             selectingLibrary: true,
             libraries: [],
-            books: null
+            books: null,
+            filterQuery: null,
+            filteredBooks: null
         };
     }
 
@@ -50,7 +54,8 @@ export default class App extends React.Component {
             saveLibrary: this.saveLibrary,
             addBook: this.addBook,
             uploadFiles: this.uploadFiles,
-            startSelectingLibrary: this.startSelectingLibrary
+            startSelectingLibrary: this.startSelectingLibrary,
+            updateFilterQuery: this.updateFilterQuery
         };
 
         const libraryService = {
@@ -66,6 +71,8 @@ export default class App extends React.Component {
 
         const selectingLibrary = this.state.selectingLibrary;
 
+        const books = this.state.filteredBooks ? this.state.filteredBooks : this.state.books;
+
         /* eslint-disable quotes */
         return (
             <>
@@ -80,7 +87,7 @@ export default class App extends React.Component {
                 {!selectingLibrary && 
                     <>
                         <LibraryControls service={controlsService} libraryData={libraryData} />
-                        <Library books={this.state.books} service={libraryService} />
+                        <Library books={books} service={libraryService} />
                     </>
                 }
             </>
@@ -211,6 +218,24 @@ export default class App extends React.Component {
         // TODO Need to just print the "other" type links somewhere on the page.
 
         return null;
+    }
+
+    updateFilterQuery(query) {
+        if (!query) {
+            this.setState({
+                filterQuery: null,
+                filteredBooks: null
+            });
+
+            return;
+        }
+
+        const resultBooks = applyFilterQuery(query, this.state.books);
+
+        this.setState({
+            filterQuery: query,
+            filteredBooks: resultBooks
+        });
     }
 }
 

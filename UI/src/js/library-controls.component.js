@@ -63,7 +63,7 @@ export default class LibraryControls extends React.Component {
 
                 {isFiltering &&
                     <div>
-                        <LibraryFilter />
+                        <LibraryFilter updateFilterQuery={this.props.service.updateFilterQuery} />
                     </div>
                 }
             </>
