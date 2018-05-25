@@ -28,8 +28,19 @@ export default class LibraryFilter extends React.Component {
                     <input type="text" className="form-control" id="filter-query" placeholder="Enter query" onChange={this.queryChanged} />
                 </div>
 
-                {this.state.showHelpText &&
-                    <p>Type what you like and you'll be filtering by title.</p>
+                {this.state.showHelpText && 
+                    <div>
+                        <p>You can type in text to filter your books by title.</p>
+                        <p>If you'd like something more specific there's a little query language:</p>
+                        <ul>
+                            <li>Tag search terms with a column, e.g. dickens:authors</li>
+                            <li>You can combine terms with and '&amp;' and '|', e.g. expectations:title &amp; dickens:author</li>
+                            <li>Invert a search item, e.g. !bleak:title</li>
+                            <li>Group terms together, e.g. bleak:title | !(expectations:title &amp; dickens:author)</li>
+                        </ul>
+                        <p>The order of evaluation is what you'd expect if you've used a modern programming language. That is, (), !, &amp;, |</p>
+                        <p>Search items are NOT case sensitive, but column tags are case sensitive. i.e. classics:TAGS won't work.</p>
+                    </div>
                 }
             </>
         );
