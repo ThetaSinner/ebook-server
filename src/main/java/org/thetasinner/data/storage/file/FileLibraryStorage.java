@@ -262,6 +262,36 @@ public class FileLibraryStorage implements ILibraryStorage {
         return new FileInputStream(file);
     }
 
+    @Override
+    public void storeCover(String id, String name, MultipartFile cover) throws StorageException {
+        String originalFileName = org.springframework.util.StringUtils.cleanPath(cover.getOriginalFilename());
+        if (originalFileName.contains("..") || originalFileName.contains("\\") || originalFileName.contains("/")) {
+            // Security check to make sure a path embedded in the filename can't escape the storage location.
+            // Or accidentally orphan itself by having a path the server can't find again.
+            throw new StorageException("Won't store file which contains path component.");
+        }
+
+        int lastDot = originalFileName.lastIndexOf('.');
+        String fileName = "cover-" + UUID.randomUUID().toString() + originalFileName.substring(lastDot);
+
+        Book theBook = getBook(id, name);
+        Path path = Paths.get(theBook.getUrl().getValue());
+
+        Path savePath = Paths.get(path.getParent().toString(), fileName);
+
+        try {
+            Files.copy(cover.getInputStream(), savePath);
+        }
+        catch (IOException e) {
+            throw new StorageException("Error saving the file", e);
+        }
+
+        if (theBook.getCovers() == null) {
+            theBook.setCovers(new ArrayList<>());
+        }
+        theBook.getCovers().add(new TypedUrl(savePath.toString(), TypedUrl.Type.LocalManaged));
+    }
+
     private void updateBookMetadata(Book book, BookMetadataUpdateRequest bookMetadataUpdateRequest) {
         BookMetadata bookMetadata = book.getMetadata();
         if (bookMetadata == null) {

@@ -75,4 +75,11 @@ public class EBookController {
         eBookDataService.deleteBook(id, name);
         return new EmptyJsonResponse();
     }
+
+    @RequestMapping(value = "/books/{id}/covers", method = RequestMethod.POST)
+    public @ResponseBody UploadResponse uploadCover(@PathVariable("id") String id, @RequestParam(name = "name") String name, @RequestParam(name = "cover") MultipartFile cover) {
+        List<Integer> failedUploadIndices = eBookDataService.uploadCover(id, name, cover);
+
+        return new UploadResponse(failedUploadIndices);
+    }
 }

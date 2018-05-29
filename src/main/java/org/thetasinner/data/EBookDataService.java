@@ -16,10 +16,7 @@ import org.thetasinner.data.storage.ILibraryStorage;
 import org.thetasinner.data.storage.StorageException;
 import org.thetasinner.web.events.ChangeEventData;
 import org.thetasinner.web.events.LibraryChangeService;
-import org.thetasinner.web.model.BookAddRequest;
-import org.thetasinner.web.model.BookUpdateRequest;
-import org.thetasinner.web.model.CommitLibrary;
-import org.thetasinner.web.model.CommitRequest;
+import org.thetasinner.web.model.*;
 
 import javax.servlet.ServletOutputStream;
 import java.io.FileInputStream;
@@ -30,6 +27,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.thetasinner.web.events.ChangeEventData.ChangeType.*;
@@ -169,5 +168,21 @@ public class EBookDataService {
         FileInputStream inputStream = storage.getBookInputStream(id, name);
         IOUtils.copy(inputStream, outputStream);
         return "application/pdf";
+    }
+
+    public List<Integer> uploadCover(String id, String name, MultipartFile cover) {
+        if (cover == null || cover.isEmpty()) {
+            return Collections.singletonList(0);
+        }
+
+        List<Integer> failedUploadIndices = new ArrayList<>(1);
+        try {
+            storage.storeCover(id, name, cover);
+        }
+        catch (StorageException e) {
+            failedUploadIndices.add(0);
+        }
+
+        return failedUploadIndices;
     }
 }

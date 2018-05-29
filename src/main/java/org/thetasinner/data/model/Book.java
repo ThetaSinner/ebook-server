@@ -18,5 +18,6 @@ public class Book {
     private String publisher;
     private Date datePublished;
     private String description;
+    private List<TypedUrl> covers = new ArrayList<>();
     private BookMetadata metadata;
 }

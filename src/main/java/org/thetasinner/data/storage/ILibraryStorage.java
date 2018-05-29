@@ -27,4 +27,6 @@ public interface ILibraryStorage {
     List<String> getLibraries();
 
     FileInputStream getBookInputStream(String id, String name) throws FileNotFoundException;
+
+    void storeCover(String id, String name, MultipartFile cover) throws StorageException;
 }
