@@ -34,6 +34,7 @@ export default class App extends React.Component {
         this.state = {
             selectingLibrary: true,
             libraries: [],
+            librariesRequestOk: false,
             books: null,
             filterQuery: null,
             filteredBooks: null
@@ -41,9 +42,10 @@ export default class App extends React.Component {
     }
 
     componentDidMount() {
-        this.listLibraries().then((libraries) => {
+        this.listLibraries().then((libraries, requestOk) => {
             this.setState({
-                libraries: libraries
+                libraries: libraries,
+                librariesRequestOk: requestOk
             });
         });
     }
@@ -79,6 +81,7 @@ export default class App extends React.Component {
                 {selectingLibrary &&                 
                     <LibrarySelect 
                         libraries={this.state.libraries}
+                        librariesRequestOk={this.state.libraries}
                         
                         navigateToLibrary={this.navigateToLibrary}
                         createLibrary={this.createLibrary}
@@ -98,13 +101,14 @@ export default class App extends React.Component {
     listLibraries() {
         return this.props.dataService.listLibraries();
     }
-
+    
     createLibrary(name) {
         return this.props.dataService.createLibrary(name).then(() => {
             return this.props.dataService.listLibraries();
-        }).then((libraries) => {
+        }).then((libraries, requestOk) => {
             this.setState({
-                libraries: libraries
+                libraries: libraries,
+                librariesRequestOk: requestOk
             });
         });
     }

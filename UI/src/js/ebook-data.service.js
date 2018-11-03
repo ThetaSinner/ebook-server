@@ -28,8 +28,8 @@ export default class EBookDataService {
                 url: this.serverUrl + '/libraries',
                 type: 'GET',
                 timeout: 1500
-            }).done((response) => {
-                resolve(response);
+            }).done((response, _, jqXHR) => {
+                resolve(response, jqXHR.status == 200);
             }).fail((jqXHR) => {
                 reject(processAjaxError(jqXHR));
             });

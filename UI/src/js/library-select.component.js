@@ -12,12 +12,24 @@ export default class LibrarySelect extends React.Component {
     }
 
     render() {
-        // TODO figure out how to tell if the server is running.
+        const createLibrary = this.props.createLibrary;
+
         if (this.props.libraries.length === 0) {
+            if (this.props.librariesRequestOk) {
+                return (
+                    <div className="container">
+                        <h5>It looks like you don't have any libraries yet, you can create one now!</h5>
+                        <div className="row">
+                            <div className="col-sm-12">
+                                <CreateLibraryControl createLibrary={createLibrary} />
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+            
             return <p>No libraries found, is the server up?</p>;
         }
-
-        const createLibrary = this.props.createLibrary;
 
         return (
             <div className="container">
