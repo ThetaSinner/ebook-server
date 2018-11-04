@@ -28,7 +28,7 @@ export default class LibrarySelect extends React.Component {
                 );
             }
             
-            return <p>No libraries found, is the server up?</p>;
+            return <p>Could not get libraries from the server. Please check that it is running then reload this page!</p>;
         }
 
         return (

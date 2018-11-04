@@ -47,6 +47,12 @@ export default class App extends React.Component {
                 libraries: libraries,
                 librariesRequestOk: requestOk
             });
+        }).catch(err => {
+            console.error('There was a problem getting the list of libraries', err)
+            this.setState({
+                libraries: [],
+                librariesRequestOk: false
+            });
         });
     }
 
@@ -81,7 +87,7 @@ export default class App extends React.Component {
                 {selectingLibrary &&                 
                     <LibrarySelect 
                         libraries={this.state.libraries}
-                        librariesRequestOk={this.state.libraries}
+                        librariesRequestOk={this.state.librariesRequestOk}
                         
                         navigateToLibrary={this.navigateToLibrary}
                         createLibrary={this.createLibrary}
