@@ -7,6 +7,7 @@ import org.thetasinner.web.model.BookUpdateRequest;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 
 public interface ILibraryStorage {
@@ -18,7 +19,7 @@ public interface ILibraryStorage {
 
     Book createBook(String name, String url, TypedUrl.Type type);
 
-    void store(String name, MultipartFile file) throws StorageException;
+    void store(String name, MultipartFile file) throws StorageException, IOException;
 
     Book updateBook(String id, String name, BookUpdateRequest bookUpdateRequest);
 

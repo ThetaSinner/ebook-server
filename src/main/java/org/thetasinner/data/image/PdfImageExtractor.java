@@ -23,7 +23,7 @@ import java.util.ArrayList;
  */
 
 public class PdfImageExtractor {
-    static ArrayList<RenderedImage> extract(File source, ExtractionProperties extractionProperties) throws IOException {
+    public static ArrayList<RenderedImage> extract(File source, ExtractionProperties extractionProperties) throws IOException {
         var doc = PDDocument.load(source);
 
         var images = new ArrayList<RenderedImage>();

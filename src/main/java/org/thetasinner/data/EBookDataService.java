@@ -78,7 +78,7 @@ public class EBookDataService {
                 store(name, file);
                 storeIndex++;
             }
-            catch (StorageException e) {
+            catch (StorageException | IOException e) {
                 failed.add(storeIndex);
             }
         }
@@ -86,7 +86,7 @@ public class EBookDataService {
         return failed;
     }
 
-    private void store(String name, MultipartFile file) throws StorageException {
+    private void store(String name, MultipartFile file) throws StorageException, IOException {
         if (file.isEmpty()) {
             throw new StorageException("File is empty");
         }

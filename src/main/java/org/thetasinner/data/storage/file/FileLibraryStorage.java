@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.multipart.MultipartFile;
 import org.thetasinner.data.exception.EBookDataServiceException;
 import org.thetasinner.data.exception.EBookNotFoundException;
+import org.thetasinner.data.image.ExtractionProperties;
+import org.thetasinner.data.image.PdfImageExtractor;
 import org.thetasinner.data.model.Book;
 import org.thetasinner.data.model.BookMetadata;
 import org.thetasinner.data.model.Library;
@@ -21,6 +23,7 @@ import org.thetasinner.data.storage.StorageException;
 import org.thetasinner.web.model.BookMetadataUpdateRequest;
 import org.thetasinner.web.model.BookUpdateRequest;
 
+import javax.imageio.ImageIO;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.DirectoryStream;
@@ -41,6 +44,8 @@ public class FileLibraryStorage implements ILibraryStorage {
     private final ReentrantLock acquireLibraryLock = new ReentrantLock();
     private final ReentrantLock createLibraryLock = new ReentrantLock();
     private String dataPath;
+
+    private static final String COVER_FILE = "cover.png";
 
     @Autowired
     private FileCache<Library> cache;
@@ -155,7 +160,7 @@ public class FileLibraryStorage implements ILibraryStorage {
     }
 
     @Override
-    public void store(String name, MultipartFile file) throws StorageException {
+    public void store(String name, MultipartFile file) throws StorageException, IOException {
         String filename = org.springframework.util.StringUtils.cleanPath(file.getOriginalFilename());
         if (filename.contains("..") || filename.contains("\\") || filename.contains("/")) {
             // Security check to make sure a path embedded in the filename can't escape the storage location.
@@ -178,12 +183,26 @@ public class FileLibraryStorage implements ILibraryStorage {
             throw new StorageException("Error saving the file", e);
         }
 
+        extractAndStoreCover(storagePath, fileStoragePath);
+
         // Once everything else is in place, add the book to the library.
         Book book = new Book();
         book.setId(uuid.toString());
         book.setUrl(new TypedUrl(fileStoragePath, TypedUrl.Type.LocalManaged));
         book.setTitle(filename);
         getLibrary(name).getBooks().add(book);
+    }
+
+    private void extractAndStoreCover(String storagePath, String fileStoragePath) throws IOException {
+        var images = PdfImageExtractor.extract(new File(fileStoragePath), new ExtractionProperties());
+        if (images.size() == 0) {
+            return;
+        }
+
+        var outPath = Paths.get(storagePath, COVER_FILE);
+
+        var im = images.get(0);
+        ImageIO.write(im, "PNG", outPath.toFile());
     }
 
     @Override
