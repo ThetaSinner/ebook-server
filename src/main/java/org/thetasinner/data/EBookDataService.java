@@ -20,14 +20,12 @@ import org.thetasinner.web.model.*;
 
 import javax.servlet.ServletOutputStream;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -184,5 +182,11 @@ public class EBookDataService {
         }
 
         return failedUploadIndices;
+    }
+
+    public String getCover(String bookId, String libraryName, ServletOutputStream outputStream) throws IOException {
+        FileInputStream inputStream = storage.getCoverInputStream(bookId, libraryName);
+        IOUtils.copy(inputStream, outputStream);
+        return "image/png";
     }
 }

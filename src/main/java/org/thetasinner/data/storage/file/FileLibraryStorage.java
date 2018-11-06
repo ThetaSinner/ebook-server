@@ -311,6 +311,23 @@ public class FileLibraryStorage implements ILibraryStorage {
         theBook.getCovers().add(new TypedUrl(savePath.toString(), TypedUrl.Type.LocalManaged));
     }
 
+    @Override
+    public FileInputStream getCoverInputStream(String bookId, String libraryName) throws FileNotFoundException {
+        Book book = getBook(bookId, libraryName);
+
+        TypedUrl typedUrl = book.getUrl();
+        if (typedUrl.getType() != TypedUrl.Type.LocalManaged) {
+            throw new EBookDataServiceException("Can only get cover for local managed book");
+        }
+
+        File file = Paths.get(Paths.get(typedUrl.getValue()).getParent().toString(), COVER_FILE).toFile();
+        if (!file.canRead()) {
+            throw new EBookDataServiceException("Cover file is not accessible or does not exist");
+        }
+
+        return new FileInputStream(file);
+    }
+
     private void updateBookMetadata(Book book, BookMetadataUpdateRequest bookMetadataUpdateRequest) {
         BookMetadata bookMetadata = book.getMetadata();
         if (bookMetadata == null) {

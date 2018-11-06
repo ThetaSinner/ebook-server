@@ -103,4 +103,15 @@ public class EBookController {
 
         return new UploadResponse(failedUploadIndices);
     }
+
+    @RequestMapping(value = "/books/{id}/covers", method = RequestMethod.GET)
+    public void getCover(@PathVariable("id") String bookId, @RequestParam(name = "name") String libraryName, HttpServletResponse response) {
+        try {
+            var contentType = eBookDataService.getCover(bookId, libraryName, response.getOutputStream());
+            response.setContentType(contentType);
+            response.flushBuffer();
+        } catch (IOException e) {
+            throw new EbookControllerException("Failed to get cover", e);
+        }
+    }
 }
