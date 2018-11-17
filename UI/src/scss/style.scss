@@ -61,3 +61,11 @@
     background: lightblue;
     cursor: pointer;
 }
+
+.es-book-card {
+    padding-bottom: 2em;
+
+    .es-cover-image {
+        max-width: 100%;
+    }
+}

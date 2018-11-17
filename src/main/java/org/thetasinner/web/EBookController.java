@@ -104,6 +104,7 @@ public class EBookController {
         return new UploadResponse(failedUploadIndices);
     }
 
+    // TODO This is not restful but some work is needed to make covers work in general. i.e. on other books types and using urls rather than a single default cover
     @RequestMapping(value = "/books/{id}/covers", method = RequestMethod.GET)
     public void getCover(@PathVariable("id") String bookId, @RequestParam(name = "name") String libraryName, HttpServletResponse response) {
         try {

@@ -8,17 +8,27 @@ export default class Book extends React.Component {
     constructor(props) {
         super(props);
 
+        this.state = {
+            coverSource: 'http://via.placeholder.com/250x375'
+        };
+
         this.editBook = this.editBook.bind(this);
         this.deleteBook = this.deleteBook.bind(this);
+        this.getCover = this.getCover.bind(this);
+
+        this.getCover();
     }
 
     render() {
         const book = this.props.book;
         const readLink = this.props.getReadLink(book.id, book.title);
+
+        const coverLink = this.state.coverSource;
+
         /* eslint-disable quotes */
         return (
             <>
-                <div className="container-fluid card">
+                <div className="container-fluid card es-book-card">
                     <div className="row">
                         <div className="col-sm-12">
                             <div className="es-title-line">
@@ -45,7 +55,7 @@ export default class Book extends React.Component {
                     </div>
                     <div className="row">
                         <div className="col-sm-3">
-                            <img alt="No cover" src="http://via.placeholder.com/250x375" />
+                            <img className="es-cover-image" alt="No cover" src={coverLink} />
                         </div>
                         <div className="col-sm-9">
                             <p>{book.description}</p>
@@ -100,6 +110,19 @@ export default class Book extends React.Component {
 
     deleteBook() {
         this.props.deleteBook(this.props.book.id);
+    }
+
+    getCover() {
+        const that = this;
+        this.props.getCover(this.props.book.id).then(cover => {
+            if (cover == null) {
+                return;
+            }
+
+            that.setState({
+                coverSource: that.props.getCoverLink(that.props.book.id)
+            });
+        });
     }
 
     componentDidMount() {
