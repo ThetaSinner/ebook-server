@@ -62,7 +62,11 @@ dependencies {
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-tomcat
     providedRuntime group: 'org.springframework.boot', name: 'spring-boot-starter-tomcat', version: '2.1.0.RELEASE'
 
-    testCompile 'junit:junit:4.12'
+    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-test
+    testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '2.1.0.RELEASE'
+
+    // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
+    testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.3.1'
 }
 
 lombok {
