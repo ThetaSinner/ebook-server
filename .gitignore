@@ -6,3 +6,7 @@ out
 node_modules
 
 esdata
+
+*.aux
+*.log
+*.synctex.gz
