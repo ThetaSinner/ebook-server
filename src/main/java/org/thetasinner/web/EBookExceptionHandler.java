@@ -19,7 +19,7 @@ class EBookExceptionHandler {
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
-    public @ResponseBody DefaultError handleException(HttpServletRequest req, Exception e) throws Exception {
+    public @ResponseBody DefaultError handleException(HttpServletRequest req, Exception e) {
         LOG.error("Converting exception to error response.", e);
         return new DefaultError(req.getRequestURI(), e.getLocalizedMessage());
     }

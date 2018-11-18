@@ -19,8 +19,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @RunWith(SpringRunner.class)
@@ -75,16 +77,44 @@ public class EBookControllerTest {
         assertEquals("E-Book data service input failed validation [Library name must not be empty]", response.getBody());
     }
 
+    @Test
+    public void lookupLibraries() {
+        var libraryNameBase = getCurrentMethodName();
+        var libraryNameOne = String.format("%s-%d", libraryNameBase, 1);
+        var libraryNameTwo = String.format("%s-%d", libraryNameBase, 2);
+
+        var response = createProject(libraryNameOne);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        response = createProject(libraryNameTwo);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        var result = getLibraries();
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        var libraries = result.getBody();
+        assert libraries != null;
+        assertEquals(2, libraries.size());
+        assertEquals(libraryNameOne, libraries.get(0));
+        assertEquals(libraryNameTwo, libraries.get(1));
+    }
+
+    private ResponseEntity<List> getLibraries() {
+        return restTemplate.getForEntity(buildRequestUrl("/libraries"), List.class,  new EmptyRequest());
+    }
+
     private ResponseEntity<String> createProject(String libraryName) {
         var uriParams = new HashMap<String, String>();
         uriParams.put("name", libraryName);
 
-        return restTemplate.postForEntity("http://localhost:" + port + "/libraries?name={name}", new EmptyRequest(), String.class, uriParams);
+        return restTemplate.postForEntity(buildRequestUrl("/libraries?name={name}"), new EmptyRequest(), String.class, uriParams);
     }
 
     private String getCurrentMethodName() {
         // Indexing to 2 removes 'getStackTrace' and the current method name 'getCurrentMethodName'
         return Thread.currentThread().getStackTrace()[2].getMethodName();
+    }
+
+    private String buildRequestUrl(String uri) {
+        return String.format("http://localhost:%d%s", port, uri);
     }
 
     private void cleanup() throws IOException {
