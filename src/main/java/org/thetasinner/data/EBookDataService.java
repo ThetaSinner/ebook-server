@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.thetasinner.data.exception.EBookDataServiceException;
+import org.thetasinner.data.exception.EBookDataServiceInputValidationException;
 import org.thetasinner.data.exception.EBookFileNotFoundException;
 import org.thetasinner.data.exception.InvalidRequestException;
 import org.thetasinner.data.model.Book;
@@ -61,7 +62,7 @@ public class EBookDataService {
 
     public void createLibrary(String name) {
         if (StringUtils.isEmpty(name)) {
-            throw new EBookDataServiceException(("Provide a name"));
+            throw new EBookDataServiceInputValidationException("Library name must not be empty");
         }
 
         storage.create(name);
