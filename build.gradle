@@ -20,6 +20,7 @@ apply plugin: 'idea'
 apply plugin: 'war'
 apply plugin: 'org.springframework.boot'
 apply plugin: "io.franzbecker.gradle-lombok"
+apply plugin: "jacoco"
 
 apply plugin: 'codenarc'
 // apply plugin: 'checkstyle'
@@ -72,4 +73,9 @@ dependencies {
 lombok {
     version = '1.18.4'
     sha256 = ""
+}
+
+jacoco {
+    toolVersion = "0.8.2"
+    reportsDir = file("$buildDir/jacocoReport")
 }
