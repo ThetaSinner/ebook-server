@@ -1,8 +1,7 @@
 package org.thetasinner.ebookserver;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,10 +9,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.thetasinner.web.model.EmptyJsonResponse;
+import org.springframework.util.LinkedMultiValueMap;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -37,13 +40,9 @@ public class EBookControllerTest {
     @Autowired
     private TestRestTemplate restTemplate;
 
-    @Before
-    public void setup() throws IOException {
-        cleanup();
-    }
-
-    @After
-    public void teardown() throws IOException {
+    // Should be BeforeAll, but running with SpringRunner which is using JUnit4.
+    @BeforeClass
+    public static void setup() throws IOException {
         cleanup();
     }
 
@@ -92,9 +91,40 @@ public class EBookControllerTest {
         assertEquals(HttpStatus.OK, result.getStatusCode());
         var libraries = result.getBody();
         assert libraries != null;
-        assertEquals(2, libraries.size());
-        assertEquals(libraryNameOne, libraries.get(0));
-        assertEquals(libraryNameTwo, libraries.get(1));
+        assertTrue(2 <= libraries.size());
+        assertTrue(libraries.contains(libraryNameOne));
+        assertTrue(libraries.contains(libraryNameTwo));
+    }
+
+    @Test
+    public void uploadToLibrary() {
+        var libraryName = getCurrentMethodName();
+        var response = createProject(libraryName);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        response = uploadBook(libraryName, "test-ebook/document.pdf");
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    private ResponseEntity<String> uploadBook(String libraryName, String name) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+        var body = new LinkedMultiValueMap<String, Object>();
+        body.add("name", libraryName);
+        body.add("files", getFileSystemResourceFromClasspath(name));
+
+        var requestEntity = new HttpEntity<>(body, headers);
+
+        return restTemplate.postForEntity(buildRequestUrl("/libraries/upload"), requestEntity, String.class);
+    }
+
+    private FileSystemResource getFileSystemResourceFromClasspath(String name) {
+        var resource = Thread.currentThread()
+                .getContextClassLoader()
+                .getResource(name);
+        assertNotNull(resource);
+        return new FileSystemResource(resource.getFile());
     }
 
     private ResponseEntity<List> getLibraries() {
@@ -117,8 +147,10 @@ public class EBookControllerTest {
         return String.format("http://localhost:%d%s", port, uri);
     }
 
-    private void cleanup() throws IOException {
-        var testLibraryPath = Paths.get(eBookDataPath);
+    private static void cleanup() throws IOException {
+        // MUST match the value in the application properties (both required).
+        // See https://github.com/junit-team/junit5/issues/419
+        var testLibraryPath = Paths.get("esdata-test");
         if (Files.exists(testLibraryPath)){
             FileUtils.deleteDirectory(testLibraryPath.toFile());
         }

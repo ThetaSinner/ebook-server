@@ -69,6 +69,10 @@ public class EBookDataService {
     }
 
     public List<Integer> storeAll(String name, MultipartFile[] files) {
+        if (files.length == 0) {
+            throw new EBookDataServiceInputValidationException("No files provided to upload");
+        }
+
         List<Integer> failed = new ArrayList<>();
 
         int storeIndex = 0;

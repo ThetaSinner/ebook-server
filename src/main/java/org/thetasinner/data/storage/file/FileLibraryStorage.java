@@ -132,7 +132,7 @@ public class FileLibraryStorage implements ILibraryStorage {
             }
             catch (IOException e) {
                 // An IO exception here is NOT expected because the path has been checked but if it does happen then some sort
-                // or recovery is needed. Can either delete the library folder or createLibrary a library validation and repair feature.
+                // of recovery is needed. Can either delete the library folder or createLibrary a library validation and repair feature.
                 throw new EBookDataServiceException(String.format("Failed to createLibrary library data file for new library with name [%s]", name));
             }
         }

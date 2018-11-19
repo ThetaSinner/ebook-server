@@ -6,6 +6,7 @@ out
 node_modules
 
 esdata
+esdata-test
 
 *.aux
 *.log
