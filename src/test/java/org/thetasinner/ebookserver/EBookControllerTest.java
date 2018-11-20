@@ -1,5 +1,6 @@
 package org.thetasinner.ebookserver;
 
+import lombok.Data;
 import org.apache.commons.io.FileUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -9,14 +10,17 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.LinkedMultiValueMap;
+import org.thetasinner.data.model.Book;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -104,6 +108,33 @@ public class EBookControllerTest {
 
         response = uploadBook(libraryName, "test-ebook/document.pdf");
         assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    public void getBooks() {
+        var libraryName = getCurrentMethodName();
+        var response = createProject(libraryName);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        response = uploadBook(libraryName, "test-ebook/document.pdf");
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        response = uploadBook(libraryName, "test-ebook/document.pdf");
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        var uriParams = new HashMap<String, String>();
+        uriParams.put("name", libraryName);
+        var libraryResponse = restTemplate.exchange(
+                buildRequestUrl("/books?name={name}"),
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<Book>>(){},
+                uriParams
+        );
+
+        List<Book> books = libraryResponse.getBody();
+        assertNotNull(books);
+        assertEquals(2, books.size());
     }
 
     private ResponseEntity<String> uploadBook(String libraryName, String name) {
