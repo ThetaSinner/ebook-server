@@ -2,6 +2,7 @@ package org.thetasinner.ebookserver;
 
 import com.google.gson.Gson;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,6 +27,7 @@ import org.thetasinner.web.model.CommitLibrary;
 import org.thetasinner.web.model.CommitRequest;
 import org.thetasinner.web.model.EmptyJsonResponse;
 
+import java.io.FileFilter;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -114,6 +116,22 @@ public class EBookControllerTest {
 
         response = uploadBook(libraryName, "test-ebook/document.pdf");
         assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    // TODO another one which knows implementation details
+    @Test
+    public void uploadingBookWithCoverImageExtractsTheCover() {
+        var libraryName = getCurrentMethodName();
+        var response = createProject(libraryName);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        response = uploadBook(libraryName, "test-ebook/document.pdf");
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        var bookDirectories = Paths.get(eBookDataPath, libraryName).toFile().listFiles((FileFilter) DirectoryFileFilter.DIRECTORY);
+        assertNotNull(bookDirectories);
+        assertEquals(1, bookDirectories.length);
+        assertTrue(Paths.get(eBookDataPath, libraryName, bookDirectories[0].getName(), "cover.png").toFile().exists());
     }
 
     @Test
