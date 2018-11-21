@@ -1,5 +1,6 @@
 package org.thetasinner.ebookserver;
 
+import com.google.gson.Gson;
 import lombok.Data;
 import org.apache.commons.io.FileUtils;
 import org.junit.BeforeClass;
@@ -21,10 +22,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.LinkedMultiValueMap;
 import org.thetasinner.data.model.Book;
+import org.thetasinner.data.model.Library;
+import org.thetasinner.web.model.CommitLibrary;
+import org.thetasinner.web.model.CommitRequest;
+import org.thetasinner.web.model.EmptyJsonResponse;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -135,6 +143,52 @@ public class EBookControllerTest {
         List<Book> books = libraryResponse.getBody();
         assertNotNull(books);
         assertEquals(2, books.size());
+    }
+
+    // TODO This test and its pair test a feature which is transparent to the user (assuming the server stays alive) but requires knowledge of the implementation to test.
+    @Test
+    public void libraryChangesAreNotSavedToDisk() throws IOException {
+        var libraryName = getCurrentMethodName();
+        var response = createProject(libraryName);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        response = uploadBook(libraryName, "test-ebook/document.pdf");
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        response = uploadBook(libraryName, "test-ebook/document.pdf");
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        var libraryJson = FileUtils.readFileToString(Paths.get(eBookDataPath, libraryName, "library.json").toFile(), Charset.defaultCharset());
+
+        var library = new Gson().fromJson(libraryJson, Library.class);
+        assertTrue(library.getBooks().isEmpty());
+    }
+
+    @Test
+    public void libraryChangesAreSavedToDiskWhenRequested() throws IOException {
+        var libraryName = getCurrentMethodName();
+        var response = createProject(libraryName);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        response = uploadBook(libraryName, "test-ebook/document.pdf");
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        response = uploadBook(libraryName, "test-ebook/document.pdf");
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        var commitRequest = new CommitRequest();
+        CommitLibrary commitLibrary = new CommitLibrary();
+        commitLibrary.setLibraryName(libraryName);
+        // TODO fix this hideous mess please!
+        commitRequest.setCommitLibraries(new ArrayList<>());
+        commitRequest.getCommitLibraries().add(commitLibrary);
+        var commitResponse = restTemplate.postForEntity(buildRequestUrl("/libraries/commit"), commitRequest, EmptyJsonResponse.class);
+        assertEquals(HttpStatus.OK, commitResponse.getStatusCode());
+
+        var libraryJson = FileUtils.readFileToString(Paths.get(eBookDataPath, libraryName, "library.json").toFile(), Charset.defaultCharset());
+
+        var library = new Gson().fromJson(libraryJson, Library.class);
+        assertEquals(2, library.getBooks().size());
     }
 
     private ResponseEntity<String> uploadBook(String libraryName, String name) {
