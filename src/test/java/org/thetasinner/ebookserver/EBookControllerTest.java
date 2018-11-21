@@ -23,9 +23,12 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.LinkedMultiValueMap;
 import org.thetasinner.data.model.Book;
 import org.thetasinner.data.model.Library;
+import org.thetasinner.data.model.TypedUrl;
+import org.thetasinner.web.model.BookAddRequest;
 import org.thetasinner.web.model.CommitLibrary;
 import org.thetasinner.web.model.CommitRequest;
 import org.thetasinner.web.model.EmptyJsonResponse;
+import org.thetasinner.web.model.RequestBase;
 
 import java.io.FileFilter;
 import java.io.IOException;
@@ -41,6 +44,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @RunWith(SpringRunner.class)
@@ -269,6 +273,90 @@ public class EBookControllerTest {
 
         var coverPngByteArray = FileUtils.readFileToByteArray(Paths.get(eBookDataPath, libraryName, books.get(0).getId(), "cover.png").toFile());
         assertArrayEquals(coverPngByteArray, result.getBody());
+    }
+
+    @Test
+    public void createLocalUnmanagedBook() {
+        var libraryName = getCurrentMethodName();
+        var response = createProject(libraryName);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        var localFilePath = getFileSystemResourceFromClasspath("test-ebook/document.pdf").getFile().getAbsolutePath();
+
+        var request = new RequestBase<BookAddRequest>();
+        request.setName(libraryName);
+        BookAddRequest bookAddRequest = new BookAddRequest();
+        request.setRequest(bookAddRequest);
+        bookAddRequest.setType(BookAddRequest.Type.LocalUnmanaged);
+        bookAddRequest.setUrl(localFilePath);
+
+        var result = restTemplate.postForEntity(buildRequestUrl("/books"), request, Book.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        var book = result.getBody();
+        assertNotNull(book);
+
+        assertNull(book.getTitle());
+        assertNotNull(book.getId());
+        var url = book.getUrl();
+        assertNotNull(url);
+        assertEquals(TypedUrl.Type.LocalUnmanaged, url.getType());
+        assertEquals(localFilePath, url.getValue());
+    }
+
+    @Test
+    public void createBookForWebLink() {
+        var libraryName = getCurrentMethodName();
+        var response = createProject(libraryName);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        var webLink = "http://test.thetasinner.com/a-really-helpful-book";
+
+        var request = new RequestBase<BookAddRequest>();
+        request.setName(libraryName);
+        BookAddRequest bookAddRequest = new BookAddRequest();
+        request.setRequest(bookAddRequest);
+        bookAddRequest.setType(BookAddRequest.Type.WebLink);
+        bookAddRequest.setUrl(webLink);
+
+        var result = restTemplate.postForEntity(buildRequestUrl("/books"), request, Book.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        var book = result.getBody();
+        assertNotNull(book);
+
+        assertNull(book.getTitle());
+        assertNotNull(book.getId());
+        var url = book.getUrl();
+        assertNotNull(url);
+        assertEquals(TypedUrl.Type.WebLink, url.getType());
+        assertEquals(webLink, url.getValue());
+    }
+
+    @Test
+    public void createBookForUnvalidatedUrlToBook() {
+        var libraryName = getCurrentMethodName();
+        var response = createProject(libraryName);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        var bookUrl = "you don't have a copy of me or a link to me";
+
+        var request = new RequestBase<BookAddRequest>();
+        request.setName(libraryName);
+        BookAddRequest bookAddRequest = new BookAddRequest();
+        request.setRequest(bookAddRequest);
+        bookAddRequest.setType(BookAddRequest.Type.Other);
+        bookAddRequest.setUrl(bookUrl);
+
+        var result = restTemplate.postForEntity(buildRequestUrl("/books"), request, Book.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        var book = result.getBody();
+        assertNotNull(book);
+
+        assertNull(book.getTitle());
+        assertNotNull(book.getId());
+        var url = book.getUrl();
+        assertNotNull(url);
+        assertEquals(TypedUrl.Type.Other, url.getType());
+        assertEquals(bookUrl, url.getValue());
     }
 
     private ResponseEntity<String> uploadBook(String libraryName, String name) {
