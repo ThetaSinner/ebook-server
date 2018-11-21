@@ -1,7 +1,6 @@
 package org.thetasinner.ebookserver;
 
 import com.google.gson.Gson;
-import lombok.Data;
 import org.apache.commons.io.FileUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -27,7 +26,6 @@ import org.thetasinner.web.model.CommitLibrary;
 import org.thetasinner.web.model.CommitRequest;
 import org.thetasinner.web.model.EmptyJsonResponse;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
