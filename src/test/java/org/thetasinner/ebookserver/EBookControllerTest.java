@@ -33,9 +33,12 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -146,19 +149,23 @@ public class EBookControllerTest {
         response = uploadBook(libraryName, "test-ebook/document.pdf");
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
+        ResponseEntity<List<Book>> libraryResponse = getBookList(libraryName);
+
+        List<Book> books = libraryResponse.getBody();
+        assertNotNull(books);
+        assertEquals(2, books.size());
+    }
+
+    private ResponseEntity<List<Book>> getBookList(String libraryName) {
         var uriParams = new HashMap<String, String>();
         uriParams.put("name", libraryName);
-        var libraryResponse = restTemplate.exchange(
+        return restTemplate.exchange(
                 buildRequestUrl("/books?name={name}"),
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<List<Book>>(){},
                 uriParams
         );
-
-        List<Book> books = libraryResponse.getBody();
-        assertNotNull(books);
-        assertEquals(2, books.size());
     }
 
     // TODO This test and its pair test a feature which is transparent to the user (assuming the server stays alive) but requires knowledge of the implementation to test.
@@ -205,6 +212,34 @@ public class EBookControllerTest {
 
         var library = new Gson().fromJson(libraryJson, Library.class);
         assertEquals(2, library.getBooks().size());
+    }
+
+    @Test
+    public void downloadBookForReading() throws IOException {
+        var libraryName = getCurrentMethodName();
+        var response = createProject(libraryName);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        response = uploadBook(libraryName, "test-ebook/document.pdf");
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        var booksResponse = getBookList(libraryName);
+        assertEquals(HttpStatus.OK, booksResponse.getStatusCode());
+        var books = booksResponse.getBody();
+        assertNotNull(books);
+
+        var headers = new HttpHeaders();
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_OCTET_STREAM));
+
+        var entity = new HttpEntity<>(headers);
+
+        var result = restTemplate.exchange(
+                buildRequestUrl("/books/any-title-i-like?id={id}&name={name}"),
+                HttpMethod.GET, entity, byte[].class, books.get(0).getId(), libraryName);
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+
+        var pdfByteArray = FileUtils.readFileToByteArray(getFileSystemResourceFromClasspath("test-ebook/document.pdf").getFile());
+        assertArrayEquals(pdfByteArray, result.getBody());
     }
 
     private ResponseEntity<String> uploadBook(String libraryName, String name) {
