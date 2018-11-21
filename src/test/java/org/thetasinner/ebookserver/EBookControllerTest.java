@@ -242,6 +242,35 @@ public class EBookControllerTest {
         assertArrayEquals(pdfByteArray, result.getBody());
     }
 
+    // TODO the image that is embedded in the pdf document is slightly different to the original so this test ends up depending on the implementation
+    @Test
+    public void downloadCoverForViewing() throws IOException {
+        var libraryName = getCurrentMethodName();
+        var response = createProject(libraryName);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        response = uploadBook(libraryName, "test-ebook/document.pdf");
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        var booksResponse = getBookList(libraryName);
+        assertEquals(HttpStatus.OK, booksResponse.getStatusCode());
+        var books = booksResponse.getBody();
+        assertNotNull(books);
+
+        var headers = new HttpHeaders();
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_OCTET_STREAM));
+
+        var entity = new HttpEntity<>(headers);
+
+        var result = restTemplate.exchange(
+                buildRequestUrl("/books/{id}/covers?name={name}"),
+                HttpMethod.GET, entity, byte[].class, books.get(0).getId(), libraryName);
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+
+        var coverPngByteArray = FileUtils.readFileToByteArray(Paths.get(eBookDataPath, libraryName, books.get(0).getId(), "cover.png").toFile());
+        assertArrayEquals(coverPngByteArray, result.getBody());
+    }
+
     private ResponseEntity<String> uploadBook(String libraryName, String name) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
