@@ -30,6 +30,7 @@ import org.thetasinner.web.model.CommitRequest;
 import org.thetasinner.web.model.EmptyJsonResponse;
 import org.thetasinner.web.model.RequestBase;
 
+import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -40,6 +41,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -357,6 +359,41 @@ public class EBookControllerTest {
         assertNotNull(url);
         assertEquals(TypedUrl.Type.Other, url.getType());
         assertEquals(bookUrl, url.getValue());
+    }
+
+    @Test
+    public void uploadCoverForBook() throws IOException {
+        var libraryName = getCurrentMethodName();
+        var response = createProject(libraryName);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        response = uploadBook(libraryName, "test-ebook/document.pdf");
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        var booksResponse = getBookList(libraryName);
+        assertEquals(HttpStatus.OK, booksResponse.getStatusCode());
+        var books = booksResponse.getBody();
+        assertNotNull(books);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+        var body = new LinkedMultiValueMap<String, Object>();
+        body.add("name", libraryName);
+        body.add("cover", getFileSystemResourceFromClasspath("test-ebook/cover.png"));
+
+        var requestEntity = new HttpEntity<>(body, headers);
+
+        var result = restTemplate.postForEntity(buildRequestUrl("/books/{id}/covers"), requestEntity, String.class, books.get(0).getId());
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+
+        var uploadedCovers = Paths.get(eBookDataPath, libraryName, books.get(0).getId()).toFile().listFiles(pathname -> pathname.getName().contains("cover-"));
+        assertNotNull(uploadedCovers);
+        assertEquals(1, uploadedCovers.length);
+
+        var pattern = Pattern.compile("cover(-[a-f0-9]+)+\\.png");
+        var matcher = pattern.matcher(uploadedCovers[0].getName());
+        assertTrue(matcher.matches());
     }
 
     private ResponseEntity<String> uploadBook(String libraryName, String name) {
