@@ -305,9 +305,6 @@ public class FileLibraryStorage implements ILibraryStorage {
             throw new StorageException("Error saving the file", e);
         }
 
-        if (theBook.getCovers() == null) {
-            theBook.setCovers(new ArrayList<>());
-        }
         theBook.getCovers().add(new TypedUrl(savePath.toString(), TypedUrl.Type.LocalManaged));
     }
 
