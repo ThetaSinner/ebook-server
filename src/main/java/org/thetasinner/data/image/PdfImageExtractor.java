@@ -10,18 +10,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-/*
-
- images.forEach(im -> {
-            try {
-                ImageIO.write(im, "PNG", new File("out.png"));
-            } catch (IOException e) {
-                System.out.println("Problem writing image to file " + e.getMessage());
-            }
-        });
-
- */
-
 public class PdfImageExtractor {
     public static ArrayList<RenderedImage> extract(File source, ExtractionProperties extractionProperties) throws IOException {
         var doc = PDDocument.load(source);
