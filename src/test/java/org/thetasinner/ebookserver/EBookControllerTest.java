@@ -1,6 +1,7 @@
 package org.thetasinner.ebookserver;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.junit.BeforeClass;
@@ -10,7 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpEntity;
@@ -19,32 +22,36 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.stereotype.Component;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.LinkedMultiValueMap;
 import org.thetasinner.data.model.Book;
 import org.thetasinner.data.model.Library;
 import org.thetasinner.data.model.TypedUrl;
 import org.thetasinner.web.model.BookAddRequest;
+import org.thetasinner.web.model.BookMetadataUpdateRequest;
+import org.thetasinner.web.model.BookUpdateRequest;
 import org.thetasinner.web.model.CommitLibrary;
 import org.thetasinner.web.model.CommitRequest;
 import org.thetasinner.web.model.EmptyJsonResponse;
 import org.thetasinner.web.model.RequestBase;
 
-import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -65,6 +72,13 @@ public class EBookControllerTest {
     @BeforeClass
     public static void setup() throws IOException {
         cleanup();
+    }
+
+    @Bean
+    public TestRestTemplate postConstructSetup() {
+        var builder = new RestTemplateBuilder()
+                .requestFactory(HttpComponentsClientHttpRequestFactory.class);
+        return new TestRestTemplate(builder);
     }
 
     @Test
@@ -394,6 +408,73 @@ public class EBookControllerTest {
         var pattern = Pattern.compile("cover(-[a-f0-9]+)+\\.png");
         var matcher = pattern.matcher(uploadedCovers[0].getName());
         assertTrue(matcher.matches());
+    }
+
+    @Test
+    public void updateAllFieldsOnBook() {
+        var libraryName = getCurrentMethodName();
+        var response = createProject(libraryName);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        response = uploadBook(libraryName, "test-ebook/document.pdf");
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        var booksResponse = getBookList(libraryName);
+        assertEquals(HttpStatus.OK, booksResponse.getStatusCode());
+        var books = booksResponse.getBody();
+        assertNotNull(books);
+
+        var request = new RequestBase<BookUpdateRequest>();
+        request.setName(libraryName);
+        BookUpdateRequest bookUpdateRequest = new BookUpdateRequest();
+        request.setRequest(bookUpdateRequest);
+
+        bookUpdateRequest.setDatePublished(new Date());
+        bookUpdateRequest.setDescription("An enlightening read");
+        bookUpdateRequest.setIsbn("123049845903845");
+        bookUpdateRequest.setPublisher("A mighty press");
+        bookUpdateRequest.setTitle("Code Smells Everywhere");
+
+        var authors = new ArrayList<String>();
+        authors.add("Randy C. Markus");
+        bookUpdateRequest.setAuthors(authors);
+
+        BookMetadataUpdateRequest bookMetadataUpdateRequest = new BookMetadataUpdateRequest();
+        bookUpdateRequest.setBookMetadataUpdateRequest(bookMetadataUpdateRequest);
+
+        bookMetadataUpdateRequest.setRating((byte) 4);
+
+        var tags = new ArrayList<String>();
+        tags.add("code-quality");
+        tags.add("software-development");
+        tags.add("python");
+        bookMetadataUpdateRequest.setTags(tags);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        var gson = new GsonBuilder()
+                .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+                .create();
+
+        var requestEntity = new HttpEntity<>(gson.toJson(request), headers);
+
+        var result = restTemplate.exchange(buildRequestUrl("/books/{id}"), HttpMethod.PATCH, requestEntity, Book.class, books.get(0).getId());
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+
+        var updatedBook = result.getBody();
+        assertNotNull(updatedBook);
+
+        System.out.println(updatedBook);
+
+        assertEquals(bookUpdateRequest.getTitle(), updatedBook.getTitle());
+        assertEquals(bookUpdateRequest.getDatePublished(), updatedBook.getDatePublished());
+        assertEquals(bookUpdateRequest.getDescription(), updatedBook.getDescription());
+        assertEquals(bookUpdateRequest.getIsbn(), updatedBook.getIsbn());
+        assertEquals(bookUpdateRequest.getPublisher(), updatedBook.getPublisher());
+        assertIterableEquals(bookUpdateRequest.getAuthors(), updatedBook.getAuthors());
+        assertEquals(bookUpdateRequest.getBookMetadataUpdateRequest().getRating(), updatedBook.getMetadata().getRating());
+        assertIterableEquals(bookUpdateRequest.getBookMetadataUpdateRequest().getTags(), updatedBook.getMetadata().getTags());
     }
 
     private ResponseEntity<String> uploadBook(String libraryName, String name) {
