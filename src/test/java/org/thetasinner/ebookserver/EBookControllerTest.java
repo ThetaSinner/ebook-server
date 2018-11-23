@@ -477,6 +477,32 @@ public class EBookControllerTest {
         assertIterableEquals(bookUpdateRequest.getBookMetadataUpdateRequest().getTags(), updatedBook.getMetadata().getTags());
     }
 
+    @Test
+    public void deleteBook() {
+        var libraryName = getCurrentMethodName();
+        var response = createProject(libraryName);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        response = uploadBook(libraryName, "test-ebook/document.pdf");
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        var booksResponse = getBookList(libraryName);
+        assertEquals(HttpStatus.OK, booksResponse.getStatusCode());
+
+        var books = booksResponse.getBody();
+        assertNotNull(books);
+        assertEquals(1, books.size());
+
+        restTemplate.delete(buildRequestUrl("/books/{id}?name={name}"), books.get(0).getId(), libraryName);
+
+        booksResponse = getBookList(libraryName);
+        assertEquals(HttpStatus.OK, booksResponse.getStatusCode());
+
+        books = booksResponse.getBody();
+        assertNotNull(books);
+        assertEquals(0, books.size());
+    }
+
     private ResponseEntity<String> uploadBook(String libraryName, String name) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
