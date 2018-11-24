@@ -5,4 +5,9 @@ jobs:
       - image: circleci/openjdk:10.0.2-jdk-sid-node-browsers
     steps:
       - checkout
-      - run: ./gradlew build
+      - run:
+          name: Enable Gradle wrapper script execution.
+          command: chmod +x ./gradlew
+      - run:
+          name: Build the server.
+          command: ./gradlew build
