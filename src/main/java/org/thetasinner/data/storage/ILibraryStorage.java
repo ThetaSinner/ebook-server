@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.List;
 
 public interface ILibraryStorage {
-    void save(String name);
+    void save(String name, Boolean unload);
 
     void create(String name);
 

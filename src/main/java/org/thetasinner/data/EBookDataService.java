@@ -54,8 +54,7 @@ public class EBookDataService {
                 throw new EBookDataServiceException("Cannot update no libraries");
             }
             commitLibraries.forEach(request -> {
-                storage.save(request.getLibraryName());
-                // TODO handle unload
+                storage.save(request.getLibraryName(), request.getUnload());
             });
         }
     }

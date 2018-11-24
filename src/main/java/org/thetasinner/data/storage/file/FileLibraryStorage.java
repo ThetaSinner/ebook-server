@@ -97,10 +97,14 @@ public class FileLibraryStorage implements ILibraryStorage {
     }
 
     @Override
-    public void save(String name) {
+    public void save(String name, Boolean unload) {
         try (FileWriter writer = new FileWriter(getLibraryPath(name))) {
-            Library library = getLibrary(name);
+            var library = getLibrary(name).getItem();
             mapper.writeValue(writer, library);
+
+            if (unload) {
+                cache.remove(name);
+            }
         }
         catch (IOException e) {
             LOG.error("Failed to save e-book library", e);
@@ -143,7 +147,7 @@ public class FileLibraryStorage implements ILibraryStorage {
 
     @Override
     public List<Book> getBooks(String name) {
-        Library library = getLibrary(name);
+        var library = getLibrary(name).getItem();
         return library.getBooks();
     }
 
@@ -153,8 +157,8 @@ public class FileLibraryStorage implements ILibraryStorage {
         book.setId(UUID.randomUUID().toString());
         book.setUrl(new TypedUrl(url, type));
 
-        Library library = getLibrary(name);
-        library.getBooks().add(book);
+        var library = getLibrary(name);
+        library.getItem().getBooks().add(book);
 
         return book;
     }
@@ -190,7 +194,7 @@ public class FileLibraryStorage implements ILibraryStorage {
         book.setId(uuid.toString());
         book.setUrl(new TypedUrl(fileStoragePath, TypedUrl.Type.LocalManaged));
         book.setTitle(filename);
-        getLibrary(name).getBooks().add(book);
+        getLibrary(name).getItem().getBooks().add(book);
     }
 
     private void extractAndStoreCover(String storagePath, String fileStoragePath) throws IOException {
@@ -207,7 +211,8 @@ public class FileLibraryStorage implements ILibraryStorage {
 
     @Override
     public Book updateBook(String id, String name, BookUpdateRequest bookUpdateRequest) {
-        Book book = getBook(id, name);
+        var library = getLibrary(name);
+        Book book = getBook(library.getItem(), id);
 
         if (bookUpdateRequest.getTitle() != null) {
             book.setTitle(bookUpdateRequest.getTitle());
@@ -246,7 +251,7 @@ public class FileLibraryStorage implements ILibraryStorage {
     @Override
     public void deleteBook(String id, String name) {
         // TODO If this entry was a file then it should be deleted here.
-        getLibrary(name).getBooks().removeIf(b -> id.equals(b.getId()));
+        getLibrary(name).getItem().getBooks().removeIf(b -> id.equals(b.getId()));
     }
 
     @Override
@@ -266,7 +271,8 @@ public class FileLibraryStorage implements ILibraryStorage {
 
     @Override
     public FileInputStream getBookInputStream(String id, String name) throws FileNotFoundException {
-        Book book = getBook(id, name);
+        var library = getLibrary(name);
+        Book book = getBook(library.getItem(), id);
 
         TypedUrl typedUrl = book.getUrl();
         if (typedUrl.getType() != TypedUrl.Type.LocalManaged && typedUrl.getType() != TypedUrl.Type.LocalUnmanaged) {
@@ -293,7 +299,8 @@ public class FileLibraryStorage implements ILibraryStorage {
         int lastDot = originalFileName.lastIndexOf('.');
         String fileName = "cover-" + UUID.randomUUID().toString() + originalFileName.substring(lastDot);
 
-        Book theBook = getBook(id, name);
+        var library = getLibrary(name);
+        Book theBook = getBook(library.getItem(), id);
         Path path = Paths.get(theBook.getUrl().getValue());
 
         Path savePath = Paths.get(path.getParent().toString(), fileName);
@@ -310,7 +317,8 @@ public class FileLibraryStorage implements ILibraryStorage {
 
     @Override
     public FileInputStream getCoverInputStream(String bookId, String libraryName) throws FileNotFoundException {
-        Book book = getBook(bookId, libraryName);
+        var library = getLibrary(libraryName);
+        Book book = getBook(library.getItem(), bookId);
 
         TypedUrl typedUrl = book.getUrl();
         if (typedUrl.getType() != TypedUrl.Type.LocalManaged) {
@@ -344,8 +352,8 @@ public class FileLibraryStorage implements ILibraryStorage {
         }
     }
 
-    private Book getBook(String id, String name) {
-        Optional<Book> book = getLibrary(name).getBooks()
+    private Book getBook(Library library, String id) {
+        Optional<Book> book = library.getBooks()
                 .stream()
                 .filter(b -> id.equals(b.getId()))
                 .findFirst();
@@ -368,7 +376,7 @@ public class FileLibraryStorage implements ILibraryStorage {
         return dataPath + name + File.separator;
     }
 
-    private Library getLibrary(String name) {
+    private LockableItem<Library> getLibrary(String name) {
         if (!cache.has(name)) {
             load(name);
         }

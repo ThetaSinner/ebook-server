@@ -23,7 +23,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.stereotype.Component;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.LinkedMultiValueMap;
 import org.thetasinner.data.model.Book;
@@ -38,6 +37,7 @@ import org.thetasinner.web.model.EmptyJsonResponse;
 import org.thetasinner.web.model.RequestBase;
 
 import java.io.FileFilter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -219,13 +219,7 @@ public class EBookControllerTest {
         response = uploadBook(libraryName, "test-ebook/document.pdf");
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        var commitRequest = new CommitRequest();
-        CommitLibrary commitLibrary = new CommitLibrary();
-        commitLibrary.setLibraryName(libraryName);
-        // TODO fix this hideous mess please!
-        commitRequest.setCommitLibraries(new ArrayList<>());
-        commitRequest.getCommitLibraries().add(commitLibrary);
-        var commitResponse = restTemplate.postForEntity(buildRequestUrl("/libraries/commit"), commitRequest, EmptyJsonResponse.class);
+        var commitResponse = commitLibrary(libraryName, false);
         assertEquals(HttpStatus.OK, commitResponse.getStatusCode());
 
         var libraryJson = FileUtils.readFileToString(Paths.get(eBookDataPath, libraryName, "library.json").toFile(), Charset.defaultCharset());
@@ -501,6 +495,45 @@ public class EBookControllerTest {
         books = booksResponse.getBody();
         assertNotNull(books);
         assertEquals(0, books.size());
+    }
+
+    @Test
+    public void libraryCanBeUnloadedOnCommitThenLoadedWhenRequired() throws IOException {
+        var libraryName = getCurrentMethodName();
+        var response = createProject(libraryName);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        response = uploadBook(libraryName, "test-ebook/document.pdf");
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        var commitResponse = commitLibrary(libraryName, true);
+        assertEquals(HttpStatus.OK, commitResponse.getStatusCode());
+
+        var libraryJson = FileUtils.readFileToString(Paths.get(eBookDataPath, libraryName, "library.json").toFile(), Charset.defaultCharset());
+
+        var library = new Gson().fromJson(libraryJson, Library.class);
+        assertEquals(1, library.getBooks().size());
+        assertEquals("document.pdf", library.getBooks().get(0).getTitle());
+        String testTitle = "Test title";
+        library.getBooks().get(0).setTitle(testTitle);
+        FileUtils.writeStringToFile(Paths.get(eBookDataPath, libraryName, "library.json").toFile(), new Gson().toJson(library), Charset.defaultCharset());
+
+        var booksResponse = getBookList(libraryName);
+        assertEquals(HttpStatus.OK, booksResponse.getStatusCode());
+
+        var books = booksResponse.getBody();
+        assertNotNull(books);
+        assertEquals(1, books.size());
+        assertEquals(testTitle, books.get(0).getTitle());
+    }
+
+    private ResponseEntity<EmptyJsonResponse> commitLibrary(String libraryName, boolean unload) {
+        var commitRequest = new CommitRequest();
+        CommitLibrary commitLibrary = new CommitLibrary();
+        commitLibrary.setLibraryName(libraryName);
+        commitLibrary.setUnload(unload);
+        commitRequest.getCommitLibraries().add(commitLibrary);
+        return restTemplate.postForEntity(buildRequestUrl("/libraries/commit"), commitRequest, EmptyJsonResponse.class);
     }
 
     private ResponseEntity<String> uploadBook(String libraryName, String name) {
