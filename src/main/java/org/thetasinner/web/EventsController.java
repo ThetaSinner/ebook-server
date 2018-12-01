@@ -33,8 +33,9 @@ public class EventsController {
             this.subscriptions.get(libraryName).add(emitter);
         }
 
-        emitter.onCompletion(() -> this.subscriptions.get(libraryName).remove(emitter));
-        emitter.onTimeout(() -> this.subscriptions.get(libraryName).remove(emitter));
+        Runnable callback = () -> this.subscriptions.get(libraryName).remove(emitter);
+        emitter.onCompletion(callback);
+        emitter.onTimeout(callback);
 
         return emitter;
     }

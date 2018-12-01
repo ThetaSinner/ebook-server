@@ -1,51 +1,40 @@
 package org.thetasinner.ebookserver;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.context.annotation.Bean;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.util.LinkedMultiValueMap;
 import org.thetasinner.data.model.Book;
 import org.thetasinner.data.model.Library;
 import org.thetasinner.data.model.TypedUrl;
+import org.thetasinner.ebookserver.helper.EBookTestClient;
+import org.thetasinner.ebookserver.helper.ResourceHelper;
+import org.thetasinner.ebookserver.helper.TestDataHelper;
+import org.thetasinner.ebookserver.helper.TestInfrastructureHelper;
 import org.thetasinner.web.model.BookAddRequest;
 import org.thetasinner.web.model.BookMetadataUpdateRequest;
 import org.thetasinner.web.model.BookUpdateRequest;
-import org.thetasinner.web.model.CommitLibrary;
-import org.thetasinner.web.model.CommitRequest;
-import org.thetasinner.web.model.EmptyJsonResponse;
 import org.thetasinner.web.model.RequestBase;
 
 import java.io.FileFilter;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -62,67 +51,63 @@ public class EBookControllerTest {
     @LocalServerPort
     private int port;
 
-    @Value("${es.data.path}")
-    private String eBookDataPath;
+    @Autowired
+    private EBookTestClient eBookTestClient;
 
     @Autowired
-    private TestRestTemplate restTemplate;
+    private ResourceHelper resourceHelper;
+
+    @Autowired
+    private TestDataHelper testDataHelper;
 
     // Should be BeforeAll, but running with SpringRunner which is using JUnit4.
     @BeforeClass
     public static void setup() throws IOException {
-        cleanup();
-    }
-
-    @Bean
-    public TestRestTemplate postConstructSetup() {
-        var builder = new RestTemplateBuilder()
-                .requestFactory(HttpComponentsClientHttpRequestFactory.class);
-        return new TestRestTemplate(builder);
+        TestInfrastructureHelper.cleanup();
     }
 
     @Test
     public void createNewLibrary() {
-        var libraryName = getCurrentMethodName();
-        var response = createProject(libraryName);
+        var libraryName = testDataHelper.getCurrentMethodName();
+        var response = eBookTestClient.createLibrary(libraryName, this.port);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        var path = Paths.get(eBookDataPath, libraryName);
+        var path = Paths.get(TestInfrastructureHelper.ESDATA_TEST_PATH, libraryName);
         assertTrue(Files.exists(path));
     }
 
     @Test
     public void existingLibraryCannotBeOverwritten() {
-        var libraryName = getCurrentMethodName();
-        var response = createProject(libraryName);
+        var libraryName = testDataHelper.getCurrentMethodName();
+        var response = eBookTestClient.createLibrary(libraryName, this.port);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        response = createProject(libraryName);
+        response = eBookTestClient.createLibrary(libraryName, this.port);
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
 
     @Test
     public void libraryNameMustNotBeEmpty() {
-        var response = createProject("");
+        var response = eBookTestClient.createLibrary("", this.port);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("E-Book data service input failed validation [Library name must not be empty]", response.getBody());
     }
 
     @Test
     public void lookupLibraries() {
-        var libraryNameBase = getCurrentMethodName();
+        var libraryNameBase = testDataHelper.getCurrentMethodName();
         var libraryNameOne = String.format("%s-%d", libraryNameBase, 1);
         var libraryNameTwo = String.format("%s-%d", libraryNameBase, 2);
 
-        var response = createProject(libraryNameOne);
+        var response = eBookTestClient.createLibrary(libraryNameOne, this.port);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        response = createProject(libraryNameTwo);
+        response = eBookTestClient.createLibrary(libraryNameTwo, this.port);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        var result = getLibraries();
+        var result = eBookTestClient.getLibraries(this.port);
         assertEquals(HttpStatus.OK, result.getStatusCode());
         var libraries = result.getBody();
         assert libraries != null;
@@ -133,75 +118,63 @@ public class EBookControllerTest {
 
     @Test
     public void uploadToLibrary() {
-        var libraryName = getCurrentMethodName();
-        var response = createProject(libraryName);
+        var libraryName = testDataHelper.getCurrentMethodName();
+        var response = eBookTestClient.createLibrary(libraryName, this.port);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        response = uploadBook(libraryName, "test-ebook/document.pdf");
+        response = eBookTestClient.uploadBook(libraryName, "test-ebook/document.pdf", this.port);
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
     // TODO another one which knows implementation details
     @Test
     public void uploadingBookWithCoverImageExtractsTheCover() {
-        var libraryName = getCurrentMethodName();
-        var response = createProject(libraryName);
+        var libraryName = testDataHelper.getCurrentMethodName();
+        var response = eBookTestClient.createLibrary(libraryName, this.port);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        response = uploadBook(libraryName, "test-ebook/document.pdf");
+        response = eBookTestClient.uploadBook(libraryName, "test-ebook/document.pdf", this.port);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        var bookDirectories = Paths.get(eBookDataPath, libraryName).toFile().listFiles((FileFilter) DirectoryFileFilter.DIRECTORY);
+        var bookDirectories = Paths.get(TestInfrastructureHelper.ESDATA_TEST_PATH, libraryName).toFile().listFiles((FileFilter) DirectoryFileFilter.DIRECTORY);
         assertNotNull(bookDirectories);
         assertEquals(1, bookDirectories.length);
-        assertTrue(Paths.get(eBookDataPath, libraryName, bookDirectories[0].getName(), "cover.png").toFile().exists());
+        assertTrue(Paths.get(TestInfrastructureHelper.ESDATA_TEST_PATH, libraryName, bookDirectories[0].getName(), "cover.png").toFile().exists());
     }
 
     @Test
     public void getBooks() {
-        var libraryName = getCurrentMethodName();
-        var response = createProject(libraryName);
+        var libraryName = testDataHelper.getCurrentMethodName();
+        var response = eBookTestClient.createLibrary(libraryName, this.port);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        response = uploadBook(libraryName, "test-ebook/document.pdf");
+        response = eBookTestClient.uploadBook(libraryName, "test-ebook/document.pdf", this.port);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        response = uploadBook(libraryName, "test-ebook/document.pdf");
+        response = eBookTestClient.uploadBook(libraryName, "test-ebook/document.pdf", this.port);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        ResponseEntity<List<Book>> libraryResponse = getBookList(libraryName);
+        ResponseEntity<List<Book>> libraryResponse = eBookTestClient.getBookList(libraryName, this.port);
 
         List<Book> books = libraryResponse.getBody();
         assertNotNull(books);
         assertEquals(2, books.size());
     }
 
-    private ResponseEntity<List<Book>> getBookList(String libraryName) {
-        var uriParams = new HashMap<String, String>();
-        uriParams.put("name", libraryName);
-        return restTemplate.exchange(
-                buildRequestUrl("/books?name={name}"),
-                HttpMethod.GET,
-                null,
-                new ParameterizedTypeReference<List<Book>>(){},
-                uriParams
-        );
-    }
-
     // TODO This test and its pair test a feature which is transparent to the user (assuming the server stays alive) but requires knowledge of the implementation to test.
     @Test
     public void libraryChangesAreNotSavedToDisk() throws IOException {
-        var libraryName = getCurrentMethodName();
-        var response = createProject(libraryName);
+        var libraryName = testDataHelper.getCurrentMethodName();
+        var response = eBookTestClient.createLibrary(libraryName, this.port);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        response = uploadBook(libraryName, "test-ebook/document.pdf");
+        response = eBookTestClient.uploadBook(libraryName, "test-ebook/document.pdf", this.port);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        response = uploadBook(libraryName, "test-ebook/document.pdf");
+        response = eBookTestClient.uploadBook(libraryName, "test-ebook/document.pdf", this.port);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        var libraryJson = FileUtils.readFileToString(Paths.get(eBookDataPath, libraryName, "library.json").toFile(), Charset.defaultCharset());
+        var libraryJson = FileUtils.readFileToString(Paths.get(TestInfrastructureHelper.ESDATA_TEST_PATH, libraryName, "library.json").toFile(), Charset.defaultCharset());
 
         var library = new Gson().fromJson(libraryJson, Library.class);
         assertTrue(library.getBooks().isEmpty());
@@ -209,20 +182,20 @@ public class EBookControllerTest {
 
     @Test
     public void libraryChangesAreSavedToDiskWhenRequested() throws IOException {
-        var libraryName = getCurrentMethodName();
-        var response = createProject(libraryName);
+        var libraryName = testDataHelper.getCurrentMethodName();
+        var response = eBookTestClient.createLibrary(libraryName, this.port);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        response = uploadBook(libraryName, "test-ebook/document.pdf");
+        response = eBookTestClient.uploadBook(libraryName, "test-ebook/document.pdf", this.port);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        response = uploadBook(libraryName, "test-ebook/document.pdf");
+        response = eBookTestClient.uploadBook(libraryName, "test-ebook/document.pdf", this.port);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        var commitResponse = commitLibrary(libraryName, false);
+        var commitResponse = eBookTestClient.commitLibrary(libraryName, false, this.port);
         assertEquals(HttpStatus.OK, commitResponse.getStatusCode());
 
-        var libraryJson = FileUtils.readFileToString(Paths.get(eBookDataPath, libraryName, "library.json").toFile(), Charset.defaultCharset());
+        var libraryJson = FileUtils.readFileToString(Paths.get(TestInfrastructureHelper.ESDATA_TEST_PATH, libraryName, "library.json").toFile(), Charset.defaultCharset());
 
         var library = new Gson().fromJson(libraryJson, Library.class);
         assertEquals(2, library.getBooks().size());
@@ -230,68 +203,56 @@ public class EBookControllerTest {
 
     @Test
     public void downloadBookForReading() throws IOException {
-        var libraryName = getCurrentMethodName();
-        var response = createProject(libraryName);
+        var libraryName = testDataHelper.getCurrentMethodName();
+        var response = eBookTestClient.createLibrary(libraryName, this.port);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        response = uploadBook(libraryName, "test-ebook/document.pdf");
+        response = eBookTestClient.uploadBook(libraryName, "test-ebook/document.pdf", this.port);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        var booksResponse = getBookList(libraryName);
+        var booksResponse = eBookTestClient.getBookList(libraryName, this.port);
         assertEquals(HttpStatus.OK, booksResponse.getStatusCode());
         var books = booksResponse.getBody();
         assertNotNull(books);
 
-        var headers = new HttpHeaders();
-        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_OCTET_STREAM));
-
-        var entity = new HttpEntity<>(headers);
-
-        var result = restTemplate.exchange(
-                buildRequestUrl("/books/any-title-i-like?id={id}&name={name}"),
-                HttpMethod.GET, entity, byte[].class, books.get(0).getId(), libraryName);
+        String bookId = books.get(0).getId();
+        ResponseEntity<byte[]> result = eBookTestClient.downloadBook(libraryName, bookId, this.port);
         assertEquals(HttpStatus.OK, result.getStatusCode());
 
-        var pdfByteArray = FileUtils.readFileToByteArray(getFileSystemResourceFromClasspath("test-ebook/document.pdf").getFile());
+        var pdfByteArray = FileUtils.readFileToByteArray(resourceHelper.getFileSystemResourceFromClasspath("test-ebook/document.pdf").getFile());
         assertArrayEquals(pdfByteArray, result.getBody());
     }
 
     // TODO the image that is embedded in the pdf document is slightly different to the original so this test ends up depending on the implementation
     @Test
     public void downloadCoverForViewing() throws IOException {
-        var libraryName = getCurrentMethodName();
-        var response = createProject(libraryName);
+        var libraryName = testDataHelper.getCurrentMethodName();
+        var response = eBookTestClient.createLibrary(libraryName, this.port);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        response = uploadBook(libraryName, "test-ebook/document.pdf");
+        response = eBookTestClient.uploadBook(libraryName, "test-ebook/document.pdf", this.port);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        var booksResponse = getBookList(libraryName);
+        var booksResponse = eBookTestClient.getBookList(libraryName, this.port);
         assertEquals(HttpStatus.OK, booksResponse.getStatusCode());
         var books = booksResponse.getBody();
         assertNotNull(books);
 
-        var headers = new HttpHeaders();
-        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_OCTET_STREAM));
-
-        var entity = new HttpEntity<>(headers);
-
-        var result = restTemplate.exchange(
-                buildRequestUrl("/books/{id}/covers?name={name}"),
-                HttpMethod.GET, entity, byte[].class, books.get(0).getId(), libraryName);
+        String bookId = books.get(0).getId();
+        ResponseEntity<byte[]> result = eBookTestClient.downloadCover(libraryName, bookId, this.port);
         assertEquals(HttpStatus.OK, result.getStatusCode());
 
-        var coverPngByteArray = FileUtils.readFileToByteArray(Paths.get(eBookDataPath, libraryName, books.get(0).getId(), "cover.png").toFile());
+        var coverPngByteArray = FileUtils.readFileToByteArray(Paths.get(TestInfrastructureHelper.ESDATA_TEST_PATH, libraryName, bookId, "cover.png").toFile());
         assertArrayEquals(coverPngByteArray, result.getBody());
     }
 
     @Test
     public void createLocalUnmanagedBook() {
-        var libraryName = getCurrentMethodName();
-        var response = createProject(libraryName);
+        var libraryName = testDataHelper.getCurrentMethodName();
+        var response = eBookTestClient.createLibrary(libraryName, this.port);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        var localFilePath = getFileSystemResourceFromClasspath("test-ebook/document.pdf").getFile().getAbsolutePath();
+        var localFilePath = resourceHelper.getFileSystemResourceFromClasspath("test-ebook/document.pdf").getFile().getAbsolutePath();
 
         var request = new RequestBase<BookAddRequest>();
         request.setName(libraryName);
@@ -300,7 +261,7 @@ public class EBookControllerTest {
         bookAddRequest.setType(BookAddRequest.Type.LocalUnmanaged);
         bookAddRequest.setUrl(localFilePath);
 
-        var result = restTemplate.postForEntity(buildRequestUrl("/books"), request, Book.class);
+        ResponseEntity<Book> result = eBookTestClient.createBook(request, this.port);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         var book = result.getBody();
         assertNotNull(book);
@@ -315,8 +276,8 @@ public class EBookControllerTest {
 
     @Test
     public void createBookForWebLink() {
-        var libraryName = getCurrentMethodName();
-        var response = createProject(libraryName);
+        var libraryName = testDataHelper.getCurrentMethodName();
+        var response = eBookTestClient.createLibrary(libraryName, this.port);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
         var webLink = "http://test.thetasinner.com/a-really-helpful-book";
@@ -328,7 +289,7 @@ public class EBookControllerTest {
         bookAddRequest.setType(BookAddRequest.Type.WebLink);
         bookAddRequest.setUrl(webLink);
 
-        var result = restTemplate.postForEntity(buildRequestUrl("/books"), request, Book.class);
+        var result = eBookTestClient.createBook(request, this.port);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         var book = result.getBody();
         assertNotNull(book);
@@ -343,8 +304,8 @@ public class EBookControllerTest {
 
     @Test
     public void createBookForUnvalidatedUrlToBook() {
-        var libraryName = getCurrentMethodName();
-        var response = createProject(libraryName);
+        var libraryName = testDataHelper.getCurrentMethodName();
+        var response = eBookTestClient.createLibrary(libraryName, this.port);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
         var bookUrl = "you don't have a copy of me or a link to me";
@@ -356,7 +317,7 @@ public class EBookControllerTest {
         bookAddRequest.setType(BookAddRequest.Type.Other);
         bookAddRequest.setUrl(bookUrl);
 
-        var result = restTemplate.postForEntity(buildRequestUrl("/books"), request, Book.class);
+        var result = eBookTestClient.createBook(request, this.port);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         var book = result.getBody();
         assertNotNull(book);
@@ -370,32 +331,24 @@ public class EBookControllerTest {
     }
 
     @Test
-    public void uploadCoverForBook() throws IOException {
-        var libraryName = getCurrentMethodName();
-        var response = createProject(libraryName);
+    public void uploadCoverForBook() {
+        var libraryName = testDataHelper.getCurrentMethodName();
+        var response = eBookTestClient.createLibrary(libraryName, this.port);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        response = uploadBook(libraryName, "test-ebook/document.pdf");
+        response = eBookTestClient.uploadBook(libraryName, "test-ebook/document.pdf", this.port);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        var booksResponse = getBookList(libraryName);
+        var booksResponse = eBookTestClient.getBookList(libraryName, this.port);
         assertEquals(HttpStatus.OK, booksResponse.getStatusCode());
         var books = booksResponse.getBody();
         assertNotNull(books);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-
-        var body = new LinkedMultiValueMap<String, Object>();
-        body.add("name", libraryName);
-        body.add("cover", getFileSystemResourceFromClasspath("test-ebook/cover.png"));
-
-        var requestEntity = new HttpEntity<>(body, headers);
-
-        var result = restTemplate.postForEntity(buildRequestUrl("/books/{id}/covers"), requestEntity, String.class, books.get(0).getId());
+        String bookId = books.get(0).getId();
+        ResponseEntity<String> result = eBookTestClient.uploadCover(libraryName, bookId, this.port);
         assertEquals(HttpStatus.OK, result.getStatusCode());
 
-        var uploadedCovers = Paths.get(eBookDataPath, libraryName, books.get(0).getId()).toFile().listFiles(pathname -> pathname.getName().contains("cover-"));
+        var uploadedCovers = Paths.get(TestInfrastructureHelper.ESDATA_TEST_PATH, libraryName, bookId).toFile().listFiles(pathname -> pathname.getName().contains("cover-"));
         assertNotNull(uploadedCovers);
         assertEquals(1, uploadedCovers.length);
 
@@ -406,14 +359,14 @@ public class EBookControllerTest {
 
     @Test
     public void updateAllFieldsOnBook() {
-        var libraryName = getCurrentMethodName();
-        var response = createProject(libraryName);
+        var libraryName = testDataHelper.getCurrentMethodName();
+        var response = eBookTestClient.createLibrary(libraryName, this.port);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        response = uploadBook(libraryName, "test-ebook/document.pdf");
+        response = eBookTestClient.uploadBook(libraryName, "test-ebook/document.pdf", this.port);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        var booksResponse = getBookList(libraryName);
+        var booksResponse = eBookTestClient.getBookList(libraryName, this.port);
         assertEquals(HttpStatus.OK, booksResponse.getStatusCode());
         var books = booksResponse.getBody();
         assertNotNull(books);
@@ -444,16 +397,8 @@ public class EBookControllerTest {
         tags.add("python");
         bookMetadataUpdateRequest.setTags(tags);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        var gson = new GsonBuilder()
-                .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
-                .create();
-
-        var requestEntity = new HttpEntity<>(gson.toJson(request), headers);
-
-        var result = restTemplate.exchange(buildRequestUrl("/books/{id}"), HttpMethod.PATCH, requestEntity, Book.class, books.get(0).getId());
+        String bookId = books.get(0).getId();
+        ResponseEntity<Book> result = eBookTestClient.updateBook(request, bookId, this.port);
         assertEquals(HttpStatus.OK, result.getStatusCode());
 
         var updatedBook = result.getBody();
@@ -473,23 +418,24 @@ public class EBookControllerTest {
 
     @Test
     public void deleteBook() {
-        var libraryName = getCurrentMethodName();
-        var response = createProject(libraryName);
+        var libraryName = testDataHelper.getCurrentMethodName();
+        var response = eBookTestClient.createLibrary(libraryName, this.port);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        response = uploadBook(libraryName, "test-ebook/document.pdf");
+        response = eBookTestClient.uploadBook(libraryName, "test-ebook/document.pdf", this.port);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        var booksResponse = getBookList(libraryName);
+        var booksResponse = eBookTestClient.getBookList(libraryName, this.port);
         assertEquals(HttpStatus.OK, booksResponse.getStatusCode());
 
         var books = booksResponse.getBody();
         assertNotNull(books);
         assertEquals(1, books.size());
 
-        restTemplate.delete(buildRequestUrl("/books/{id}?name={name}"), books.get(0).getId(), libraryName);
+        String bookId = books.get(0).getId();
+        eBookTestClient.deleteBook(libraryName, bookId, this.port);
 
-        booksResponse = getBookList(libraryName);
+        booksResponse = eBookTestClient.getBookList(libraryName, this.port);
         assertEquals(HttpStatus.OK, booksResponse.getStatusCode());
 
         books = booksResponse.getBody();
@@ -499,90 +445,31 @@ public class EBookControllerTest {
 
     @Test
     public void libraryCanBeUnloadedOnCommitThenLoadedWhenRequired() throws IOException {
-        var libraryName = getCurrentMethodName();
-        var response = createProject(libraryName);
+        var libraryName = testDataHelper.getCurrentMethodName();
+        var response = eBookTestClient.createLibrary(libraryName, this.port);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        response = uploadBook(libraryName, "test-ebook/document.pdf");
+        response = eBookTestClient.uploadBook(libraryName, "test-ebook/document.pdf", this.port);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        var commitResponse = commitLibrary(libraryName, true);
+        var commitResponse = eBookTestClient.commitLibrary(libraryName, true, this.port);
         assertEquals(HttpStatus.OK, commitResponse.getStatusCode());
 
-        var libraryJson = FileUtils.readFileToString(Paths.get(eBookDataPath, libraryName, "library.json").toFile(), Charset.defaultCharset());
+        var libraryJson = FileUtils.readFileToString(Paths.get(TestInfrastructureHelper.ESDATA_TEST_PATH, libraryName, "library.json").toFile(), Charset.defaultCharset());
 
         var library = new Gson().fromJson(libraryJson, Library.class);
         assertEquals(1, library.getBooks().size());
         assertEquals("document.pdf", library.getBooks().get(0).getTitle());
         String testTitle = "Test title";
         library.getBooks().get(0).setTitle(testTitle);
-        FileUtils.writeStringToFile(Paths.get(eBookDataPath, libraryName, "library.json").toFile(), new Gson().toJson(library), Charset.defaultCharset());
+        FileUtils.writeStringToFile(Paths.get(TestInfrastructureHelper.ESDATA_TEST_PATH, libraryName, "library.json").toFile(), new Gson().toJson(library), Charset.defaultCharset());
 
-        var booksResponse = getBookList(libraryName);
+        var booksResponse = eBookTestClient.getBookList(libraryName, this.port);
         assertEquals(HttpStatus.OK, booksResponse.getStatusCode());
 
         var books = booksResponse.getBody();
         assertNotNull(books);
         assertEquals(1, books.size());
         assertEquals(testTitle, books.get(0).getTitle());
-    }
-
-    private ResponseEntity<EmptyJsonResponse> commitLibrary(String libraryName, boolean unload) {
-        var commitRequest = new CommitRequest();
-        CommitLibrary commitLibrary = new CommitLibrary();
-        commitLibrary.setLibraryName(libraryName);
-        commitLibrary.setUnload(unload);
-        commitRequest.getCommitLibraries().add(commitLibrary);
-        return restTemplate.postForEntity(buildRequestUrl("/libraries/commit"), commitRequest, EmptyJsonResponse.class);
-    }
-
-    private ResponseEntity<String> uploadBook(String libraryName, String name) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-
-        var body = new LinkedMultiValueMap<String, Object>();
-        body.add("name", libraryName);
-        body.add("files", getFileSystemResourceFromClasspath(name));
-
-        var requestEntity = new HttpEntity<>(body, headers);
-
-        return restTemplate.postForEntity(buildRequestUrl("/libraries/upload"), requestEntity, String.class);
-    }
-
-    private FileSystemResource getFileSystemResourceFromClasspath(String name) {
-        var resource = Thread.currentThread()
-                .getContextClassLoader()
-                .getResource(name);
-        assertNotNull(resource);
-        return new FileSystemResource(resource.getFile());
-    }
-
-    private ResponseEntity<List> getLibraries() {
-        return restTemplate.getForEntity(buildRequestUrl("/libraries"), List.class,  new EmptyRequest());
-    }
-
-    private ResponseEntity<String> createProject(String libraryName) {
-        var uriParams = new HashMap<String, String>();
-        uriParams.put("name", libraryName);
-
-        return restTemplate.postForEntity(buildRequestUrl("/libraries?name={name}"), new EmptyRequest(), String.class, uriParams);
-    }
-
-    private String getCurrentMethodName() {
-        // Indexing to 2 removes 'getStackTrace' and the current method name 'getCurrentMethodName'
-        return Thread.currentThread().getStackTrace()[2].getMethodName();
-    }
-
-    private String buildRequestUrl(String uri) {
-        return String.format("http://localhost:%d%s", port, uri);
-    }
-
-    private static void cleanup() throws IOException {
-        // MUST match the value in the application properties (both required).
-        // See https://github.com/junit-team/junit5/issues/419
-        var testLibraryPath = Paths.get("esdata-test");
-        if (Files.exists(testLibraryPath)){
-            FileUtils.deleteDirectory(testLibraryPath.toFile());
-        }
     }
 }
