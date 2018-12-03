@@ -8,13 +8,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.thetasinner.data.model.Book;
 import org.thetasinner.data.model.Library;
@@ -47,7 +44,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@TestPropertySource("classpath:application-ebook.properties")
 public class EBookControllerTest {
+    private static final String ESDATA_TEST_PATH = "esdata-test";
+
     @LocalServerPort
     private int port;
 
@@ -63,7 +63,7 @@ public class EBookControllerTest {
     // Should be BeforeAll, but running with SpringRunner which is using JUnit4.
     @BeforeClass
     public static void setup() throws IOException {
-        TestInfrastructureHelper.cleanup();
+        TestInfrastructureHelper.cleanup(ESDATA_TEST_PATH);
     }
 
     @Test
@@ -73,7 +73,7 @@ public class EBookControllerTest {
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        var path = Paths.get(TestInfrastructureHelper.ESDATA_TEST_PATH, libraryName);
+        var path = Paths.get(ESDATA_TEST_PATH, libraryName);
         assertTrue(Files.exists(path));
     }
 
@@ -136,10 +136,10 @@ public class EBookControllerTest {
         response = eBookTestClient.uploadBook(libraryName, "test-ebook/document.pdf", this.port);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        var bookDirectories = Paths.get(TestInfrastructureHelper.ESDATA_TEST_PATH, libraryName).toFile().listFiles((FileFilter) DirectoryFileFilter.DIRECTORY);
+        var bookDirectories = Paths.get(ESDATA_TEST_PATH, libraryName).toFile().listFiles((FileFilter) DirectoryFileFilter.DIRECTORY);
         assertNotNull(bookDirectories);
         assertEquals(1, bookDirectories.length);
-        assertTrue(Paths.get(TestInfrastructureHelper.ESDATA_TEST_PATH, libraryName, bookDirectories[0].getName(), "cover.png").toFile().exists());
+        assertTrue(Paths.get(ESDATA_TEST_PATH, libraryName, bookDirectories[0].getName(), "cover.png").toFile().exists());
     }
 
     @Test
@@ -174,7 +174,7 @@ public class EBookControllerTest {
         response = eBookTestClient.uploadBook(libraryName, "test-ebook/document.pdf", this.port);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        var libraryJson = FileUtils.readFileToString(Paths.get(TestInfrastructureHelper.ESDATA_TEST_PATH, libraryName, "library.json").toFile(), Charset.defaultCharset());
+        var libraryJson = FileUtils.readFileToString(Paths.get(ESDATA_TEST_PATH, libraryName, "library.json").toFile(), Charset.defaultCharset());
 
         var library = new Gson().fromJson(libraryJson, Library.class);
         assertTrue(library.getBooks().isEmpty());
@@ -195,7 +195,7 @@ public class EBookControllerTest {
         var commitResponse = eBookTestClient.commitLibrary(libraryName, false, this.port);
         assertEquals(HttpStatus.OK, commitResponse.getStatusCode());
 
-        var libraryJson = FileUtils.readFileToString(Paths.get(TestInfrastructureHelper.ESDATA_TEST_PATH, libraryName, "library.json").toFile(), Charset.defaultCharset());
+        var libraryJson = FileUtils.readFileToString(Paths.get(ESDATA_TEST_PATH, libraryName, "library.json").toFile(), Charset.defaultCharset());
 
         var library = new Gson().fromJson(libraryJson, Library.class);
         assertEquals(2, library.getBooks().size());
@@ -242,7 +242,7 @@ public class EBookControllerTest {
         ResponseEntity<byte[]> result = eBookTestClient.downloadCover(libraryName, bookId, this.port);
         assertEquals(HttpStatus.OK, result.getStatusCode());
 
-        var coverPngByteArray = FileUtils.readFileToByteArray(Paths.get(TestInfrastructureHelper.ESDATA_TEST_PATH, libraryName, bookId, "cover.png").toFile());
+        var coverPngByteArray = FileUtils.readFileToByteArray(Paths.get(ESDATA_TEST_PATH, libraryName, bookId, "cover.png").toFile());
         assertArrayEquals(coverPngByteArray, result.getBody());
     }
 
@@ -348,7 +348,7 @@ public class EBookControllerTest {
         ResponseEntity<String> result = eBookTestClient.uploadCover(libraryName, bookId, this.port);
         assertEquals(HttpStatus.OK, result.getStatusCode());
 
-        var uploadedCovers = Paths.get(TestInfrastructureHelper.ESDATA_TEST_PATH, libraryName, bookId).toFile().listFiles(pathname -> pathname.getName().contains("cover-"));
+        var uploadedCovers = Paths.get(ESDATA_TEST_PATH, libraryName, bookId).toFile().listFiles(pathname -> pathname.getName().contains("cover-"));
         assertNotNull(uploadedCovers);
         assertEquals(1, uploadedCovers.length);
 
@@ -455,14 +455,14 @@ public class EBookControllerTest {
         var commitResponse = eBookTestClient.commitLibrary(libraryName, true, this.port);
         assertEquals(HttpStatus.OK, commitResponse.getStatusCode());
 
-        var libraryJson = FileUtils.readFileToString(Paths.get(TestInfrastructureHelper.ESDATA_TEST_PATH, libraryName, "library.json").toFile(), Charset.defaultCharset());
+        var libraryJson = FileUtils.readFileToString(Paths.get(ESDATA_TEST_PATH, libraryName, "library.json").toFile(), Charset.defaultCharset());
 
         var library = new Gson().fromJson(libraryJson, Library.class);
         assertEquals(1, library.getBooks().size());
         assertEquals("document.pdf", library.getBooks().get(0).getTitle());
         String testTitle = "Test title";
         library.getBooks().get(0).setTitle(testTitle);
-        FileUtils.writeStringToFile(Paths.get(TestInfrastructureHelper.ESDATA_TEST_PATH, libraryName, "library.json").toFile(), new Gson().toJson(library), Charset.defaultCharset());
+        FileUtils.writeStringToFile(Paths.get(ESDATA_TEST_PATH, libraryName, "library.json").toFile(), new Gson().toJson(library), Charset.defaultCharset());
 
         var booksResponse = eBookTestClient.getBookList(libraryName, this.port);
         assertEquals(HttpStatus.OK, booksResponse.getStatusCode());

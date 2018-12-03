@@ -4,10 +4,12 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.codec.ServerSentEvent;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.thetasinner.ebookserver.helper.EBookTestClient;
@@ -16,6 +18,7 @@ import org.thetasinner.ebookserver.helper.TestInfrastructureHelper;
 import org.thetasinner.ebookserver.helper.UrlHelper;
 import org.thetasinner.web.events.ChangeEventData;
 import org.thetasinner.web.model.BookAddRequest;
+import org.thetasinner.web.model.BookUpdateRequest;
 import org.thetasinner.web.model.RequestBase;
 import reactor.core.publisher.Flux;
 
@@ -30,6 +33,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@TestPropertySource("classpath:application-event.properties")
 public class EventsControllerTest {
     @LocalServerPort
     private int port;
@@ -46,7 +50,7 @@ public class EventsControllerTest {
     // Should be BeforeAll, but running with SpringRunner which is using JUnit4.
     @BeforeClass
     public static void setup() throws IOException {
-        TestInfrastructureHelper.cleanup();
+        TestInfrastructureHelper.cleanup("esdata-test-event");
     }
 
     @Test
@@ -67,11 +71,12 @@ public class EventsControllerTest {
         lock.await(5, TimeUnit.SECONDS);
 
         assertEquals(1, changes.size());
+        assertEquals(ChangeEventData.ChangeType.BookCreated, changes.get(0).getChangeType());
     }
 
     @Test
     public void eventTriggeredForEachBookAdded() throws InterruptedException {
-        var NUMBER_OF_COUNT_DOWNS_REQUIRED = 1;
+        var NUMBER_OF_COUNT_DOWNS_REQUIRED = 3;
         var lock = new CountDownLatch(NUMBER_OF_COUNT_DOWNS_REQUIRED);
 
         String libraryName = testDataHelper.getCurrentMethodName();
@@ -89,6 +94,66 @@ public class EventsControllerTest {
         lock.await(5, TimeUnit.SECONDS);
 
         assertEquals(3, changes.size());
+        changes.forEach(change -> {
+            assertEquals(ChangeEventData.ChangeType.BookCreated, change.getChangeType());
+        });
+    }
+
+    @Test
+    public void eventTriggeredWhenBookUpdated() throws InterruptedException {
+        var NUMBER_OF_COUNT_DOWNS_REQUIRED = 1;
+        var lock = new CountDownLatch(NUMBER_OF_COUNT_DOWNS_REQUIRED);
+
+        String libraryName = testDataHelper.getCurrentMethodName();
+        eBookTestClient.createLibrary(libraryName, port);
+
+        sendAddRequest(libraryName);
+
+        var bookList = eBookTestClient.getBookList(libraryName, port);
+        var bookId = bookList.getBody().get(0).getId();
+
+        var eventStream = createSubscriptionRequest(libraryName);
+
+        var changes = new ArrayList<ChangeEventData>();
+        captureEvents(lock, eventStream, changes);
+
+        var request = new RequestBase<BookUpdateRequest>();
+        request.setName(libraryName);
+        BookUpdateRequest bookUpdateRequest = new BookUpdateRequest();
+        request.setRequest(bookUpdateRequest);
+        bookUpdateRequest.setTitle("I updated the title!");
+        eBookTestClient.updateBook(request, bookId, port);
+
+        lock.await(5, TimeUnit.SECONDS);
+
+        assertEquals(1, changes.size());
+        assertEquals(ChangeEventData.ChangeType.BookUpdated, changes.get(0).getChangeType());
+    }
+
+    @Test
+    public void eventTriggeredWhenBookDeleted() throws InterruptedException {
+        var NUMBER_OF_COUNT_DOWNS_REQUIRED = 1;
+        var lock = new CountDownLatch(NUMBER_OF_COUNT_DOWNS_REQUIRED);
+
+        String libraryName = testDataHelper.getCurrentMethodName();
+        eBookTestClient.createLibrary(libraryName, port);
+
+        sendAddRequest(libraryName);
+
+        var bookList = eBookTestClient.getBookList(libraryName, port);
+        var bookId = bookList.getBody().get(0).getId();
+
+        var eventStream = createSubscriptionRequest(libraryName);
+
+        var changes = new ArrayList<ChangeEventData>();
+        captureEvents(lock, eventStream, changes);
+
+        eBookTestClient.deleteBook(libraryName, bookId, port);
+
+        lock.await(5, TimeUnit.SECONDS);
+
+        assertEquals(1, changes.size());
+        assertEquals(ChangeEventData.ChangeType.BookDeleted, changes.get(0).getChangeType());
     }
 
     private void sendAddRequest(String libraryName) {
@@ -116,7 +181,7 @@ public class EventsControllerTest {
 
         // Things that run after the subscribe should be chained into the callbacks. But more code needs to run in order
         // to trigger an event before any callback will run. This sleep gives the subscription request time to run
-        Thread.sleep(100);
+        Thread.sleep(300);
     }
 
     private Flux<ServerSentEvent<ChangeEventData>> createSubscriptionRequest(String libraryName) {
