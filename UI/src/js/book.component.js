@@ -9,14 +9,12 @@ export default class Book extends React.Component {
         super(props);
 
         this.state = {
-            coverSource: 'http://via.placeholder.com/250x375'
+            // TODO default to 'http://via.placeholder.com/250x375'
+            coverSource: props.getCoverLink(props.book.id)
         };
 
         this.editBook = this.editBook.bind(this);
         this.deleteBook = this.deleteBook.bind(this);
-        this.getCover = this.getCover.bind(this);
-
-        this.getCover();
     }
 
     render() {
@@ -110,19 +108,6 @@ export default class Book extends React.Component {
 
     deleteBook() {
         this.props.deleteBook(this.props.book.id);
-    }
-
-    getCover() {
-        const that = this;
-        this.props.getCover(this.props.book.id).then(cover => {
-            if (cover == null) {
-                return;
-            }
-
-            that.setState({
-                coverSource: that.props.getCoverLink(that.props.book.id)
-            });
-        });
     }
 
     componentDidMount() {

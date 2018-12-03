@@ -219,24 +219,6 @@ export default class EBookDataService {
         });
     }
 
-    getCover(id) {
-        const that = this;
-        return new Promise((resolve, reject) => {
-            $.ajax({
-                url: this.serverUrl + `/books/${id}/covers`,
-                type: 'GET',
-                data: {
-                    name: that.activeLibraryName
-                },
-                timeout: 3000
-            }).done((result) => {
-                resolve(result);
-            }).fail(_ => {
-                resolve(null);
-            });
-        });
-    }
-
     getLocalReadLink(id, title) {
         return this.serverUrl + '/books/' + title + '?name=' + this.activeLibraryName + '&id=' + id;
     }

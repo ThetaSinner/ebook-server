@@ -22,7 +22,6 @@ export default class App extends React.Component {
         this.addBook = this.addBook.bind(this);
         this.uploadFiles = this.uploadFiles.bind(this);
         this.updateFilterQuery = this.updateFilterQuery.bind(this);
-        this.getCover = this.getCover.bind(this);
 
         this.deleteBook = this.deleteBook.bind(this);
         this.updateBook = this.updateBook.bind(this);
@@ -72,7 +71,6 @@ export default class App extends React.Component {
             updateBook: this.updateBook,
             deleteBook: this.deleteBook,
             getReadLink: this.getReadLink,
-            getCover: this.getCover,
             getCoverLink: this.getCoverLink
         };
 
@@ -250,10 +248,6 @@ export default class App extends React.Component {
             filterQuery: query,
             filteredBooks: resultBooks
         });
-    }
-
-    getCover(id) {
-        return this.props.dataService.getCover(id);
     }
 
     getCoverLink(id) {
