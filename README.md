@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/ThetaSinner/ebook-server.svg?style=svg)](https://circleci.com/gh/ThetaSinner/ebook-server)
+
 # ebook-server
 Server for managing your ebooks
 
