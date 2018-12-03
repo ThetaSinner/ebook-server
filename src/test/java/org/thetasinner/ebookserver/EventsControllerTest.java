@@ -24,6 +24,8 @@ import reactor.core.publisher.Flux;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -156,6 +158,31 @@ public class EventsControllerTest {
         assertEquals(ChangeEventData.ChangeType.BookDeleted, changes.get(0).getChangeType());
     }
 
+    @Test
+    public void multipleSubscribersCanReceiveSameNotification() throws InterruptedException {
+        var NUMBER_OF_COUNT_DOWNS_REQUIRED = 2;
+        var lock = new CountDownLatch(NUMBER_OF_COUNT_DOWNS_REQUIRED);
+
+        String libraryName = testDataHelper.getCurrentMethodName();
+        eBookTestClient.createLibrary(libraryName, port);
+
+        var eventStreamOne = createSubscriptionRequest(libraryName);
+        var eventStreamTwo = createSubscriptionRequest(libraryName);
+
+        var changes = new CopyOnWriteArrayList<ChangeEventData>();
+        captureEvents(lock, eventStreamOne, changes);
+        captureEvents(lock, eventStreamTwo, changes);
+
+        sendAddRequest(libraryName);
+
+        lock.await(5, TimeUnit.SECONDS);
+
+        // Expect two add requests which are for the same book.
+        assertEquals(2, changes.size());
+        changes.forEach(change -> assertEquals(ChangeEventData.ChangeType.BookCreated, change.getChangeType()));
+        assertEquals(changes.get(0).getBookId(), changes.get(1).getBookId());
+    }
+
     private void sendAddRequest(String libraryName) {
         var request = new RequestBase<BookAddRequest>();
         request.setName(libraryName);
@@ -167,7 +194,7 @@ public class EventsControllerTest {
         eBookTestClient.createBook(request, this.port);
     }
 
-    private void captureEvents(CountDownLatch lock, Flux<ServerSentEvent<ChangeEventData>> eventStream, ArrayList<ChangeEventData> changes) throws InterruptedException {
+    private void captureEvents(CountDownLatch lock, Flux<ServerSentEvent<ChangeEventData>> eventStream, List<ChangeEventData> changes) throws InterruptedException {
         eventStream.subscribe(
                 content -> {
                     changes.add(content.data());
