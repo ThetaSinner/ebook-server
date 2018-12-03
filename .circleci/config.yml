@@ -11,3 +11,13 @@ jobs:
       - run:
           name: Build the server.
           command: ./gradlew build
+      - run:
+          name: Gather coverage results
+          command: ./gradlew jacocoTestReport
+      - run:
+          name: Upload coverage to Codecov
+          command: >-
+            sudo apt-get update
+            && sudo apt-get install bash
+            && sudo apt-get install curl
+            && bash -c "bash <(curl -s https://codecov.io/bash)"
