@@ -1,3 +1,5 @@
+import com.github.spotbugs.SpotBugsTask
+
 buildscript {
     repositories {
         mavenCentral()
@@ -12,6 +14,10 @@ buildscript {
 
         classpath 'io.franzbecker:gradle-lombok:1.14'
     }
+}
+
+plugins {
+    id "com.github.spotbugs" version "1.6.5"
 }
 
 apply plugin: 'java'
@@ -94,6 +100,13 @@ jacocoTestReport {
 
 checkstyle {
     toolVersion '8.15'
+}
+
+tasks.withType(SpotBugsTask) {
+    reports {
+        xml.enabled = false
+        html.enabled = true
+    }
 }
 
 task printVersion {
