@@ -3,7 +3,9 @@ if (Test-Path -Path build) {
 }
 .\gradlew.bat build
 
-$outFolder = 'es-release.prebuilt'
+$projectVersion = (gradle printVersion | Select-String -Pattern '\d+\.\d+\.\d+').ToString().Trim()
+
+$outFolder = "es-$projectVersion.prebuilt"
 if (Test-Path -Path $outFolder) {
     Remove-Item -Path $outFolder -Recurse
 }
@@ -11,7 +13,9 @@ mkdir $outFolder
 Copy-Item -Path .\build\libs\ebook-server-*-RELEASE.war -Destination $outFolder
 
 Push-Location -Path ui
-Remove-Item -Path build -Recurse
+if (Test-Path -Path 'build') {
+    Remove-Item -Path build -Recurse
+}
 npm run build
 Pop-Location
 Copy-Item -Path .\ui\build -Destination $outFolder\ui -Recurse

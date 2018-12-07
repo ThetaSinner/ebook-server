@@ -95,3 +95,9 @@ jacocoTestReport {
         html.enabled = true
     }
 }
+
+task printVersion {
+    doLast {
+        println project.version
+    }
+}
