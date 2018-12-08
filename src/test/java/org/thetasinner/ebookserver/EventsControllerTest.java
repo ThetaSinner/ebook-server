@@ -19,6 +19,7 @@ import org.thetasinner.web.events.ChangeEventData;
 import org.thetasinner.web.model.BookAddRequest;
 import org.thetasinner.web.model.BookUpdateRequest;
 import org.thetasinner.web.model.RequestBase;
+import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 
 import java.io.IOException;
@@ -212,8 +213,8 @@ public class EventsControllerTest {
               lock.countDown();
             },
             error -> {
-              error.printStackTrace();
-              fail();
+              // Just do nothing, because there will be an error when the server is shut down at the
+              // end of the test run.
             },
             () -> System.out.println("Subscription completed."));
 
