@@ -26,7 +26,6 @@ import org.thetasinner.web.model.BookUpdateRequest;
 import javax.imageio.ImageIO;
 import java.io.*;
 import java.nio.charset.Charset;
-import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -165,20 +164,15 @@ public class FileLibraryStorage implements ILibraryStorage {
 
     @Override
     public void store(String name, MultipartFile file) throws StorageException, IOException {
-        String filename = org.springframework.util.StringUtils.cleanPath(file.getOriginalFilename());
-        if (filename.contains("..") || filename.contains("\\") || filename.contains("/")) {
-            // Security check to make sure a path embedded in the filename can't escape the storage location.
-            // Or accidentally orphan itself by having a path the server can't find again.
-            throw new StorageException("Won't store file which contains path component.");
-        }
+        var fileName = validateUploadFile(file);
 
         UUID uuid = UUID.randomUUID();
         String storagePath = getLibraryDirectory(name) + uuid + File.separator;
         if (!new File(storagePath).mkdirs()) {
-            throw new StorageException(String.format("Could not createLibrary a directory to store the new file in [%s]", filename));
+            throw new StorageException(String.format("Could not createLibrary a directory to store the new file in [%s]", fileName));
         }
 
-        String fileStoragePath = storagePath + filename;
+        String fileStoragePath = storagePath + fileName;
 
         try {
             Files.copy(file.getInputStream(), Paths.get(fileStoragePath));
@@ -193,7 +187,7 @@ public class FileLibraryStorage implements ILibraryStorage {
         Book book = new Book();
         book.setId(uuid.toString());
         book.setUrl(new TypedUrl(fileStoragePath, TypedUrl.Type.LocalManaged));
-        book.setTitle(filename);
+        book.setTitle(fileName);
         getLibrary(name).getItem().getBooks().add(book);
     }
 
@@ -258,9 +252,11 @@ public class FileLibraryStorage implements ILibraryStorage {
     public List<String> getLibraries() {
         List<String> libraries = new ArrayList<>();
         String libraryDirectory = getLibraryDirectory("");
-        try (DirectoryStream<Path> paths = Files.newDirectoryStream(Paths.get(libraryDirectory))) {
-            for (Path path : paths) {
-                libraries.add(path.getFileName().toString());
+        try (var paths = Files.newDirectoryStream(Paths.get(libraryDirectory))) {
+            for (var path : paths) {
+                var filePath = path.getFileName();
+                if (filePath == null) continue;
+                libraries.add(filePath.toString());
             }
         } catch (IOException e) {
             throw new EBookDataServiceException("Failed to get a list of library directories", e);
@@ -289,12 +285,7 @@ public class FileLibraryStorage implements ILibraryStorage {
 
     @Override
     public void storeCover(String id, String name, MultipartFile cover) throws StorageException {
-        String originalFileName = org.springframework.util.StringUtils.cleanPath(cover.getOriginalFilename());
-        if (originalFileName.contains("..") || originalFileName.contains("\\") || originalFileName.contains("/")) {
-            // Security check to make sure a path embedded in the filename can't escape the storage location.
-            // Or accidentally orphan itself by having a path the server can't find again.
-            throw new StorageException("Won't store file which contains path component.");
-        }
+        var originalFileName = validateUploadFile(cover);
 
         int lastDot = originalFileName.lastIndexOf('.');
         String fileName = "cover-" + UUID.randomUUID().toString() + originalFileName.substring(lastDot);
@@ -303,7 +294,11 @@ public class FileLibraryStorage implements ILibraryStorage {
         Book theBook = getBook(library.getItem(), id);
         Path path = Paths.get(theBook.getUrl().getValue());
 
-        Path savePath = Paths.get(path.getParent().toString(), fileName);
+        var storageFolder = path.getParent();
+        if (storageFolder == null) {
+            return;
+        }
+        Path savePath = Paths.get(storageFolder.toString(), fileName);
 
         try {
             Files.copy(cover.getInputStream(), savePath);
@@ -313,6 +308,22 @@ public class FileLibraryStorage implements ILibraryStorage {
         }
 
         theBook.getCovers().add(new TypedUrl(savePath.toString(), TypedUrl.Type.LocalManaged));
+    }
+
+    private String validateUploadFile(MultipartFile file) throws StorageException {
+        String originalFilename = file.getOriginalFilename();
+        if (originalFilename == null) {
+            throw new StorageException("Cannot get original filename from uploaded file.");
+        }
+
+        String originalFileName = org.springframework.util.StringUtils.cleanPath(originalFilename);
+        if (originalFileName.contains("..") || originalFileName.contains("\\") || originalFileName.contains("/")) {
+            // Security check to make sure a path embedded in the filename can't escape the storage location.
+            // Or accidentally orphan itself by having a path the server can't find again.
+            throw new StorageException("Won't store file which contains path component.");
+        }
+
+        return originalFilename;
     }
 
     @Override
@@ -325,7 +336,12 @@ public class FileLibraryStorage implements ILibraryStorage {
             throw new EBookDataServiceException("Can only get cover for local managed book");
         }
 
-        File file = Paths.get(Paths.get(typedUrl.getValue()).getParent().toString(), COVER_FILE).toFile();
+        var bookPath = Paths.get(typedUrl.getValue());
+        var bookFolder = bookPath.getParent();
+        if (bookFolder == null) {
+            return null;
+        }
+        File file = Paths.get(bookFolder.toString(), COVER_FILE).toFile();
         if (!file.canRead()) {
             throw new EBookDataServiceException("Cover file is not accessible or does not exist");
         }
