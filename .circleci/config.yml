@@ -10,7 +10,7 @@ jobs:
           command: chmod +x ./gradlew
       - run:
           name: Build the server
-          command: ./gradlew build
+          command: ./gradlew build --no-daemon
       - run:
           name: Gather coverage results
           command: ./gradlew jacocoTestReport
