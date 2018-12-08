@@ -50,8 +50,12 @@ public class FileLibraryStorage implements ILibraryStorage {
 
   private static final String COVER_FILE = "cover.png";
 
-  @Autowired
   private FileCache<Library> cache;
+
+  @Autowired
+  public FileLibraryStorage(FileCache<Library> cache) {
+    this.cache = cache;
+  }
 
   public FileLibraryStorage() {
     mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true);
@@ -99,6 +103,9 @@ public class FileLibraryStorage implements ILibraryStorage {
 
   @Override
   public void save(String name, Boolean unload) {
+    // Ignore save requests for libraries which are not loaded.
+    if (!cache.has(name)) return;
+
     try (FileWriter writer = new FileWriter(getLibraryPath(name), Charset.forName("UTF-8"))) {
       var library = getLibrary(name).getItem();
       mapper.writeValue(writer, library);

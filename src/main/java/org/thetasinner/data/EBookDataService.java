@@ -41,25 +41,25 @@ import static org.thetasinner.web.events.ChangeEventData.ChangeType.BookUpdated;
 public class EBookDataService {
   private static final Logger LOG = LoggerFactory.getLogger(EBookDataService.class);
 
-  @Autowired
   private ILibraryStorage storage;
 
-  @Autowired
   private LibraryChangeService libraryChangeService;
 
+  @Autowired
+  public EBookDataService(ILibraryStorage storage, LibraryChangeService changeService) {
+    this.storage = storage;
+    this.libraryChangeService = changeService;
+  }
+
   public void commit(CommitRequest commitRequest) {
-    boolean commitAll = Boolean.TRUE.equals(commitRequest.getCommitAll());
-    boolean commitAndUnloadAll = Boolean.TRUE.equals(commitRequest.getCommitAndUnloadAll());
-    if (commitAll || commitAndUnloadAll) {
-      // TODO
+    if (commitRequest.getCommitAll() || commitRequest.getCommitAndUnloadAll()) {
+      storage.getLibraries().forEach(libraryName -> storage.save(libraryName, true));
     } else {
       List<CommitLibrary> commitLibraries = commitRequest.getCommitLibraries();
       if (commitLibraries == null) {
         throw new EBookDataServiceException("Cannot update no libraries");
       }
-      commitLibraries.forEach(request -> {
-        storage.save(request.getLibraryName(), request.getUnload());
-      });
+      commitLibraries.forEach(request -> storage.save(request.getLibraryName(), request.getUnload()));
     }
   }
 
