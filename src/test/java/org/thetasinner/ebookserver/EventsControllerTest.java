@@ -70,7 +70,8 @@ public class EventsControllerTest {
 
         sendAddRequest(libraryName);
 
-        lock.await(5, TimeUnit.SECONDS);
+        var countDownSucceeded = lock.await(5, TimeUnit.SECONDS);
+        assertTrue(countDownSucceeded);
 
         assertEquals(1, changes.size());
         assertEquals(ChangeEventData.ChangeType.BookCreated, changes.get(0).getChangeType());
@@ -93,7 +94,8 @@ public class EventsControllerTest {
         sendAddRequest(libraryName);
         sendAddRequest(libraryName);
 
-        lock.await(5, TimeUnit.SECONDS);
+        var countDownSucceeded = lock.await(5, TimeUnit.SECONDS);
+        assertTrue(countDownSucceeded);
 
         assertEquals(3, changes.size());
         changes.forEach(change -> {
@@ -126,7 +128,8 @@ public class EventsControllerTest {
         bookUpdateRequest.setTitle("I updated the title!");
         eBookTestClient.updateBook(request, bookId, port);
 
-        lock.await(5, TimeUnit.SECONDS);
+        var countDownSucceeded = lock.await(5, TimeUnit.SECONDS);
+        assertTrue(countDownSucceeded);
 
         assertEquals(1, changes.size());
         assertEquals(ChangeEventData.ChangeType.BookUpdated, changes.get(0).getChangeType());
@@ -152,7 +155,8 @@ public class EventsControllerTest {
 
         eBookTestClient.deleteBook(libraryName, bookId, port);
 
-        lock.await(5, TimeUnit.SECONDS);
+        var countDownSucceeded = lock.await(5, TimeUnit.SECONDS);
+        assertTrue(countDownSucceeded);
 
         assertEquals(1, changes.size());
         assertEquals(ChangeEventData.ChangeType.BookDeleted, changes.get(0).getChangeType());
@@ -175,7 +179,8 @@ public class EventsControllerTest {
 
         sendAddRequest(libraryName);
 
-        lock.await(5, TimeUnit.SECONDS);
+        var countDownSucceeded = lock.await(5, TimeUnit.SECONDS);
+        assertTrue(countDownSucceeded);
 
         // Expect two add requests which are for the same book.
         assertEquals(2, changes.size());
