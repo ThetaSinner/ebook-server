@@ -3,6 +3,7 @@ jobs:
   build:
     docker:
       - image: circleci/openjdk:11.0.1-jdk-sid-browsers
+
     steps:
       - checkout
       - run:
@@ -11,6 +12,8 @@ jobs:
       - run:
           name: Build the server
           command: ./gradlew build --no-daemon
+          environment:
+            GRADLE_OPTS: '-Xmx2048m -Dorg.gradle.daemon=false'
       - run:
           name: Gather coverage results
           command: ./gradlew jacocoTestReport

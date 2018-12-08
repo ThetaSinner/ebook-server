@@ -82,6 +82,10 @@ dependencies {
     testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-webflux', version: '2.1.1.RELEASE'
 }
 
+test {
+    maxHeapSize = "512m"
+}
+
 lombok {
     version = '1.18.4'
     sha256 = ""
