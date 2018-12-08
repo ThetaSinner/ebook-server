@@ -146,4 +146,11 @@ public class EBookTestClient {
 
     return restTemplate.postForEntity(urlHelper.buildRequestUrl("/books/{id}/covers", port), requestEntity, String.class, bookId);
   }
+
+  public ResponseEntity<EmptyJsonResponse> commitAllLibraries(int port) {
+    var commitRequest = new CommitRequest();
+    commitRequest.setCommitAll(true);
+    commitRequest.setCommitAndUnloadAll(true);
+    return restTemplate.postForEntity(urlHelper.buildRequestUrl("/libraries/commit", port), commitRequest, EmptyJsonResponse.class);
+  }
 }

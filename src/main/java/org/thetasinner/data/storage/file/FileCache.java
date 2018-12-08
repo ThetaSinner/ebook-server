@@ -1,11 +1,11 @@
 package org.thetasinner.data.storage.file;
 
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
-@Service
+@Component
 public class FileCache<T> {
   private HashMap<String, LockableItem<T>> inner = new HashMap<>();
 

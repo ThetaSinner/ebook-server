@@ -52,8 +52,10 @@ public class EBookDataService {
   }
 
   public void commit(CommitRequest commitRequest) {
-    if (commitRequest.getCommitAll() || commitRequest.getCommitAndUnloadAll()) {
-      storage.getLibraries().forEach(libraryName -> storage.save(libraryName, true));
+    var commitAll = Boolean.TRUE.equals(commitRequest.getCommitAll());
+    var commitAndUnloadAll = Boolean.TRUE.equals(commitRequest.getCommitAndUnloadAll());
+    if (commitAll || commitAndUnloadAll) {
+      storage.getLibraries().forEach(libraryName -> storage.save(libraryName, commitAndUnloadAll));
     } else {
       List<CommitLibrary> commitLibraries = commitRequest.getCommitLibraries();
       if (commitLibraries == null) {

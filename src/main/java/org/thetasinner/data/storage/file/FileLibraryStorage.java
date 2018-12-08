@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import org.thetasinner.data.exception.EBookDataServiceException;
 import org.thetasinner.data.exception.EBookNotFoundException;
@@ -52,12 +53,9 @@ public class FileLibraryStorage implements ILibraryStorage {
 
   private FileCache<Library> cache;
 
-  @Autowired
   public FileLibraryStorage(FileCache<Library> cache) {
     this.cache = cache;
-  }
 
-  public FileLibraryStorage() {
     mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true);
     mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
 

@@ -455,15 +455,43 @@ public class EBookControllerTest {
     var commitResponse = eBookTestClient.commitLibrary(libraryName, true, this.port);
     assertEquals(HttpStatus.OK, commitResponse.getStatusCode());
 
-    var libraryJson = FileUtils.readFileToString(Paths.get(ESDATA_TEST_PATH, libraryName, "library.json").toFile(), Charset.defaultCharset());
-
-    var library = new Gson().fromJson(libraryJson, Library.class);
-    assertEquals(1, library.getBooks().size());
-    assertEquals("document.pdf", library.getBooks().get(0).getTitle());
     String testTitle = "Test title";
-    library.getBooks().get(0).setTitle(testTitle);
-    FileUtils.writeStringToFile(Paths.get(ESDATA_TEST_PATH, libraryName, "library.json").toFile(), new Gson().toJson(library), Charset.defaultCharset());
+    modifyLibraryOnDisk(libraryName, "document.pdf", testTitle);
 
+    checkBookTitle(libraryName, testTitle);
+  }
+
+  @Test
+  public void saveAndUnloadAllLibraries() throws IOException {
+    var libraryNameBase = testDataHelper.getCurrentMethodName();
+    var libraryNameOne = libraryNameBase + "-one";
+    var libraryNameTwo = libraryNameBase + "-two";
+    var response = eBookTestClient.createLibrary(libraryNameOne, this.port);
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+
+    response = eBookTestClient.createLibrary(libraryNameTwo, this.port);
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+
+    response = eBookTestClient.uploadBook(libraryNameOne, "test-ebook/document.pdf", this.port);
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+
+    response = eBookTestClient.uploadBook(libraryNameTwo, "test-ebook/document.pdf", this.port);
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+
+    var commitResponse = eBookTestClient.commitAllLibraries(port);
+    assertEquals(HttpStatus.OK, commitResponse.getStatusCode());
+
+    var testTitleOne = "Test title 1";
+    modifyLibraryOnDisk(libraryNameOne, "document.pdf", testTitleOne);
+
+    var testTitleTwo = "Test title 2";
+    modifyLibraryOnDisk(libraryNameTwo, "document.pdf", testTitleTwo);
+
+    checkBookTitle(libraryNameOne, testTitleOne);
+    checkBookTitle(libraryNameTwo, testTitleTwo);
+  }
+
+  private void checkBookTitle(String libraryName, String testTitle) {
     var booksResponse = eBookTestClient.getBookList(libraryName, this.port);
     assertEquals(HttpStatus.OK, booksResponse.getStatusCode());
 
@@ -471,5 +499,14 @@ public class EBookControllerTest {
     assertNotNull(books);
     assertEquals(1, books.size());
     assertEquals(testTitle, books.get(0).getTitle());
+  }
+
+  private void modifyLibraryOnDisk(String libraryName, String oldTitle, String newTitle) throws IOException {
+    var libraryJson = FileUtils.readFileToString(Paths.get(ESDATA_TEST_PATH, libraryName, "library.json").toFile(), Charset.defaultCharset());
+    var library = new Gson().fromJson(libraryJson, Library.class);
+    assertTrue(library.getBooks().size() >= 1);
+    assertEquals(oldTitle, library.getBooks().get(0).getTitle());
+    library.getBooks().get(0).setTitle(newTitle);
+    FileUtils.writeStringToFile(Paths.get(ESDATA_TEST_PATH, libraryName, "library.json").toFile(), new Gson().toJson(library), Charset.defaultCharset());
   }
 }
