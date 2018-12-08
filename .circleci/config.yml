@@ -6,10 +6,10 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Enable Gradle wrapper script execution.
+          name: Enable Gradle wrapper script execution
           command: chmod +x ./gradlew
       - run:
-          name: Build the server.
+          name: Build the server
           command: ./gradlew build
       - run:
           name: Gather coverage results
