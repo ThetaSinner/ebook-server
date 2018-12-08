@@ -4,5 +4,5 @@ import lombok.Data;
 
 @Data
 public class ExtractionProperties {
-    private Integer limit;
+  private Integer limit;
 }

@@ -7,11 +7,11 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @Service
 public class ResourceHelper {
-    public FileSystemResource getFileSystemResourceFromClasspath(String name) {
-        var resource = Thread.currentThread()
-                .getContextClassLoader()
-                .getResource(name);
-        assertNotNull(resource);
-        return new FileSystemResource(resource.getFile());
-    }
+  public FileSystemResource getFileSystemResourceFromClasspath(String name) {
+    var resource = Thread.currentThread()
+            .getContextClassLoader()
+            .getResource(name);
+    assertNotNull(resource);
+    return new FileSystemResource(resource.getFile());
+  }
 }

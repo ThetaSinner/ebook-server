@@ -8,12 +8,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ChangeEventData {
-    private ChangeType changeType;
-    private String bookId;
+  private ChangeType changeType;
+  private String bookId;
 
-    public enum ChangeType {
-        BookCreated,
-        BookUpdated,
-        BookDeleted
-    }
+  public enum ChangeType {
+    BookCreated,
+    BookUpdated,
+    BookDeleted
+  }
 }

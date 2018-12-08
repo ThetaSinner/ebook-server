@@ -17,7 +17,10 @@ import org.thetasinner.data.storage.ILibraryStorage;
 import org.thetasinner.data.storage.StorageException;
 import org.thetasinner.web.events.ChangeEventData;
 import org.thetasinner.web.events.LibraryChangeService;
-import org.thetasinner.web.model.*;
+import org.thetasinner.web.model.BookAddRequest;
+import org.thetasinner.web.model.BookUpdateRequest;
+import org.thetasinner.web.model.CommitLibrary;
+import org.thetasinner.web.model.CommitRequest;
 
 import javax.servlet.ServletOutputStream;
 import java.io.FileInputStream;
@@ -30,169 +33,168 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.thetasinner.web.events.ChangeEventData.ChangeType.*;
+import static org.thetasinner.web.events.ChangeEventData.ChangeType.BookCreated;
+import static org.thetasinner.web.events.ChangeEventData.ChangeType.BookDeleted;
+import static org.thetasinner.web.events.ChangeEventData.ChangeType.BookUpdated;
 
 @Service
 public class EBookDataService {
-    private static final Logger LOG = LoggerFactory.getLogger(EBookDataService.class);
+  private static final Logger LOG = LoggerFactory.getLogger(EBookDataService.class);
 
-    @Autowired
-    private ILibraryStorage storage;
+  @Autowired
+  private ILibraryStorage storage;
 
-    @Autowired
-    private LibraryChangeService libraryChangeService;
+  @Autowired
+  private LibraryChangeService libraryChangeService;
 
-    public void commit(CommitRequest commitRequest) {
-        boolean commitAll = Boolean.TRUE.equals(commitRequest.getCommitAll());
-        boolean commitAndUnloadAll = Boolean.TRUE.equals(commitRequest.getCommitAndUnloadAll());
-        if (commitAll || commitAndUnloadAll) {
-            // TODO
-        }
-        else {
-            List<CommitLibrary> commitLibraries = commitRequest.getCommitLibraries();
-            if (commitLibraries == null) {
-                throw new EBookDataServiceException("Cannot update no libraries");
-            }
-            commitLibraries.forEach(request -> {
-                storage.save(request.getLibraryName(), request.getUnload());
-            });
-        }
+  public void commit(CommitRequest commitRequest) {
+    boolean commitAll = Boolean.TRUE.equals(commitRequest.getCommitAll());
+    boolean commitAndUnloadAll = Boolean.TRUE.equals(commitRequest.getCommitAndUnloadAll());
+    if (commitAll || commitAndUnloadAll) {
+      // TODO
+    } else {
+      List<CommitLibrary> commitLibraries = commitRequest.getCommitLibraries();
+      if (commitLibraries == null) {
+        throw new EBookDataServiceException("Cannot update no libraries");
+      }
+      commitLibraries.forEach(request -> {
+        storage.save(request.getLibraryName(), request.getUnload());
+      });
+    }
+  }
+
+  public void createLibrary(String name) {
+    if (StringUtils.isEmpty(name)) {
+      throw new EBookDataServiceInputValidationException("Library name must not be empty");
     }
 
-    public void createLibrary(String name) {
-        if (StringUtils.isEmpty(name)) {
-            throw new EBookDataServiceInputValidationException("Library name must not be empty");
-        }
+    storage.create(name);
+  }
 
-        storage.create(name);
+  public List<Integer> storeAll(String name, MultipartFile[] files) {
+    if (files.length == 0) {
+      throw new EBookDataServiceInputValidationException("No files provided to upload");
     }
 
-    public List<Integer> storeAll(String name, MultipartFile[] files) {
-        if (files.length == 0) {
-            throw new EBookDataServiceInputValidationException("No files provided to upload");
-        }
+    List<Integer> failed = new ArrayList<>();
 
-        List<Integer> failed = new ArrayList<>();
-
-        int storeIndex = 0;
-        for (MultipartFile file : files) {
-            try {
-                store(name, file);
-                storeIndex++;
-            }
-            catch (StorageException | IOException e) {
-                failed.add(storeIndex);
-            }
-        }
-
-        return failed;
+    int storeIndex = 0;
+    for (MultipartFile file : files) {
+      try {
+        store(name, file);
+        storeIndex++;
+      } catch (StorageException | IOException e) {
+        failed.add(storeIndex);
+      }
     }
 
-    private void store(String name, MultipartFile file) throws StorageException, IOException {
-        if (file.isEmpty()) {
-            throw new StorageException("File is empty");
-        }
+    return failed;
+  }
 
-        storage.store(name, file);
+  private void store(String name, MultipartFile file) throws StorageException, IOException {
+    if (file.isEmpty()) {
+      throw new StorageException("File is empty");
     }
 
-    public List<Book> getBooks(String name) {
-        List<Book> books = storage.getBooks(name);
+    storage.store(name, file);
+  }
 
-        return books == null ? new ArrayList<>() : books;
+  public List<Book> getBooks(String name) {
+    List<Book> books = storage.getBooks(name);
+
+    return books == null ? new ArrayList<>() : books;
+  }
+
+  public Book createBook(String name, BookAddRequest bookAddRequest) {
+    if (bookAddRequest == null || bookAddRequest.getUrl() == null || bookAddRequest.getType() == null) {
+      throw new InvalidRequestException("Invalid add book request");
     }
 
-    public Book createBook(String name, BookAddRequest bookAddRequest) {
-        if (bookAddRequest == null || bookAddRequest.getUrl() == null || bookAddRequest.getType() == null) {
-            throw new InvalidRequestException("Invalid add book request");
+    Book book;
+    switch (bookAddRequest.getType()) {
+      case LocalUnmanaged:
+        Path path = Paths.get(bookAddRequest.getUrl());
+        if (!Files.exists(path)) {
+          throw new EBookFileNotFoundException("Won't add book because the file does not exist");
         }
 
-        Book book;
-        switch (bookAddRequest.getType()) {
-            case LocalUnmanaged:
-                Path path = Paths.get(bookAddRequest.getUrl());
-                if (!Files.exists(path)) {
-                    throw new EBookFileNotFoundException("Won't add book because the file does not exist");
-                }
-
-                book = storage.createBook(name, bookAddRequest.getUrl(), TypedUrl.Type.LocalUnmanaged);
-                break;
-            case WebLink:
-                book = storage.createBook(name, bookAddRequest.getUrl(), TypedUrl.Type.WebLink);
-                break;
-            case Other:
-                book = storage.createBook(name, bookAddRequest.getUrl(), TypedUrl.Type.Other);
-                break;
-            default:
-                throw new InvalidRequestException(String.format("Cannot create a book of type [%s]", bookAddRequest.getType()));
-        }
-
-        // Publish book created change event.
-        ChangeEventData eventData = new ChangeEventData(BookCreated, book.getId());
-        libraryChangeService.publish(name, eventData);
-
-        return book;
+        book = storage.createBook(name, bookAddRequest.getUrl(), TypedUrl.Type.LocalUnmanaged);
+        break;
+      case WebLink:
+        book = storage.createBook(name, bookAddRequest.getUrl(), TypedUrl.Type.WebLink);
+        break;
+      case Other:
+        book = storage.createBook(name, bookAddRequest.getUrl(), TypedUrl.Type.Other);
+        break;
+      default:
+        throw new InvalidRequestException(String.format("Cannot create a book of type [%s]", bookAddRequest.getType()));
     }
 
-    public void deleteBook(String id, String name) {
-        if (StringUtils.isBlank(id)) {
-            throw new InvalidRequestException("Missing request param: id");
-        }
+    // Publish book created change event.
+    ChangeEventData eventData = new ChangeEventData(BookCreated, book.getId());
+    libraryChangeService.publish(name, eventData);
 
-        storage.deleteBook(id, name);
+    return book;
+  }
 
-        // Publish book deleted change event.
-        ChangeEventData eventData = new ChangeEventData(BookDeleted, id);
-        libraryChangeService.publish(name, eventData);
+  public void deleteBook(String id, String name) {
+    if (StringUtils.isBlank(id)) {
+      throw new InvalidRequestException("Missing request param: id");
     }
 
-    public Book updateBook(String id, String name, BookUpdateRequest bookUpdateRequest) {
-        if (StringUtils.isEmpty(id)) {
-            throw new InvalidRequestException("Missing request param: id");
-        }
+    storage.deleteBook(id, name);
 
-        if (bookUpdateRequest == null) {
-            throw new InvalidRequestException("Missing request body");
-        }
+    // Publish book deleted change event.
+    ChangeEventData eventData = new ChangeEventData(BookDeleted, id);
+    libraryChangeService.publish(name, eventData);
+  }
 
-        Book book = storage.updateBook(id, name, bookUpdateRequest);
-
-        // Publish book updated change event.
-        ChangeEventData eventData = new ChangeEventData(BookUpdated, id);
-        libraryChangeService.publish(name, eventData);
-
-        return book;
+  public Book updateBook(String id, String name, BookUpdateRequest bookUpdateRequest) {
+    if (StringUtils.isEmpty(id)) {
+      throw new InvalidRequestException("Missing request param: id");
     }
 
-    public List<String> getLibraries() {
-        return storage.getLibraries();
+    if (bookUpdateRequest == null) {
+      throw new InvalidRequestException("Missing request body");
     }
 
-    public String getBook(String id, String name, OutputStream outputStream) throws IOException {
-        FileInputStream inputStream = storage.getBookInputStream(id, name);
-        IOUtils.copy(inputStream, outputStream);
-        return "application/pdf";
+    Book book = storage.updateBook(id, name, bookUpdateRequest);
+
+    // Publish book updated change event.
+    ChangeEventData eventData = new ChangeEventData(BookUpdated, id);
+    libraryChangeService.publish(name, eventData);
+
+    return book;
+  }
+
+  public List<String> getLibraries() {
+    return storage.getLibraries();
+  }
+
+  public String getBook(String id, String name, OutputStream outputStream) throws IOException {
+    FileInputStream inputStream = storage.getBookInputStream(id, name);
+    IOUtils.copy(inputStream, outputStream);
+    return "application/pdf";
+  }
+
+  public List<Integer> uploadCover(String id, String name, MultipartFile cover) {
+    if (cover == null || cover.isEmpty()) {
+      return Collections.singletonList(0);
     }
 
-    public List<Integer> uploadCover(String id, String name, MultipartFile cover) {
-        if (cover == null || cover.isEmpty()) {
-            return Collections.singletonList(0);
-        }
-
-        List<Integer> failedUploadIndices = new ArrayList<>(1);
-        try {
-            storage.storeCover(id, name, cover);
-        }
-        catch (StorageException e) {
-            failedUploadIndices.add(0);
-        }
-
-        return failedUploadIndices;
+    List<Integer> failedUploadIndices = new ArrayList<>(1);
+    try {
+      storage.storeCover(id, name, cover);
+    } catch (StorageException e) {
+      failedUploadIndices.add(0);
     }
 
-    public String getCover(String bookId, String libraryName, ServletOutputStream outputStream) throws IOException {
-        FileInputStream inputStream = storage.getCoverInputStream(bookId, libraryName);
-        IOUtils.copy(inputStream, outputStream);
-        return "image/png";
-    }
+    return failedUploadIndices;
+  }
+
+  public String getCover(String bookId, String libraryName, ServletOutputStream outputStream) throws IOException {
+    FileInputStream inputStream = storage.getCoverInputStream(bookId, libraryName);
+    IOUtils.copy(inputStream, outputStream);
+    return "image/png";
+  }
 }

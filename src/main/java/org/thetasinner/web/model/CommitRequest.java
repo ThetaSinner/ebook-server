@@ -7,8 +7,8 @@ import java.util.List;
 
 @Data
 public class CommitRequest {
-    private Boolean commitAll;
-    private Boolean commitAndUnloadAll;
+  private Boolean commitAll;
+  private Boolean commitAndUnloadAll;
 
-    private List<CommitLibrary> commitLibraries = new ArrayList<>();
+  private List<CommitLibrary> commitLibraries = new ArrayList<>();
 }

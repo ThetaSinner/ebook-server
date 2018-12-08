@@ -8,16 +8,16 @@ import org.thetasinner.data.storage.file.FileLibraryStorage;
 
 @Configuration
 public class Config {
-    @Bean
-    public CommonsMultipartResolver multipartResolver() {
-        CommonsMultipartResolver resolver = new CommonsMultipartResolver();
-        resolver.setMaxUploadSize(-1);
+  @Bean
+  public CommonsMultipartResolver multipartResolver() {
+    CommonsMultipartResolver resolver = new CommonsMultipartResolver();
+    resolver.setMaxUploadSize(-1);
 
-        return resolver;
-    }
+    return resolver;
+  }
 
-    @Bean
-    public ILibraryStorage libraryStorage() {
-        return new FileLibraryStorage();
-    }
+  @Bean
+  public ILibraryStorage libraryStorage() {
+    return new FileLibraryStorage();
+  }
 }

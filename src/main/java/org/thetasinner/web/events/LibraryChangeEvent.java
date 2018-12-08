@@ -6,6 +6,6 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class LibraryChangeEvent {
-    private String libraryName;
-    private ChangeEventData eventData;
+  private String libraryName;
+  private ChangeEventData eventData;
 }
