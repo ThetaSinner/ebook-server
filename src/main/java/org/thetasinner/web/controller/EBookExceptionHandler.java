@@ -1,4 +1,4 @@
-package org.thetasinner.web;
+package org.thetasinner.web.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

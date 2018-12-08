@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.thetasinner.data.EBookDataService;
 import org.thetasinner.data.model.Book;
-import org.thetasinner.web.EbookControllerException;
+import org.thetasinner.web.error.EBookControllerException;
 import org.thetasinner.web.model.BookAddRequest;
 import org.thetasinner.web.model.BookUpdateRequest;
 import org.thetasinner.web.model.EmptyJsonResponse;
@@ -55,7 +55,7 @@ public class BookController {
       response.setContentType(contentType);
       response.flushBuffer();
     } catch (IOException e) {
-      throw new EbookControllerException("Failed to get book", e);
+      throw new EBookControllerException("Failed to get book", e);
     }
   }
 
@@ -88,7 +88,7 @@ public class BookController {
       response.setContentType(contentType);
       response.flushBuffer();
     } catch (IOException e) {
-      throw new EbookControllerException("Failed to get cover", e);
+      throw new EBookControllerException("Failed to get cover", e);
     }
   }
 }
