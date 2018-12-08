@@ -84,7 +84,7 @@ public class FileLibraryStorage implements ILibraryStorage {
             byte[] encoded = Files.readAllBytes(Paths.get(getLibraryPath(name)));
             String result = new String(encoded, Charset.defaultCharset());
 
-            Library library = mapper.readValue(result.getBytes(), Library.class);
+            Library library = mapper.readValue(result.getBytes(Charset.forName("UTF-8")), Library.class);
             cache.put(name, library);
         }
         catch (IOException e) {
@@ -98,7 +98,7 @@ public class FileLibraryStorage implements ILibraryStorage {
 
     @Override
     public void save(String name, Boolean unload) {
-        try (FileWriter writer = new FileWriter(getLibraryPath(name))) {
+        try (FileWriter writer = new FileWriter(getLibraryPath(name), Charset.forName("UTF-8"))) {
             var library = getLibrary(name).getItem();
             mapper.writeValue(writer, library);
 
@@ -131,7 +131,7 @@ public class FileLibraryStorage implements ILibraryStorage {
             String libraryPath = getLibraryPath(name);
             Library newLibrary = new Library();
             cache.put(name, newLibrary);
-            try (FileWriter writer = new FileWriter(libraryPath)) {
+            try (FileWriter writer = new FileWriter(libraryPath, Charset.forName("UTF-8"))) {
                 mapper.writeValue(writer, newLibrary);
             }
             catch (IOException e) {
