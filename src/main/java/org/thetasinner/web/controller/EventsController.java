@@ -1,4 +1,4 @@
-package org.thetasinner.web;
+package org.thetasinner.web.controller;
 
 import org.springframework.context.event.EventListener;
 import org.springframework.web.bind.annotation.PathVariable;
