@@ -30,6 +30,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -114,7 +115,10 @@ public class EventsControllerTest {
         sendAddRequest(libraryName);
 
         var bookList = eBookTestClient.getBookList(libraryName, port);
-        var bookId = bookList.getBody().get(0).getId();
+        var books = bookList.getBody();
+        assertNotNull(books);
+        assertEquals(1, books.size());
+        var bookId = books.get(0).getId();
 
         var eventStream = createSubscriptionRequest(libraryName);
 
@@ -146,7 +150,10 @@ public class EventsControllerTest {
         sendAddRequest(libraryName);
 
         var bookList = eBookTestClient.getBookList(libraryName, port);
-        var bookId = bookList.getBody().get(0).getId();
+        var books = bookList.getBody();
+        assertNotNull(books);
+        assertEquals(1, books.size());
+        var bookId = books.get(0).getId();
 
         var eventStream = createSubscriptionRequest(libraryName);
 
