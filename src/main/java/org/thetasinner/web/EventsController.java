@@ -24,14 +24,9 @@ public class EventsController {
     public SseEmitter subscribe(@PathVariable(name = "libraryName") String libraryName) {
         SseEmitter emitter = new SseEmitter(SSE_TIMEOUT);
 
-        if (!subscriptions.containsKey(libraryName)) {
-            CopyOnWriteArrayList<SseEmitter> list = new CopyOnWriteArrayList<>();
-            list.add(emitter);
-            this.subscriptions.put(libraryName, list);
-        }
-        else {
-            this.subscriptions.get(libraryName).add(emitter);
-        }
+        CopyOnWriteArrayList<SseEmitter> list = new CopyOnWriteArrayList<>();
+        subscriptions.putIfAbsent(libraryName, list);
+        subscriptions.get(libraryName).add(emitter);
 
         Runnable callback = () -> this.subscriptions.get(libraryName).remove(emitter);
         emitter.onCompletion(callback);
