@@ -29,7 +29,7 @@ apply plugin: "jacoco"
 apply plugin: 'checkstyle'
 
 group 'ebook-server'
-version '1.3.0-RELEASE'
+version '1.3.1-SNAPSHOT'
 
 targetCompatibility = '10'
 sourceCompatibility = '10'
