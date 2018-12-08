@@ -102,6 +102,10 @@ checkstyle {
     toolVersion '8.15'
 }
 
+spotbugs {
+    excludeFilter = file("config/spotbugs/es-exclude-spotbugs.xml")
+}
+
 tasks.withType(SpotBugsTask) {
     reports {
         xml.enabled = false
