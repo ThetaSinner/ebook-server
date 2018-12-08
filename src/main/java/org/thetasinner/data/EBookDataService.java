@@ -107,7 +107,7 @@ public class EBookDataService {
             throw new InvalidRequestException("Invalid add book request");
         }
 
-        Book book = null;
+        Book book;
         switch (bookAddRequest.getType()) {
             case LocalUnmanaged:
                 Path path = Paths.get(bookAddRequest.getUrl());
@@ -123,6 +123,8 @@ public class EBookDataService {
             case Other:
                 book = storage.createBook(name, bookAddRequest.getUrl(), TypedUrl.Type.Other);
                 break;
+            default:
+                throw new InvalidRequestException(String.format("Cannot create a book of type [%s]", bookAddRequest.getType()));
         }
 
         // Publish book created change event.
