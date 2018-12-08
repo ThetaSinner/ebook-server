@@ -21,3 +21,7 @@ jobs:
             && sudo apt-get install bash
             && sudo apt-get install curl
             && bash -c "bash <(curl -s https://codecov.io/bash)"
+      - store_artifacts:
+          path: /build/reports/checkstyle
+      - store_artifacts:
+          path: /build/reports/spotbugs
