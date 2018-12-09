@@ -96,27 +96,31 @@ public class FileLibraryStorage implements ILibraryStorage {
     }
   }
 
-  private Library loadLibraryFromFile(String name) throws IOException {
-    var libraryData = Files.readString(Paths.get(getLibraryPath(name)));
+  private Library loadLibraryFromFile(String libraryName) throws IOException {
+    var libraryData = Files.readString(Paths.get(getLibraryPath(libraryName)));
     return mapper.readValue(libraryData, Library.class);
   }
 
   @Override
-  public void save(String name, Boolean unload) {
+  public void save(String libraryName, Boolean unload) {
     // Ignore save requests for libraries which are not loaded.
-    if (!cache.has(name)) return;
+    if (!cache.has(libraryName)) return;
 
-    try (FileWriter writer = new FileWriter(getLibraryPath(name), Charset.forName("UTF-8"))) {
-      var library = getLibrary(name).getItem();
-      mapper.writeValue(writer, library);
+    try (var writer = new FileWriter(getLibraryPath(libraryName), Charset.forName("UTF-8"))) {
+      saveLibrary(libraryName, writer);
 
       if (unload) {
-        cache.remove(name);
+        cache.remove(libraryName);
       }
     } catch (IOException e) {
       LOG.error("Failed to save e-book library", e);
       throw new EBookDataServiceException("Failed to save e-book library", e);
     }
+  }
+
+  private void saveLibrary(String name, FileWriter writer) throws IOException {
+    var library = getLibrary(name).getItem();
+    mapper.writeValue(writer, library);
   }
 
   @Override
