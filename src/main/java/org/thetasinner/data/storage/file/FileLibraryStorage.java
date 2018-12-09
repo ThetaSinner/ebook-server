@@ -82,21 +82,23 @@ public class FileLibraryStorage implements ILibraryStorage {
       acquireLibraryLock.lock();
 
       if (cache.has(name)) {
-        // The library is already loaded, so there's nothing to do.
         return;
       }
 
-      byte[] encoded = Files.readAllBytes(Paths.get(getLibraryPath(name)));
-      String result = new String(encoded, Charset.defaultCharset());
-
-      Library library = mapper.readValue(result.getBytes(Charset.forName("UTF-8")), Library.class);
+      var library = loadLibraryFromFile(name);
       cache.put(name, library);
     } catch (IOException e) {
-      LOG.error("Failed to load e-book library", e);
-      throw new EBookDataServiceException("Failed to load e-book library", e);
+      var msg = "Failed to load e-book library";
+      LOG.error(msg, e);
+      throw new EBookDataServiceException(msg, e);
     } finally {
       acquireLibraryLock.unlock();
     }
+  }
+
+  private Library loadLibraryFromFile(String name) throws IOException {
+    var libraryData = Files.readString(Paths.get(getLibraryPath(name)));
+    return mapper.readValue(libraryData, Library.class);
   }
 
   @Override
