@@ -7,9 +7,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import org.thetasinner.data.exception.EBookDataServiceException;
 import org.thetasinner.data.exception.EBookNotFoundException;
@@ -113,8 +111,9 @@ public class FileLibraryStorage implements ILibraryStorage {
         cache.remove(libraryName);
       }
     } catch (IOException e) {
-      LOG.error("Failed to save e-book library", e);
-      throw new EBookDataServiceException("Failed to save e-book library", e);
+      var msg = "Failed to save e-book library";
+      LOG.error(msg, e);
+      throw new EBookDataServiceException(msg, e);
     }
   }
 
@@ -124,33 +123,41 @@ public class FileLibraryStorage implements ILibraryStorage {
   }
 
   @Override
-  public void create(String name) {
+  public void create(String libraryName) {
     try {
       createLibraryLock.lock();
 
-      String path = getLibraryDirectory(name);
-      Path newLibraryPath = Paths.get(path);
-      if (Files.exists(newLibraryPath)) {
-        throw new EBookDataServiceException(String.format("Will not createLibrary new library with name [%s] because the name is already in use", name));
-      }
-
-      File dir = new File(path);
-      if (!dir.mkdirs()) {
-        throw new EBookDataServiceException(String.format("Unable to createLibrary directory for name [%s], check this is a valid directory name and you have permission to createLibrary it", name));
-      }
-
-      String libraryPath = getLibraryPath(name);
-      Library newLibrary = new Library();
-      cache.put(name, newLibrary);
-      try (FileWriter writer = new FileWriter(libraryPath, Charset.forName("UTF-8"))) {
-        mapper.writeValue(writer, newLibrary);
-      } catch (IOException e) {
-        // An IO exception here is NOT expected because the path has been checked but if it does happen then some sort
-        // of recovery is needed. Can either delete the library folder or createLibrary a library validation and repair feature.
-        throw new EBookDataServiceException(String.format("Failed to createLibrary library data file for new library with name [%s]", name));
-      }
+      createDirectoryForLibrary(libraryName);
+      createLibrary(libraryName);
     } finally {
       createLibraryLock.unlock();
+    }
+  }
+
+  private void createLibrary(String libraryName) {
+    Library newLibrary = new Library();
+    cache.put(libraryName, newLibrary);
+    save(libraryName, false);
+  }
+
+  private void createDirectoryForLibrary(String libraryName) {
+    var libraryDirectory = getLibraryDirectory(libraryName);
+    checkLibraryDirectoryNotAlreadyInUse(libraryDirectory, libraryName);
+    createLibraryDirectory(libraryDirectory, libraryName);
+  }
+
+  private void createLibraryDirectory(String libraryDirectory, String libraryName) {
+    var dir = new File(libraryDirectory);
+    if (!dir.mkdirs()) {
+      throw new EBookDataServiceException(String.format("Unable to create library directory for name [%s], " +
+              "check this is a valid directory name and you have permission to createLibrary it", libraryName));
+    }
+  }
+
+  private void checkLibraryDirectoryNotAlreadyInUse(String libraryDirectory, String libraryName) {
+    Path libraryPath = Paths.get(libraryDirectory);
+    if (Files.exists(libraryPath)) {
+      throw new EBookDataServiceException(String.format("Will not create library new library with name [%s] because the name is already in use", libraryName));
     }
   }
 
