@@ -52,16 +52,27 @@ public class EBookDataService {
   }
 
   public void commit(CommitRequest commitRequest) {
+    if (commitRequest.getCommitAll() != null || commitRequest.getCommitAndUnloadAll() != null) {
+      commitAllLibraries(commitRequest);
+    } else {
+      commitSpecifiedLibraries(commitRequest);
+    }
+  }
+
+  private void commitSpecifiedLibraries(CommitRequest commitRequest) {
+    List<CommitLibrary> commitLibraries = commitRequest.getCommitLibraries();
+    if (commitLibraries == null) {
+      throw new EBookDataServiceException("Cannot update no libraries");
+    }
+
+    commitLibraries.forEach(request -> storage.save(request.getLibraryName(), request.getUnload()));
+  }
+
+  private void commitAllLibraries(CommitRequest commitRequest) {
     var commitAll = Boolean.TRUE.equals(commitRequest.getCommitAll());
     var commitAndUnloadAll = Boolean.TRUE.equals(commitRequest.getCommitAndUnloadAll());
     if (commitAll || commitAndUnloadAll) {
       storage.getLibraries().forEach(libraryName -> storage.save(libraryName, commitAndUnloadAll));
-    } else {
-      List<CommitLibrary> commitLibraries = commitRequest.getCommitLibraries();
-      if (commitLibraries == null) {
-        throw new EBookDataServiceException("Cannot update no libraries");
-      }
-      commitLibraries.forEach(request -> storage.save(request.getLibraryName(), request.getUnload()));
     }
   }
 
