@@ -7,6 +7,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.thetasinner.data.content.BookService;
+import org.thetasinner.data.content.LibraryService;
 import org.thetasinner.data.exception.EBookDataServiceException;
 import org.thetasinner.data.exception.EBookDataServiceInputValidationException;
 import org.thetasinner.data.exception.EBookFileNotFoundException;
@@ -41,14 +43,20 @@ import static org.thetasinner.web.events.ChangeEventData.ChangeType.BookUpdated;
 public class EBookDataService {
   private static final Logger LOG = LoggerFactory.getLogger(EBookDataService.class);
 
-  private ILibraryStorage storage;
+  private final LibraryChangeService libraryChangeService;
 
-  private LibraryChangeService libraryChangeService;
+  private final LibraryService libraryService;
+
+  private final BookService bookService;
+
+  private final ILibraryStorage libraryStorage;
 
   @Autowired
-  public EBookDataService(ILibraryStorage storage, LibraryChangeService changeService) {
-    this.storage = storage;
+  public EBookDataService(LibraryChangeService changeService, LibraryService libraryService, BookService bookService, ILibraryStorage libraryStorage) {
     this.libraryChangeService = changeService;
+    this.libraryService = libraryService;
+    this.bookService = bookService;
+    this.libraryStorage = libraryStorage;
   }
 
   public void commit(CommitRequest commitRequest) {
@@ -65,14 +73,14 @@ public class EBookDataService {
       throw new EBookDataServiceException("Cannot update no libraries");
     }
 
-    commitLibraries.forEach(request -> storage.save(request.getLibraryName(), request.getUnload()));
+    commitLibraries.forEach(request -> libraryService.save(request.getLibraryName(), request.getUnload()));
   }
 
   private void commitAllLibraries(CommitRequest commitRequest) {
     var commitAll = Boolean.TRUE.equals(commitRequest.getCommitAll());
     var commitAndUnloadAll = Boolean.TRUE.equals(commitRequest.getCommitAndUnloadAll());
     if (commitAll || commitAndUnloadAll) {
-      storage.getLibraries().forEach(libraryName -> storage.save(libraryName, commitAndUnloadAll));
+      libraryService.getLibraries().forEach(libraryName -> libraryService.save(libraryName, commitAndUnloadAll));
     }
   }
 
@@ -81,7 +89,7 @@ public class EBookDataService {
       throw new EBookDataServiceInputValidationException("Library name must not be empty");
     }
 
-    storage.create(name);
+    libraryService.create(name);
   }
 
   public List<Integer> storeAll(String name, MultipartFile[] files) {
@@ -109,11 +117,11 @@ public class EBookDataService {
       throw new StorageException("File is empty");
     }
 
-    storage.store(name, file);
+    bookService.storeBook(name, file);
   }
 
   public List<Book> getBooks(String name) {
-    List<Book> books = storage.getBooks(name);
+    List<Book> books = bookService.getBooks(name);
 
     return books == null ? new ArrayList<>() : books;
   }
@@ -131,13 +139,13 @@ public class EBookDataService {
           throw new EBookFileNotFoundException("Won't add book because the file does not exist");
         }
 
-        book = storage.createBook(name, bookAddRequest.getUrl(), TypedUrl.Type.LocalUnmanaged);
+        book = bookService.createBook(name, bookAddRequest.getUrl(), TypedUrl.Type.LocalUnmanaged);
         break;
       case WebLink:
-        book = storage.createBook(name, bookAddRequest.getUrl(), TypedUrl.Type.WebLink);
+        book = bookService.createBook(name, bookAddRequest.getUrl(), TypedUrl.Type.WebLink);
         break;
       case Other:
-        book = storage.createBook(name, bookAddRequest.getUrl(), TypedUrl.Type.Other);
+        book = bookService.createBook(name, bookAddRequest.getUrl(), TypedUrl.Type.Other);
         break;
       default:
         throw new InvalidRequestException(String.format("Cannot create a book of type [%s]", bookAddRequest.getType()));
@@ -155,7 +163,7 @@ public class EBookDataService {
       throw new InvalidRequestException("Missing request param: id");
     }
 
-    storage.deleteBook(id, name);
+    bookService.deleteBook(id, name);
 
     // Publish book deleted change event.
     ChangeEventData eventData = new ChangeEventData(BookDeleted, id);
@@ -171,7 +179,7 @@ public class EBookDataService {
       throw new InvalidRequestException("Missing request body");
     }
 
-    Book book = storage.updateBook(id, name, bookUpdateRequest);
+    Book book = bookService.updateBook(id, name, bookUpdateRequest);
 
     // Publish book updated change event.
     ChangeEventData eventData = new ChangeEventData(BookUpdated, id);
@@ -181,11 +189,12 @@ public class EBookDataService {
   }
 
   public List<String> getLibraries() {
-    return storage.getLibraries();
+    return libraryService.getLibraries();
   }
 
   public String getBook(String id, String name, OutputStream outputStream) throws IOException {
-    FileInputStream inputStream = storage.getBookInputStream(id, name);
+    var book = bookService.getBook(name, id);
+    FileInputStream inputStream = libraryStorage.getBookInputStream(book);
     IOUtils.copy(inputStream, outputStream);
     return "application/pdf";
   }
@@ -197,7 +206,8 @@ public class EBookDataService {
 
     List<Integer> failedUploadIndices = new ArrayList<>(1);
     try {
-      storage.storeCover(id, name, cover);
+      var book = bookService.getBook(name, id);
+      libraryStorage.storeCover(book, cover);
     } catch (StorageException e) {
       failedUploadIndices.add(0);
     }
@@ -206,7 +216,8 @@ public class EBookDataService {
   }
 
   public String getCover(String bookId, String libraryName, ServletOutputStream outputStream) throws IOException {
-    FileInputStream inputStream = storage.getCoverInputStream(bookId, libraryName);
+    var book = bookService.getBook(libraryName, bookId);
+    FileInputStream inputStream = libraryStorage.getCoverInputStream(book);
     IOUtils.copy(inputStream, outputStream);
     return "image/png";
   }
