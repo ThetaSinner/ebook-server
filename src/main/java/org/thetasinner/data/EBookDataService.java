@@ -163,7 +163,7 @@ public class EBookDataService {
       throw new InvalidRequestException("Missing request param: id");
     }
 
-    bookService.deleteBook(id, name);
+    bookService.deleteBook(name, id);
 
     // Publish book deleted change event.
     ChangeEventData eventData = new ChangeEventData(BookDeleted, id);
