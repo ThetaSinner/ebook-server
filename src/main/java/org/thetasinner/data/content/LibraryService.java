@@ -20,11 +20,15 @@ public class LibraryService {
   private LockableItemCache<Library> cache;
 
   public LibraryService(LockableItemCache<Library> cache, ILibraryStorage libraryStorage) {
+    LOG.trace("Creating library service");
+
     this.cache = cache;
     this.libraryStorage = libraryStorage;
   }
 
   LockableItem<Library> getLibrary(String libraryName) {
+    LOG.debug("Getting library by name [{}]", libraryName);
+
     if (!cache.has(libraryName)) {
       load(libraryName);
     }
@@ -33,14 +37,20 @@ public class LibraryService {
   }
 
   public void create(String libraryName) {
+    LOG.debug("Creating library with name [{}]", libraryName);
+
     libraryStorage.create(libraryName);
   }
 
   public List<String> getLibraries() {
+    LOG.trace("Getting libraries");
+
     return libraryStorage.getLibraries();
   }
 
   public void save(String libraryName, boolean unload) {
+    LOG.debug("Saving library with name [{}]", libraryName);
+
     // Ignore save requests for libraries which are not loaded.
     if (!cache.has(libraryName)) return;
 
@@ -52,6 +62,8 @@ public class LibraryService {
   }
 
   private void load(String libraryName) {
+    LOG.debug("Loading library with name [{}]", libraryName);
+
     try {
       acquireLibraryLock.lock();
 

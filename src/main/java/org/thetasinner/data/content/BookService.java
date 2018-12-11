@@ -6,7 +6,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.thetasinner.data.exception.EBookNotFoundException;
 import org.thetasinner.data.model.Book;
 import org.thetasinner.data.model.BookMetadata;
-import org.thetasinner.data.model.Library;
 import org.thetasinner.data.model.TypedUrl;
 import org.thetasinner.data.storage.ILibraryStorage;
 import org.thetasinner.data.storage.StorageException;
