@@ -99,7 +99,7 @@ public class EBookDataService {
 
     List<Integer> failed = new ArrayList<>();
 
-    int storeIndex = 0;
+    var storeIndex = 0;
     for (MultipartFile file : files) {
       try {
         store(name, file);
@@ -127,6 +127,10 @@ public class EBookDataService {
   }
 
   public Book createBook(String name, BookAddRequest bookAddRequest) {
+    if (StringUtils.isBlank(name)) {
+      throw new InvalidRequestException("Invalid library name");
+    }
+
     if (bookAddRequest == null || bookAddRequest.getUrl() == null || bookAddRequest.getType() == null) {
       throw new InvalidRequestException("Invalid add book request");
     }
@@ -152,7 +156,7 @@ public class EBookDataService {
     }
 
     // Publish book created change event.
-    ChangeEventData eventData = new ChangeEventData(BookCreated, book.getId());
+    var eventData = new ChangeEventData(BookCreated, book.getId());
     libraryChangeService.publish(name, eventData);
 
     return book;
@@ -166,7 +170,7 @@ public class EBookDataService {
     bookService.deleteBook(name, id);
 
     // Publish book deleted change event.
-    ChangeEventData eventData = new ChangeEventData(BookDeleted, id);
+    var eventData = new ChangeEventData(BookDeleted, id);
     libraryChangeService.publish(name, eventData);
   }
 
