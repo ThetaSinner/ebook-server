@@ -1,6 +1,8 @@
 package org.thetasinner.data.content;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.thetasinner.data.exception.EBookNotFoundException;
@@ -20,6 +22,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class BookService {
+  private static final Logger LOG = LoggerFactory.getLogger(BookService.class);
+
   private final LibraryService libraryService;
 
   private final ILibraryStorage libraryStorage;
@@ -30,6 +34,8 @@ public class BookService {
   }
 
   public Book createBook(String libraryName, String url, TypedUrl.Type type) {
+    LOG.trace("Creating book in library [{}] for resource [{}]", libraryName, url);
+
     Book book = new Book();
     book.setId(UUID.randomUUID().toString());
     book.setUrl(new TypedUrl(url, type));
@@ -41,11 +47,15 @@ public class BookService {
   }
 
   public List<Book> getBooks(String libraryName) {
+    LOG.trace("Getting books for library [{}]", libraryName);
+
     var library = libraryService.getLibrary(libraryName).getItem();
     return library.getBooks();
   }
 
   public Book updateBook(String id, String name, BookUpdateRequest bookUpdateRequest) {
+    LOG.info("Updating book with id [{}] in library [{}]", id, name);
+
     Book book = getBook(name, id);
 
     if (bookUpdateRequest.getTitle() != null) {
@@ -83,12 +93,16 @@ public class BookService {
   }
 
   public void deleteBook(String libraryName, String id) {
+    LOG.trace("Deleting book with id [{}] from library [{}]", id, libraryName);
+
     libraryService.getLibrary(libraryName).getItem().getBooks().removeIf(b -> id.equals(b.getId()));
 
     libraryStorage.deleteBook(libraryName, id);
   }
 
   public void storeBook(String libraryName, MultipartFile file) throws IOException, StorageException {
+    LOG.trace("Storing book from file in library with name [{}]", libraryName);
+
     var book = libraryStorage.store(libraryName, file);
 
     libraryService.getLibrary(libraryName).getItem().getBooks().add(book);
@@ -114,6 +128,8 @@ public class BookService {
   }
 
   public Book getBook(String libraryName, String id) {
+    LOG.trace("Getting book with id [{}] from library [{}]", id, libraryName);
+
     var library = libraryService.getLibrary(libraryName).getItem();
     Optional<Book> book = library.getBooks()
             .stream()
