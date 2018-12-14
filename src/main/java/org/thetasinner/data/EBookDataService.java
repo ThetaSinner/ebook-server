@@ -162,16 +162,13 @@ public class EBookDataService {
     return book;
   }
 
+  @EmitDeleteEvent
   public void deleteBook(String id, String name) {
     if (StringUtils.isBlank(id)) {
       throw new InvalidRequestException("Missing request param: id");
     }
 
     bookService.deleteBook(name, id);
-
-    // Publish book deleted change event.
-    var eventData = new ChangeEventData(BookDeleted, id);
-    libraryChangeService.publish(name, eventData);
   }
 
   public Book updateBook(String id, String name, BookUpdateRequest bookUpdateRequest) {
