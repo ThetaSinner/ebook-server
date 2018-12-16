@@ -5,7 +5,17 @@ import org.thetasinner.web.model.ReportModel;
 
 @Service
 public class MaintenanceService {
+  private final IErrorReporter errorReporter;
+
+  public MaintenanceService(IErrorReporter errorReporter) {
+    this.errorReporter = errorReporter;
+  }
+
   public ReportModel createReport(String libraryName) {
-    return null;
+    var report = new ReportModel();
+
+    errorReporter.findUnreferencedBooks(report);
+
+    return report;
   }
 }
