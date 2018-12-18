@@ -14,7 +14,7 @@ public class MaintenanceService {
   public ReportModel createReport(String libraryName) {
     var report = new ReportModel();
 
-    errorReporter.findUnreferencedBooks(report);
+    errorReporter.findUnreferencedBooks(libraryName, report);
 
     return report;
   }
