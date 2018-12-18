@@ -13,11 +13,11 @@ import org.thetasinner.web.model.MissingBook;
 import org.thetasinner.web.model.ReportModel;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toSet;
 
@@ -43,7 +43,7 @@ public class FileErrorReporter implements IErrorReporter {
   }
 
   @Override
-  public void findUnreferencedBooks(String libraryName, ReportModel report) {
+  public void findUnreferencedBooks(String libraryName, ReportModel report) throws FileNotFoundException {
     var listedBooks = libraryStorage.load(libraryName)
             .getBooks()
             .stream()
@@ -51,11 +51,15 @@ public class FileErrorReporter implements IErrorReporter {
             .map(book -> Paths.get(book.getUrl().getValue()).getParent().getFileName().toString())
             .collect(toSet());
 
-    var storedBooks = Arrays.stream(
-            Objects.requireNonNull(
-                    Paths.get(dataPath, libraryName)
-                    .toFile()
-                    .listFiles(File::isDirectory)))
+    var libraryItemContainerFolders = Paths.get(dataPath, libraryName)
+            .toFile()
+            .listFiles(File::isDirectory);
+
+    if (libraryItemContainerFolders == null) {
+      throw new FileNotFoundException("No library containers");
+    }
+
+    var storedBooks = Arrays.stream(libraryItemContainerFolders)
             .map(File::getName)
             .collect(toSet());
 

@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.thetasinner.maintenance.MaintenanceService;
 import org.thetasinner.web.model.ReportModel;
 
+import java.io.FileNotFoundException;
+
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/maintenance")
@@ -20,7 +22,7 @@ public class MaintenanceController {
   }
 
   @RequestMapping(path = "/report", method = RequestMethod.GET)
-  public @ResponseBody ReportModel createReport(@RequestParam(name = "libraryName") String libraryName) {
+  public @ResponseBody ReportModel createReport(@RequestParam(name = "libraryName") String libraryName) throws FileNotFoundException {
     return maintenanceService.createReport(libraryName);
   }
 }
