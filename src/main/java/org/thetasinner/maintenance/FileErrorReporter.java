@@ -36,6 +36,8 @@ public class FileErrorReporter implements IErrorReporter {
 
   @Value("${es.data.path:esdata}")
   private void setDataPath(String param) {
+    LOG.trace("esdata path is set to [{}]", param);
+
     if (param.charAt(param.length() - 1) != File.separatorChar) {
       param += File.separator;
     }
@@ -44,6 +46,8 @@ public class FileErrorReporter implements IErrorReporter {
 
   @Override
   public void findUnreferencedBooks(String libraryName, ReportModel report) throws FileNotFoundException {
+    LOG.trace("Finding unreferenced books for library [{}]", libraryName);
+
     var listedBooks = libraryStorage.load(libraryName)
             .getBooks()
             .stream()
