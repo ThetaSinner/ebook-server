@@ -13,6 +13,7 @@ public class ReportModel {
   private final String reportId;
   private List<MissingBook> missingBooks = new ArrayList<>();
   private List<MissingBook> unlistedBooks = new ArrayList<>();
+  private ReportMetricsModel metrics;
 
   public ReportModel() {
     this.reportId = UUID.randomUUID().toString();
