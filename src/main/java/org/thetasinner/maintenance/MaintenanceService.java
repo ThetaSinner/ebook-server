@@ -23,7 +23,8 @@ public class MaintenanceService {
     errorReporter.findUnreferencedBooks(libraryName, report);
     errorReporter.findUnreachableBooks(libraryName, report);
 
-    libraryMetricsReporter.reportCounts(libraryName, report);
+    libraryMetricsReporter.reportMetrics(libraryName, report);
+    libraryMetricsReporter.reportCurationMetrics(libraryName, report);
 
     return report;
   }
