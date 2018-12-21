@@ -21,6 +21,7 @@ public class MaintenanceService {
     var report = new ReportModel();
 
     errorReporter.findUnreferencedBooks(libraryName, report);
+    errorReporter.findUnreachableBooks(libraryName, report);
 
     libraryMetricsReporter.reportCounts(libraryName, report);
 
