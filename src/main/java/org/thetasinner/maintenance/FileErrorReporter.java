@@ -1,7 +1,6 @@
 package org.thetasinner.maintenance;
 
 import com.google.common.collect.Sets;
-import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.slf4j.Logger;
@@ -10,12 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.thetasinner.data.model.Book;
-import org.thetasinner.data.model.TypedUrl;
 import org.thetasinner.data.storage.ILibraryStorage;
 import org.thetasinner.data.storage.file.FileLibraryStorage;
 import org.thetasinner.web.model.MissingBook;
 import org.thetasinner.web.model.ReportModel;
 import org.thetasinner.web.model.UnreachableBooksModel;
+import org.thetasinner.web.model.UnreachableLocalBook;
 import org.thetasinner.web.model.UnreachableWebLink;
 
 import java.io.File;
@@ -23,12 +22,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.UUID;
 
 import static java.util.stream.Collectors.toSet;
-import static org.thetasinner.data.model.TypedUrl.*;
-import static org.thetasinner.data.model.TypedUrl.Type.*;
+import static org.thetasinner.data.model.TypedUrl.Type.LocalManaged;
 
 @Component
 public class FileErrorReporter implements IErrorReporter {
@@ -100,10 +97,24 @@ public class FileErrorReporter implements IErrorReporter {
         case WebLink:
           testWebLinkReachable(book, report.getUnreachableBooksModel());
           break;
+        case LocalManaged:
+        case LocalUnmanaged:
+          testLocalBookReachable(book, report.getUnreachableBooksModel());
+          break;
         default:
           LOG.warn("Not trying to reach book [{}] because its URL type [{}] excludes it from this reporting check", book.getId(), book.getUrl().getType());
       }
     });
+  }
+
+  private void testLocalBookReachable(Book book, UnreachableBooksModel unreachableBooksModel) {
+    if (!new File(book.getUrl().getValue()).exists()) {
+      UnreachableLocalBook unreachableLocalBook = new UnreachableLocalBook();
+      unreachableBooksModel.getLocalBooks().add(unreachableLocalBook);
+
+      unreachableLocalBook.setBookId(book.getId());
+      unreachableLocalBook.setReportId(UUID.randomUUID().toString());
+    }
   }
 
   private void testWebLinkReachable(Book book, UnreachableBooksModel report) {
