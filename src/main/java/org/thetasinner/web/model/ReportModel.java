@@ -14,6 +14,7 @@ public class ReportModel {
   private List<MissingBook> missingBooks = new ArrayList<>();
   private List<MissingBook> unlistedBooks = new ArrayList<>();
   private ReportMetricsModel metrics;
+  private UnreachableBooksModel unreachableBooksModel;
 
   public ReportModel() {
     this.reportId = UUID.randomUUID().toString();

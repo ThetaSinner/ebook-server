@@ -6,4 +6,6 @@ import java.io.FileNotFoundException;
 
 public interface IErrorReporter {
   void findUnreferencedBooks(String libraryName, ReportModel report) throws FileNotFoundException;
+
+  void findUnreachableBooks(String libraryName, ReportModel report);
 }
