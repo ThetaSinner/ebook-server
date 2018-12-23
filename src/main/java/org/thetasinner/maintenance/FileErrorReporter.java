@@ -8,8 +8,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.thetasinner.data.content.LibraryService;
 import org.thetasinner.data.model.Book;
-import org.thetasinner.data.storage.ILibraryStorage;
 import org.thetasinner.data.storage.file.FileLibraryStorage;
 import org.thetasinner.web.model.MissingBook;
 import org.thetasinner.web.model.ReportModel;
@@ -31,13 +31,13 @@ import static org.thetasinner.data.model.TypedUrl.Type.LocalManaged;
 public class FileErrorReporter implements IErrorReporter {
   private static final Logger LOG = LoggerFactory.getLogger(FileLibraryStorage.class);
 
-  private final ILibraryStorage libraryStorage;
+  private final LibraryService libraryService;
 
   private String dataPath;
 
   @Autowired
-  public FileErrorReporter(ILibraryStorage libraryStorage) {
-    this.libraryStorage = libraryStorage;
+  public FileErrorReporter(LibraryService libraryService) {
+    this.libraryService = libraryService;
   }
 
   @Value("${es.data.path:esdata}")
@@ -54,7 +54,7 @@ public class FileErrorReporter implements IErrorReporter {
   public void findUnreferencedBooks(String libraryName, ReportModel report) throws FileNotFoundException {
     LOG.trace("Finding unreferenced books for library [{}]", libraryName);
 
-    var listedBooks = libraryStorage.load(libraryName)
+    var listedBooks = libraryService.getLibrary(libraryName).getItem()
             .getBooks()
             .stream()
             .filter(book -> book.getUrl().getType() == LocalManaged)
@@ -91,7 +91,7 @@ public class FileErrorReporter implements IErrorReporter {
 
     report.setUnreachableBooksModel(new UnreachableBooksModel());
 
-    var library = libraryStorage.load(libraryName);
+    var library = libraryService.getLibrary(libraryName).getItem();
     library.getBooks().forEach(book -> {
       switch (book.getUrl().getType()) {
         case WebLink:

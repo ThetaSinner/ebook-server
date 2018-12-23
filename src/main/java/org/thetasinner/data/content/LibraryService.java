@@ -26,7 +26,7 @@ public class LibraryService {
     this.libraryStorage = libraryStorage;
   }
 
-  LockableItem<Library> getLibrary(String libraryName) {
+  public LockableItem<Library> getLibrary(String libraryName) {
     LOG.debug("Getting library by name [{}]", libraryName);
 
     if (!cache.has(libraryName)) {

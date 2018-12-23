@@ -1,14 +1,13 @@
 package org.thetasinner.maintenance;
 
-import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.thetasinner.data.content.LibraryService;
 import org.thetasinner.data.model.Book;
 import org.thetasinner.data.model.TypedUrl;
-import org.thetasinner.data.storage.ILibraryStorage;
 import org.thetasinner.data.storage.file.FileLibraryStorage;
 import org.thetasinner.web.model.BookWithMissingData;
 import org.thetasinner.web.model.ReportCurationMetricsModel;
@@ -21,17 +20,17 @@ import java.util.UUID;
 public class LibraryMetricsReporter {
     private static final Logger LOG = LoggerFactory.getLogger(FileLibraryStorage.class);
 
-    private final ILibraryStorage libraryStorage;
+    private final LibraryService libraryService;
 
     @Autowired
-    public LibraryMetricsReporter(ILibraryStorage libraryStorage) {
-        this.libraryStorage = libraryStorage;
+    public LibraryMetricsReporter(LibraryService libraryService) {
+        this.libraryService = libraryService;
     }
 
     void reportMetrics(String libraryName, ReportModel report) {
         LOG.trace("Reporting count metrics for library [{}]", libraryName);
 
-        var library = libraryStorage.load(libraryName);
+        var library = libraryService.getLibrary(libraryName).getItem();
 
         ReportMetricsModel metrics = new ReportMetricsModel();
         report.setMetrics(metrics);
@@ -46,7 +45,7 @@ public class LibraryMetricsReporter {
     void reportCurationMetrics(String libraryName, ReportModel report) {
         LOG.trace("Reporting curation metrics for library [{}]", libraryName);
 
-        var library = libraryStorage.load(libraryName);
+        var library = libraryService.getLibrary(libraryName).getItem();
 
         ReportCurationMetricsModel curationMetrics = new ReportCurationMetricsModel();
         report.setCurationMetrics(curationMetrics);
