@@ -21,6 +21,7 @@ import org.thetasinner.web.model.BookUpdateRequest;
 import org.thetasinner.web.model.CommitLibrary;
 import org.thetasinner.web.model.CommitRequest;
 import org.thetasinner.web.model.EmptyJsonResponse;
+import org.thetasinner.web.model.ReportModel;
 import org.thetasinner.web.model.RequestBase;
 
 import java.util.Collections;
@@ -152,5 +153,9 @@ public class EBookTestClient {
     commitRequest.setCommitAll(true);
     commitRequest.setCommitAndUnloadAll(true);
     return restTemplate.postForEntity(urlHelper.buildRequestUrl("/libraries/commit", port), commitRequest, EmptyJsonResponse.class);
+  }
+
+  public ResponseEntity<ReportModel> getReport(String libraryName, int port) {
+    return restTemplate.getForEntity(urlHelper.buildRequestUrl("/maintenance/report?libraryName={libraryName}", port), ReportModel.class, libraryName);
   }
 }
