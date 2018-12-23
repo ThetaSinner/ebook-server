@@ -108,7 +108,7 @@ public class FileErrorReporter implements IErrorReporter {
   }
 
   private void testLocalBookReachable(Book book, UnreachableBooksModel unreachableBooksModel) {
-    if (!new File(book.getUrl().getValue()).exists()) {
+    if (!new File(book.getUrl().getValue()).canRead()) {
       UnreachableLocalBook unreachableLocalBook = new UnreachableLocalBook();
       unreachableBooksModel.getLocalBooks().add(unreachableLocalBook);
 
