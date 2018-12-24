@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { LibraryModule } from './library/library.module';
 
 @NgModule({
@@ -12,6 +13,7 @@ import { LibraryModule } from './library/library.module';
   imports: [
     BrowserModule,
     AppRoutingModule,
+    NgbModule,
     LibraryModule
   ],
   providers: [],
