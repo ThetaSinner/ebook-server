@@ -40,6 +40,10 @@ Now you're ready to launch the tests
 
 ## Changes
 
+7th of December, 2018 Version 1.3.0
+  - Extract cover from uploaded books
+  - Integration tests written and associated bug fixes
+
 27th of May, 2018 Version 1.2.0
   - Library view now shows the library name and number of books.
   - Added the ability to filter the library based on a custom query format.
