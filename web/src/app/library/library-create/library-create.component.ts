@@ -1,5 +1,4 @@
-import { Component, OnInit } from '@angular/core';
-import { LibraryDataService } from '../library-data/library-data.service';
+import { Component, EventEmitter, Output } from '@angular/core';
 
 @Component({
   selector: 'app-library-create',
@@ -7,12 +6,11 @@ import { LibraryDataService } from '../library-data/library-data.service';
   styleUrls: ['./library-create.component.scss']
 })
 export class LibraryCreateComponent {
+  @Output() create = new EventEmitter<string>();
 
-  constructor(private libraryDataService: LibraryDataService) { }
+  constructor() { }
 
   createLibrary(libraryName: string) {
-    const subscription = this.libraryDataService.createLibrary(libraryName).subscribe(_ => {
-      subscription.unsubscribe();
-    });
+    this.create.emit(libraryName);
   }
 }

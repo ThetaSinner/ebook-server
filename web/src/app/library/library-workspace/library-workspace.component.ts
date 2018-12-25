@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { LibraryDataService } from '../library-data/library-data.service';
 
 @Component({
   selector: 'app-library-workspace',
@@ -7,9 +8,14 @@ import { Component, OnInit } from '@angular/core';
 })
 export class LibraryWorkspaceComponent implements OnInit {
 
-  constructor() { }
+  constructor(private libraryDataService: LibraryDataService) { }
 
   ngOnInit() {
   }
 
+  createLibrary(libraryName: string) {
+    const subscription = this.libraryDataService.createLibrary(libraryName).subscribe(_ => {
+      subscription.unsubscribe();
+    });
+  }
 }
