@@ -1,9 +1,9 @@
 import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
-import { LibrarySelectComponent } from './library-select/library-select.component';
+import { RouterModule, Routes } from '@angular/router';
+import { LibraryWorkspaceComponent } from './library-workspace/library-workspace.component';
 
 const routes: Routes = [
-  { path: 'libraries', component: LibrarySelectComponent }
+  { path: 'libraries', component: LibraryWorkspaceComponent }
 ];
 
 @NgModule({

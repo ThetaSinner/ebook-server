@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { faFolderOpen, IconDefinition } from '@fortawesome/free-solid-svg-icons';
+import { LibraryDataService } from '../library-data/library-data.service';
 
 @Component({
   selector: 'app-library-select',
@@ -9,9 +10,15 @@ import { faFolderOpen, IconDefinition } from '@fortawesome/free-solid-svg-icons'
 export class LibrarySelectComponent implements OnInit {
   faFolderOpen: IconDefinition = faFolderOpen;
 
-  constructor() { }
+  libraryData: any;
+
+  constructor(private libraryDataService: LibraryDataService) { }
 
   ngOnInit() {
+    const component = this;
+    const subscription = this.libraryDataService.getLibraries().subscribe(libraryData => {
+      component.libraryData = libraryData;
+      subscription.unsubscribe();
+    });
   }
-
 }
