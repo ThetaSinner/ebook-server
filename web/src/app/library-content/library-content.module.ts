@@ -4,12 +4,15 @@ import { LibraryContentWorkspaceComponent } from './library-content-workspace/li
 import { BookDataService } from './book-data/book-data.service';
 import { HttpClientModule } from '@angular/common/http';
 import { LibraryContentRoutingModule } from './library-content-routing.module';
+import { ControlBarComponent } from './control-bar/control-bar.component';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @NgModule({
-  declarations: [LibraryContentWorkspaceComponent],
+  declarations: [LibraryContentWorkspaceComponent, ControlBarComponent],
   imports: [
     CommonModule,
     HttpClientModule,
+    FontAwesomeModule,
     LibraryContentRoutingModule
   ],
   providers: [
