@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
+import { ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { LibraryCreateComponent } from './library-create/library-create.component';
 import { LibraryDataService } from './library-data/library-data.service';
@@ -13,6 +14,7 @@ import { LibraryWorkspaceComponent } from './library-workspace/library-workspace
   imports: [
     CommonModule,
     HttpClientModule,
+    ReactiveFormsModule,
     FontAwesomeModule,
     LibraryRoutingModule
   ],

@@ -1,7 +1,7 @@
-<form>
+<form [formGroup]="createForm">
   <div class="form-group">
     <label for="libraryNameInput">Create a new library</label>
-    <input #libraryName type="text" class="form-control" id="libraryNameInput" placeholder="Enter name for your new library">
+    <input #libraryName type="text" class="form-control" id="libraryNameInput" placeholder="Enter name for your new library" formControlName="libraryName">
   </div>
-  <button type="button" class="btn btn-primary" (click)="createLibrary(libraryName.value)">Create</button>
+  <button type="button" class="btn btn-primary" (click)="createLibrary(libraryName.value, createForm)">Create</button>
 </form>
