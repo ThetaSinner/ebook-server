@@ -1,1 +1,9 @@
 /* You can add global styles to this file, and also import other style files */
+
+%icon-button {
+    cursor: pointer;
+}
+
+.es-icon-button {
+    @extend %icon-button;
+}

@@ -18,7 +18,7 @@
     <div class="col-sm-1">{{getRating(rowData)}}</div>
     <div class="col-sm-1" [title]="getTags(rowData)">{{getTags(rowData) | valueList}}</div>
     <div class="col-sm-1 text-center" aria-label="Expand Book">
-      <fa-icon [icon]="faExpandContractIcon" (click)="toggleDetails()"></fa-icon>
+      <fa-icon [icon]="faExpandContractIcon" (click)="toggleDetails()" class="es-icon-button"></fa-icon>
     </div>
   </div>
   <div class="row es-book-row" *ngIf="showDetails">
