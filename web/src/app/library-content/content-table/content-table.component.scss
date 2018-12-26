@@ -1,0 +1,19 @@
+%book-row {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0.2em;
+}
+
+div.row.es-book-row {
+    div {
+        @extend %book-row;
+    }
+}
+
+.es-book-header-row {
+    div {
+        @extend %book-row;
+        font-weight: bold;
+    }
+}

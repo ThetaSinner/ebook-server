@@ -1,4 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { faChevronDown, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-content-table',
@@ -6,6 +7,8 @@ import { Component, OnInit, Input } from '@angular/core';
   styleUrls: ['./content-table.component.scss']
 })
 export class ContentTableComponent implements OnInit {
+  faChevronDown: IconDefinition = faChevronDown;
+
   @Input() tableData$;
 
   constructor() { }
