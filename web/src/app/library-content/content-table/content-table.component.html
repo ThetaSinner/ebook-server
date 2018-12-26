@@ -1,23 +1,29 @@
 <div class="row es-book-header-row">
-    <div class="col-sm-2">Title</div>
-    <div class="col-sm-2">Authors</div>
-    <div class="col-sm-2">Publisher</div>
-    <div class="col-sm-1">Date</div>
-    <div class="col-sm-2">ISBN</div>
-    <div class="col-sm-1">Rating</div>
-    <div class="col-sm-1">Tags</div>
-    <div class="col-sm-1"></div>
+  <div class="col-sm-2">Title</div>
+  <div class="col-sm-2">Authors</div>
+  <div class="col-sm-2">Publisher</div>
+  <div class="col-sm-1">Date</div>
+  <div class="col-sm-2">ISBN</div>
+  <div class="col-sm-1">Rating</div>
+  <div class="col-sm-1">Tags</div>
+  <div class="col-sm-1"></div>
+</div>
+<div *ngFor="let rowData of tableData$ | async">
+  <div class="row es-book-row" >
+    <div class="col-sm-2" [title]="rowData.title">{{rowData.title}}</div>
+    <div class="col-sm-2" [title]="rowData.authors">{{rowData.authors | valueList}}</div>
+    <div class="col-sm-2" [title]="rowData.publisher">{{rowData.publisher}}</div>
+    <div class="col-sm-1">{{rowData.datePublished | date:'shortDate'}}</div>
+    <div class="col-sm-2">{{rowData.isbn}}</div>
+    <div class="col-sm-1">{{getRating(rowData)}}</div>
+    <div class="col-sm-1" [title]="getTags(rowData)">{{getTags(rowData) | valueList}}</div>
+    <div class="col-sm-1 text-center" aria-label="Expand Book">
+      <fa-icon [icon]="faExpandContractIcon" (click)="toggleDetails()"></fa-icon>
+    </div>
   </div>
-<div class="row es-book-row" *ngFor="let rowData of tableData$ | async">
-  <div class="col-sm-2" [title]="rowData.title">{{rowData.title}}</div>
-  <div class="col-sm-2" [title]="rowData.authors">{{rowData.authors | valueList}}</div>
-  <div class="col-sm-2" [title]="rowData.publisher">{{rowData.publisher}}</div>
-  <div class="col-sm-1">{{rowData.datePublished | date:'shortDate'}}</div>
-  <div class="col-sm-2">{{rowData.isbn}}</div>
-  <div class="col-sm-1">{{rowData.metadata && rowData.metadata.rating}}</div>
-  <div class="col-sm-1" [title]="rowData.metadata && rowData.metadata.tags">{{rowData.metadata && rowData.metadata.tags | valueList}}</div>
-  <div class="col-sm-1 text-center" aria-label="Expand Book">
-    <fa-icon [icon]="faChevronDown"></fa-icon>
-    <!--<i class="material-icons" aria-hidden="true">{this.props.expanded ? 'expand_less' : 'expand_more'}</i>-->
+  <div class="row es-book-row" *ngIf="showDetails">
+    <div class="col">
+      <app-content-detail [detailData]="rowData"></app-content-detail>
+    </div>
   </div>
 </div>

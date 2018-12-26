@@ -1,0 +1,26 @@
+<div class="card">
+  <div class="card-body">
+    <div class="row es-title-line">
+      <div class="col-sm-12">
+        <h3 class="card-title">{{detailData.title}}</h3>
+        <span class="es-faded-text">{{detailData.datePublished | date:'longDate'}}</span>
+      </div>
+    </div>
+    <div class="row es-subtitle-line">
+      <div class="col-sm-12">
+        <h5 class="card-title">
+          <span class="es-faded-text">Authors&nbsp;</span>
+          <span *ngFor="let author of getAuthorsWithCommas(detailData.authors)">{{author}}&nbsp;</span>
+        </h5>
+      </div>
+    </div>
+    <div class="row es-subtitle-line">
+      <div class="col-sm-12">
+        <h5 class="card-title">
+          <span class="es-faded-text">Publisher&nbsp;</span>
+          <span>{{detailData.publisher}}</span>
+        </h5>
+      </div>
+    </div>
+  </div>
+</div>

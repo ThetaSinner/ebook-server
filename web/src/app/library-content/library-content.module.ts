@@ -8,9 +8,10 @@ import { ControlBarComponent } from './control-bar/control-bar.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ContentTableComponent } from './content-table/content-table.component';
 import { ValueListPipe } from './value-list/value-list.pipe';
+import { ContentDetailComponent } from './content-detail/content-detail.component';
 
 @NgModule({
-  declarations: [LibraryContentWorkspaceComponent, ControlBarComponent, ContentTableComponent, ValueListPipe],
+  declarations: [LibraryContentWorkspaceComponent, ControlBarComponent, ContentTableComponent, ValueListPipe, ContentDetailComponent],
   imports: [
     CommonModule,
     HttpClientModule,

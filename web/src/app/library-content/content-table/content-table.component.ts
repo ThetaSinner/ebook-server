@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { faChevronDown, IconDefinition } from '@fortawesome/free-solid-svg-icons';
+import { faChevronDown, IconDefinition, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-content-table',
@@ -7,7 +7,8 @@ import { faChevronDown, IconDefinition } from '@fortawesome/free-solid-svg-icons
   styleUrls: ['./content-table.component.scss']
 })
 export class ContentTableComponent implements OnInit {
-  faChevronDown: IconDefinition = faChevronDown;
+  faExpandContractIcon: IconDefinition = faChevronDown;
+  showDetails: boolean = false;
 
   @Input() tableData$;
 
@@ -16,4 +17,30 @@ export class ContentTableComponent implements OnInit {
   ngOnInit() {
   }
 
+  getTags(book: any) {
+    if (book && book.metadata) {
+      return book.metadata.tags;
+    }
+
+    return null;
+  }
+
+  getRating(book: any) {
+    if (book && book.metadata) {
+      return book.metadata.rating;
+    }
+
+    return null;
+  }
+
+  toggleDetails() {
+    this.showDetails = !this.showDetails;
+
+    if (this.showDetails) {
+      this.faExpandContractIcon = faChevronUp;
+    }
+    else {
+      this.faExpandContractIcon = faChevronDown;
+    }
+  }
 }
