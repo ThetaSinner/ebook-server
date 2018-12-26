@@ -36,7 +36,6 @@ export class LibraryWorkspaceComponent implements OnInit {
   }
 
   selectLibrary(libraryName: string) {
-    console.log('going to ', libraryName);
     this.router.navigate(['/content', libraryName]);
   }
 }

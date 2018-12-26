@@ -6,9 +6,11 @@ import { HttpClientModule } from '@angular/common/http';
 import { LibraryContentRoutingModule } from './library-content-routing.module';
 import { ControlBarComponent } from './control-bar/control-bar.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { ContentTableComponent } from './content-table/content-table.component';
+import { ValueListPipe } from './value-list/value-list.pipe';
 
 @NgModule({
-  declarations: [LibraryContentWorkspaceComponent, ControlBarComponent],
+  declarations: [LibraryContentWorkspaceComponent, ControlBarComponent, ContentTableComponent, ValueListPipe],
   imports: [
     CommonModule,
     HttpClientModule,

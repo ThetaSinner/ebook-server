@@ -9,7 +9,7 @@ import { BookDataService } from '../book-data/book-data.service';
   styleUrls: ['./library-content-workspace.component.scss']
 })
 export class LibraryContentWorkspaceComponent implements OnInit {
-  books: any;
+  books$: any;
 
   constructor(
     private route: ActivatedRoute,
@@ -17,7 +17,7 @@ export class LibraryContentWorkspaceComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.books = this.route.paramMap.pipe(
+    this.books$ = this.route.paramMap.pipe(
       switchMap((params: ParamMap) =>
         this.bookDataService.getBooks(params.get('libraryName')))
     );
