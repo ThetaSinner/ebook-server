@@ -5,6 +5,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { LibraryModule } from './library/library.module';
+import { LibraryContentModule } from './library-content/library-content.module';
 
 @NgModule({
   declarations: [
@@ -14,7 +15,8 @@ import { LibraryModule } from './library/library.module';
     BrowserModule,
     AppRoutingModule,
     NgbModule,
-    LibraryModule
+    LibraryModule,
+    LibraryContentModule
   ],
   providers: [],
   bootstrap: [AppComponent]

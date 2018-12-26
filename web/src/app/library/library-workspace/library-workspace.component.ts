@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { LibraryDataService } from '../library-data/library-data.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-library-workspace',
@@ -9,7 +10,10 @@ import { LibraryDataService } from '../library-data/library-data.service';
 export class LibraryWorkspaceComponent implements OnInit {
   libraryData: any;
 
-  constructor(private libraryDataService: LibraryDataService) { }
+  constructor(
+    private libraryDataService: LibraryDataService,
+    private router: Router
+  ) { }
 
   ngOnInit() {
     this.getLibraries();
@@ -29,5 +33,10 @@ export class LibraryWorkspaceComponent implements OnInit {
       component.libraryData = libraryData;
       subscription.unsubscribe();
     });
+  }
+
+  selectLibrary(libraryName: string) {
+    console.log('going to ', libraryName);
+    this.router.navigate(['/content', libraryName]);
   }
 }
