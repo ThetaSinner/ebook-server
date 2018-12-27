@@ -1,5 +1,5 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { faChevronDown, IconDefinition, faChevronUp } from '@fortawesome/free-solid-svg-icons';
+import { Component, Input, OnInit } from '@angular/core';
+import { faChevronDown, faChevronUp, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-content-table',

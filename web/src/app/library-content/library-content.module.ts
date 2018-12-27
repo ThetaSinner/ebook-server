@@ -9,9 +9,20 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ContentTableComponent } from './content-table/content-table.component';
 import { ValueListPipe } from './value-list/value-list.pipe';
 import { ContentDetailComponent } from './content-detail/content-detail.component';
+import { InfoHostDirective } from './control-bar/info-host/info-host.directive';
+import { LibraryInfoComponent } from './control-bar/library-info/library-info.component';
+import { InfoHostDataSourceService } from './control-bar/info-host-data-source/info-host-data-source.service';
 
 @NgModule({
-  declarations: [LibraryContentWorkspaceComponent, ControlBarComponent, ContentTableComponent, ValueListPipe, ContentDetailComponent],
+  declarations: [
+    LibraryContentWorkspaceComponent,
+    ControlBarComponent,
+    ContentTableComponent,
+    ValueListPipe,
+    ContentDetailComponent, 
+    InfoHostDirective,
+    LibraryInfoComponent 
+  ],
   imports: [
     CommonModule,
     HttpClientModule,
@@ -19,7 +30,11 @@ import { ContentDetailComponent } from './content-detail/content-detail.componen
     LibraryContentRoutingModule
   ],
   providers: [
-    BookDataService
+    BookDataService,
+    InfoHostDataSourceService
+  ],
+  entryComponents: [
+    LibraryInfoComponent
   ]
 })
 export class LibraryContentModule { }
