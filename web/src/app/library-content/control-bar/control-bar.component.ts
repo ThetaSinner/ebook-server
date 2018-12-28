@@ -1,7 +1,6 @@
-import { Component, ComponentFactoryResolver, Input, OnInit, ViewChildren, AfterViewInit, QueryList } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ComponentFactoryResolver, Input, QueryList, ViewChildren } from '@angular/core';
 import { Router } from '@angular/router';
 import { faChevronLeft, IconDefinition } from '@fortawesome/free-solid-svg-icons';
-import { Observable } from 'rxjs';
 import { InfoHostItem } from './info-host/info-host-item';
 import { InfoHostComponent } from './info-host/info-host.component';
 import { InfoHostDirective } from './info-host/info-host.directive';
@@ -11,33 +10,23 @@ import { InfoHostDirective } from './info-host/info-host.directive';
   templateUrl: './control-bar.component.html',
   styleUrls: ['./control-bar.component.scss']
 })
-export class ControlBarComponent implements OnInit, AfterViewInit {
+export class ControlBarComponent implements AfterViewInit {
   faChevronLeft: IconDefinition = faChevronLeft;
 
-  @Input() infoHostItems$: Observable<InfoHostItem[]>;
-  infoItems: InfoHostItem[];
+  @Input() infoItems: InfoHostItem[];
 
   @ViewChildren(InfoHostDirective) infoHosts: QueryList<InfoHostDirective>;
 
   constructor(
     private router: Router,
-    private componentFactoryResolver: ComponentFactoryResolver
+    private componentFactoryResolver: ComponentFactoryResolver,
+    private changeDetectorRef: ChangeDetectorRef
   ) { }
 
-  ngOnInit() {
-    console.log('subscribing for changes to info items');
-
-    this.infoHostItems$.subscribe(value => {
-      console.log('got some info items', value);
-      this.infoItems = value;
-    });
-  }
-
   ngAfterViewInit(): void {
-    console.log('after view init, listening for host changes');
+    this.loadInfoComponents();
 
     this.infoHosts.changes.subscribe(() => {
-      console.log('there were info host changes, loading')
       this.loadInfoComponents();
     });
   }
@@ -47,11 +36,9 @@ export class ControlBarComponent implements OnInit, AfterViewInit {
   }
 
   loadInfoComponents() {
-    if (this.infoItems.length === 0) {
+    if (!this.infoHosts || !this.infoItems || this.infoItems.length === 0) {
       return;
     }
-
-    console.log('loading shit into', this.infoHosts);
 
     this.infoHosts.forEach((infoHost, index) => {
       const infoItem = this.infoItems[index];
@@ -64,5 +51,11 @@ export class ControlBarComponent implements OnInit, AfterViewInit {
       let componentRef = viewContainerRef.createComponent(componentFactory);
       (<InfoHostComponent>componentRef.instance).data = infoItem.data;
     });
+
+    // Changing the infoItems causes the ngFor to re-render the number of outputs.
+    // That change must complete for this function to work as it renders to each output slot.
+    // You can't change the view while it's mid-render, so kick off a new render cycle because I
+    // know it won't cause a loop. Yay all the way home.
+    this.changeDetectorRef.detectChanges();
   }
 }

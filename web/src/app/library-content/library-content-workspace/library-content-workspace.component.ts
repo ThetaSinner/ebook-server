@@ -4,7 +4,6 @@ import { switchMap } from 'rxjs/operators';
 import { BookDataService } from '../book-data/book-data.service';
 import { InfoHostDataSourceService } from '../control-bar/info-host-data-source/info-host-data-source.service';
 import { InfoHostItem } from '../control-bar/info-host/info-host-item';
-import { Observable } from 'rxjs';
 import { LibraryInfoComponent } from '../control-bar/library-info/library-info.component';
 
 @Component({
@@ -14,7 +13,7 @@ import { LibraryInfoComponent } from '../control-bar/library-info/library-info.c
 })
 export class LibraryContentWorkspaceComponent implements OnInit {
   books$: any;
-  infoHostItems$: Observable<InfoHostItem[]>;
+  infoItems: InfoHostItem[];
 
   constructor(
     private route: ActivatedRoute,
@@ -29,10 +28,14 @@ export class LibraryContentWorkspaceComponent implements OnInit {
       )
     );
 
-    this.infoHostItems$ = this.infoHostDataSourceService.getItemsStream();
+    this.infoHostDataSourceService.getItemsStream().subscribe(value => {
+      this.infoItems = value;
+    });
+
+    this.infoHostDataSourceService.replace(new InfoHostItem(LibraryInfoComponent, {libraryName: 'test', numberOfBooks: 10}));
 
     setTimeout(() => {
-      this.infoHostDataSourceService.replace(new InfoHostItem(LibraryInfoComponent, {libraryName: 'test', numberOfBooks: 10}));
-    }, 1000);
+      this.infoHostDataSourceService.replace(new InfoHostItem(LibraryInfoComponent, {libraryName: 'test', numberOfBooks: 11}));
+    }, 3000);
   }
 }
