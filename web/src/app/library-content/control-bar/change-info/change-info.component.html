@@ -1,4 +1,14 @@
 <div>
-  <p *ngIf="data.numberOfBooksAdded" class="mb-0">{{data.numberOfBooksAdded}} books added</p>
-  <p *ngIf="data.numberOfBooksDeleted" class="mb-0">{{data.numberOfBooksDeleted}} books deleted</p>
+  <p *ngIf="data.numberOfBooksAdded" class="mb-0">
+    <fa-icon [icon]="faIconAdd" class="mr-1"></fa-icon>
+    <span>{{data.numberOfBooksAdded}} books added</span>
+  </p>
+  <p *ngIf="data.numberOfBooksDeleted" class="mb-0">
+    <fa-icon [icon]="faIconDelete" class="mr-1"></fa-icon>
+    <span>{{data.numberOfBooksDeleted}} books deleted</span>
+  </p>
+  <p *ngIf="data.numberOfBooksChanged" class="mb-0">
+      <fa-icon [icon]="faIconChange" class="mr-1"></fa-icon>
+      <span>{{data.numberOfBooksChanged}} books changed</span>
+    </p>
 </div>
