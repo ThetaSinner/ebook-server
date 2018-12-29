@@ -12,6 +12,7 @@ import { ContentDetailComponent } from './content-detail/content-detail.componen
 import { InfoHostDirective } from './control-bar/info-host/info-host.directive';
 import { LibraryInfoComponent } from './control-bar/library-info/library-info.component';
 import { InfoHostDataSourceService } from './control-bar/info-host-data-source/info-host-data-source.service';
+import { ChangeInfoComponent } from './control-bar/change-info/change-info.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import { InfoHostDataSourceService } from './control-bar/info-host-data-source/i
     ValueListPipe,
     ContentDetailComponent, 
     InfoHostDirective,
-    LibraryInfoComponent 
+    LibraryInfoComponent,
+    ChangeInfoComponent 
   ],
   imports: [
     CommonModule,
@@ -34,7 +36,8 @@ import { InfoHostDataSourceService } from './control-bar/info-host-data-source/i
     InfoHostDataSourceService
   ],
   entryComponents: [
-    LibraryInfoComponent
+    LibraryInfoComponent,
+    ChangeInfoComponent
   ]
 })
 export class LibraryContentModule { }

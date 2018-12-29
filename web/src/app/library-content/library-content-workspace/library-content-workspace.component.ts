@@ -5,6 +5,7 @@ import { BookDataService } from '../book-data/book-data.service';
 import { InfoHostDataSourceService } from '../control-bar/info-host-data-source/info-host-data-source.service';
 import { InfoHostItem } from '../control-bar/info-host/info-host-item';
 import { LibraryInfoComponent } from '../control-bar/library-info/library-info.component';
+import { ChangeInfoComponent } from '../control-bar/change-info/change-info.component';
 
 @Component({
   selector: 'app-library-content-workspace',
@@ -37,5 +38,7 @@ export class LibraryContentWorkspaceComponent implements OnInit {
     setTimeout(() => {
       this.infoHostDataSourceService.replace(new InfoHostItem(LibraryInfoComponent, {libraryName: 'test', numberOfBooks: 11}));
     }, 3000);
+
+    this.infoHostDataSourceService.replace(new InfoHostItem(ChangeInfoComponent, {numberOfBooksAdded: 2}))
   }
 }
