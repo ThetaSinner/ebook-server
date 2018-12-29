@@ -24,12 +24,12 @@ export class ContentTableComponent implements OnInit {
     })
   }
 
-  getTags(book: any) {
+  getTags(book: any): string[] {
     if (book && book.metadata) {
       return book.metadata.tags;
     }
 
-    return null;
+    return [];
   }
 
   getRating(book: any) {
@@ -37,7 +37,7 @@ export class ContentTableComponent implements OnInit {
       return book.metadata.rating;
     }
 
-    return null;
+    return '';
   }
 
   toggleDetails(rowId: string) {
