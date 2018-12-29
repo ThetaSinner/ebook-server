@@ -17,11 +17,19 @@ export class InfoHostDataSourceService {
   }
 
   replace(infoHostItem: InfoHostItem) {
-    this.data = this.data.filter(item => item.component !== infoHostItem.component);
+    let replaced = false;
+    this.data = this.data.map(item => {
+      if (item.component === infoHostItem.component) {
+        replaced = true;
+        return infoHostItem;
+      }
 
-    this.data.push(infoHostItem);
-
-    console.log('replacing info item with', infoHostItem, 'and emitting', this.data, 'into the stream');
+      return item;
+    });
+    
+    if (!replaced) {
+      this.data.push(infoHostItem);
+    }
 
     this.dataSource.next(this.data);
   }
