@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
+import { Observable, Subject } from 'rxjs';
 import { InfoHostItem } from '../info-host/info-host-item';
-import { LibraryInfoComponent } from '../library-info/library-info.component';
-import { Subject, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'

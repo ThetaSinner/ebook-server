@@ -2,10 +2,8 @@
   <div class="col-sm-1">
     <fa-icon [icon]="faChevronLeft" class="es-icon-large" (click)="navigateHome()"></fa-icon>
   </div>
-  <div class="col-sm-6"></div>
-  <div class="col-sm-5">
-    <div *ngFor="let item of infoItems" class="es-info-host-container">
-      <ng-template appInfoHost></ng-template>
-    </div>
+  <div [class]="'col-sm-' + (11 - 2 * infoItems.length)"></div>
+  <div *ngFor="let item of infoItems" class="col-sm-2">
+    <ng-template appInfoHost></ng-template>
   </div>
 </div>
