@@ -18,12 +18,12 @@
     <div class="col-sm-1">{{getRating(rowData)}}</div>
     <div class="col-sm-1" [title]="getTags(rowData)">{{getTags(rowData) | valueList}}</div>
     <div class="col-sm-1 text-center" aria-label="Expand Book">
-      <fa-icon [icon]="faExpandContractIcon" (click)="toggleDetails()" class="es-icon-button"></fa-icon>
+      <fa-icon [icon]="getIcon(rowData.id)" (click)="toggleDetails(rowData.id)" class="es-icon-button"></fa-icon>
     </div>
   </div>
-  <div class="row es-book-row" *ngIf="showDetails">
+  <div class="row es-book-row" *ngIf="isShowDetails(rowData.id)">
     <div class="col">
-      <app-content-detail [detailData]="rowData"></app-content-detail>
+      <app-content-detail [detailData]="rowData" [libraryName]="libraryName"></app-content-detail>
     </div>
   </div>
 </div>

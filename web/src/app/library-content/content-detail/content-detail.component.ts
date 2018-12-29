@@ -1,4 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { environment } from 'src/environments/environment';
+import { LibraryContentWorkspaceComponent } from '../library-content-workspace/library-content-workspace.component';
 
 @Component({
   selector: 'app-content-detail',
@@ -7,6 +9,7 @@ import { Component, OnInit, Input } from '@angular/core';
 })
 export class ContentDetailComponent implements OnInit {
   @Input() detailData;
+  @Input() libraryName;
 
   constructor() { }
 
@@ -15,5 +18,9 @@ export class ContentDetailComponent implements OnInit {
 
   getAuthorsWithCommas(authors: any[]) {
     return authors.join(', ').split(' ');
+  }
+
+  getImgSource() {
+    return `${environment.mediaServerUrlBase}/books/${this.detailData.id}/covers?name=${this.libraryName}`;
   }
 }

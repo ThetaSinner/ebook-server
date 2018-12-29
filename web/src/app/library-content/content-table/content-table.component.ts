@@ -1,5 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { faChevronDown, faChevronUp, IconDefinition } from '@fortawesome/free-solid-svg-icons';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-content-table',
@@ -7,14 +9,19 @@ import { faChevronDown, faChevronUp, IconDefinition } from '@fortawesome/free-so
   styleUrls: ['./content-table.component.scss']
 })
 export class ContentTableComponent implements OnInit {
-  faExpandContractIcon: IconDefinition = faChevronDown;
-  showDetails: boolean = false;
+  showDetails: object = {};
 
-  @Input() tableData$;
+  @Input() libraryData$;
+  libraryName: string;
+  tableData$: Observable<any>;
 
   constructor() { }
 
   ngOnInit() {
+    this.libraryData$.subscribe(libraryData => {
+      this.libraryName = libraryData.libraryName;
+      this.tableData$ = libraryData.books$;
+    })
   }
 
   getTags(book: any) {
@@ -33,14 +40,19 @@ export class ContentTableComponent implements OnInit {
     return null;
   }
 
-  toggleDetails() {
-    this.showDetails = !this.showDetails;
+  toggleDetails(rowId: string) {
+    this.showDetails[rowId] = !this.showDetails[rowId];
+  }
 
-    if (this.showDetails) {
-      this.faExpandContractIcon = faChevronUp;
+  isShowDetails(rowId: string): boolean {
+    return this.showDetails[rowId];
+  }
+
+  getIcon(rowId: string): IconDefinition {
+    if (this.showDetails[rowId]) {
+      return faChevronUp;
     }
-    else {
-      this.faExpandContractIcon = faChevronDown;
-    }
+
+    return faChevronDown;
   }
 }
