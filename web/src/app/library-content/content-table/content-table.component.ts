@@ -1,6 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { faChevronDown, faChevronUp, IconDefinition } from '@fortawesome/free-solid-svg-icons';
-import { library } from '@fortawesome/fontawesome-svg-core';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -10,6 +9,7 @@ import { Observable } from 'rxjs';
 })
 export class ContentTableComponent implements OnInit {
   showDetails: object = {};
+  editDetails: object = {};
 
   @Input() libraryData$;
   libraryName: string;
@@ -54,5 +54,13 @@ export class ContentTableComponent implements OnInit {
     }
 
     return faChevronDown;
+  }
+
+  editDetail(rowId: string) {
+    this.editDetail[rowId] = !this.editDetail[rowId];
+  }
+
+  isEditDetails(rowId: string): boolean {
+    return this.editDetail[rowId];
   }
 }

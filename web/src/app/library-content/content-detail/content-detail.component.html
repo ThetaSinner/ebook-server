@@ -4,7 +4,7 @@
       <div class="col-sm-3">
         <img [src]="getImgSource()" alt="No Cover" class="es-cover-image">
       </div>
-      <div class="col-sm-9">
+      <div class="col-sm-8">
         <div class="row es-title-line">
           <div class="col-sm-12">
             <h3 class="card-title">{{detailData.title}}</h3>
@@ -27,6 +27,9 @@
             </h5>
           </div>
         </div>
+      </div>
+      <div class="col-sm-1">
+          <fa-icon [icon]="faEditIcon" class="es-icon-button" (click)="handleEdit()"></fa-icon>
       </div>
     </div>
   </div>

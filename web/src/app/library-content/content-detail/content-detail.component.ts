@@ -1,6 +1,7 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
+import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
+import { faPen } from '@fortawesome/free-solid-svg-icons';
 import { environment } from 'src/environments/environment';
-import { LibraryContentWorkspaceComponent } from '../library-content-workspace/library-content-workspace.component';
 
 @Component({
   selector: 'app-content-detail',
@@ -8,8 +9,12 @@ import { LibraryContentWorkspaceComponent } from '../library-content-workspace/l
   styleUrls: ['./content-detail.component.scss']
 })
 export class ContentDetailComponent implements OnInit {
+  faEditIcon: IconDefinition = faPen;
+
   @Input() detailData;
   @Input() libraryName;
+
+  @Output() startEdit = new EventEmitter();
 
   constructor() { }
 
@@ -22,5 +27,9 @@ export class ContentDetailComponent implements OnInit {
 
   getImgSource() {
     return `${environment.mediaServerUrlBase}/books/${this.detailData.id}/covers?name=${this.libraryName}`;
+  }
+
+  handleEdit() {
+    this.startEdit.emit('');
   }
 }

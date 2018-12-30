@@ -13,6 +13,8 @@ import { InfoHostDirective } from './control-bar/info-host/info-host.directive';
 import { LibraryInfoComponent } from './control-bar/library-info/library-info.component';
 import { InfoHostDataSourceService } from './control-bar/info-host-data-source/info-host-data-source.service';
 import { ChangeInfoComponent } from './control-bar/change-info/change-info.component';
+import { ContentEditComponent } from './content-edit/content-edit.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -23,11 +25,13 @@ import { ChangeInfoComponent } from './control-bar/change-info/change-info.compo
     ContentDetailComponent, 
     InfoHostDirective,
     LibraryInfoComponent,
-    ChangeInfoComponent 
+    ChangeInfoComponent,
+    ContentEditComponent 
   ],
   imports: [
     CommonModule,
     HttpClientModule,
+    ReactiveFormsModule,
     FontAwesomeModule,
     LibraryContentRoutingModule
   ],
