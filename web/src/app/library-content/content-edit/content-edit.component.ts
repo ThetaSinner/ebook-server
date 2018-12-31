@@ -1,7 +1,8 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray } from '@angular/forms';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
-import { faPlus, faMinus } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faMinus, faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
+import { NgbCalendar } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-content-edit',
@@ -11,11 +12,15 @@ import { faPlus, faMinus } from '@fortawesome/free-solid-svg-icons';
 export class ContentEditComponent implements OnInit {
   addIcon: IconDefinition = faPlus;
   removeIcon: IconDefinition = faMinus;
+  calendarIcon: IconDefinition = faCalendarAlt;
 
   detailForm: FormGroup;
   @Input() detailData;
   
-  constructor(private formBuilder: FormBuilder) { }
+  constructor(
+    private formBuilder: FormBuilder,
+    private calendar: NgbCalendar
+  ) { }
 
   ngOnInit() {
     this.detailForm = this.formBuilder.group({
@@ -24,6 +29,7 @@ export class ContentEditComponent implements OnInit {
       publisher: [''],
       description: [''],
       rating: [''],
+      publishDate: [this.calendar.getToday()],
       authors: this.formBuilder.array([
         this.formBuilder.control('')
       ]),

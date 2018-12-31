@@ -14,7 +14,6 @@ import { LibraryContentModule } from './library-content/library-content.module';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    NgbModule,
     LibraryModule,
     LibraryContentModule
   ],

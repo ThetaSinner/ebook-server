@@ -51,4 +51,8 @@
     <label for="ratingInput">Rating</label>
     <input type="number" min="1" max="5" class="form-control" id="ratingInput" placeholder="Rating" formControlName="rating">
   </div>
+  <div class="form-group">
+    <label for="publishDateInput">Publish date</label><br />
+    <ngb-datepicker id="publishDateInput" #dp formControlName="publishDate" (navigate)="date = $event.next"></ngb-datepicker>
+  </div>
 </form>
