@@ -63,4 +63,8 @@ export class ContentTableComponent implements OnInit {
   isEditDetails(rowId: string): boolean {
     return this.editDetail[rowId];
   }
+
+  finishEdit(rowId: string) {
+    this.editDetail[rowId] = false;
+  }
 }

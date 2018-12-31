@@ -1,7 +1,7 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray } from '@angular/forms';
-import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
-import { faPlus, faMinus, faCalendarAlt, faCheck } from '@fortawesome/free-solid-svg-icons';
+import { IconDefinition, findIconDefinition } from '@fortawesome/fontawesome-svg-core';
+import { faPlus, faMinus, faCalendarAlt, faCheck, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import { NgbCalendar, NgbDate } from '@ng-bootstrap/ng-bootstrap';
 import { BookDataService } from '../book-data/book-data.service';
 
@@ -15,11 +15,14 @@ export class ContentEditComponent implements OnInit {
   removeIcon: IconDefinition = faMinus;
   calendarIcon: IconDefinition = faCalendarAlt;
   saveChangesIcon: IconDefinition = faCheck;
+  cancelChangesIcon: IconDefinition = faTimesCircle;
 
   detailForm: FormGroup;
   @Input() detailData;
   @Input() libraryName: string;
   
+  @Output() editFinished = new EventEmitter();
+
   constructor(
     private formBuilder: FormBuilder,
     private bookDataService: BookDataService,
@@ -132,7 +135,16 @@ export class ContentEditComponent implements OnInit {
     }
 
     const sub = this.bookDataService.updateBook(this.detailData.id, updateRequest, this.libraryName).subscribe(() => {
+      this.finishEdit();
       sub.unsubscribe();
     });
+  }
+
+  finishEdit() {
+    this.editFinished.emit('finish');
+  }
+
+  cancelEdit() {
+    this.editFinished.emit('cancel');
   }
 }
