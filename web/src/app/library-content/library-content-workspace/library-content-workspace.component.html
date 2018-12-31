@@ -1,4 +1,4 @@
 <div class="container">
   <app-control-bar [infoItems]="infoItems"></app-control-bar>
-  <app-content-table [libraryData$]="libraryData$"></app-content-table>
+  <app-content-table [libraryData$]="libraryData$" (contentChanged)="handleContentChanged()"></app-content-table>
 </div>

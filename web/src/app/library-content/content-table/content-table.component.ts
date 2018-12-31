@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { faChevronDown, faChevronUp, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { Observable } from 'rxjs';
 
@@ -15,13 +15,15 @@ export class ContentTableComponent implements OnInit {
   libraryName: string;
   tableData$: Observable<any>;
 
+  @Output() contentChanged = new EventEmitter();
+
   constructor() { }
 
   ngOnInit() {
     this.libraryData$.subscribe(libraryData => {
       this.libraryName = libraryData.libraryName;
       this.tableData$ = libraryData.books$;
-    })
+    });
   }
 
   getTags(book: any): string[] {
@@ -66,5 +68,9 @@ export class ContentTableComponent implements OnInit {
 
   finishEdit(rowId: string) {
     this.editDetail[rowId] = false;
+  }
+
+  handleContentChanged() {
+    this.contentChanged.next();
   }
 }

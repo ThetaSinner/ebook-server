@@ -16,6 +16,7 @@ import { LibraryInfoComponent } from '../control-bar/library-info/library-info.c
 export class LibraryContentWorkspaceComponent implements OnInit {
   libraryData$: any;
   infoItems: InfoHostItem[];
+  private libraryName: string;
 
   constructor(
     private route: ActivatedRoute,
@@ -24,9 +25,13 @@ export class LibraryContentWorkspaceComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    
     this.libraryData$ = this.route.paramMap.pipe(
       switchMap((params: ParamMap) => {
         const libraryName = params.get('libraryName');
+        this.libraryName = libraryName;
+        
+        this.bookDataService.doGetBooks(libraryName);
 
         return of({
           books$: this.bookDataService.getBooks(libraryName),
@@ -46,5 +51,9 @@ export class LibraryContentWorkspaceComponent implements OnInit {
     }, 3000);
 
     this.infoHostDataSourceService.replace(new InfoHostItem(ChangeInfoComponent, {numberOfBooksAdded: 2, numberOfBooksDeleted: 1, numberOfBooksChanged: 5}))
+  }
+
+  handleContentChanged() {
+    this.bookDataService.doGetBooks(this.libraryName);
   }
 }
