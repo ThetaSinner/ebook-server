@@ -23,7 +23,7 @@
         </div>
       </div>
       <div class="col-sm-1">
-        <fa-icon *ngIf="i >= 1" [icon]="removeAuthorIcon" class="es-icon-button" (click)="removeAuthorInput(i)"></fa-icon>
+        <fa-icon *ngIf="i >= 1" [icon]="removeIcon" class="es-icon-button" (click)="removeAuthorInput(i)"></fa-icon>
       </div>
     </div>
   </div>
@@ -52,7 +52,13 @@
     <input type="number" min="1" max="5" class="form-control" id="ratingInput" placeholder="Rating" formControlName="rating">
   </div>
   <div class="form-group">
-    <label for="publishDateInput">Publish date</label><br />
-    <ngb-datepicker id="publishDateInput" #dp formControlName="publishDate" (navigate)="date = $event.next"></ngb-datepicker>
+    <label for="datePublishedInput">Date published</label><br />
+    <ngb-datepicker id="datePublishedInput" #dp formControlName="datePublished"></ngb-datepicker>
+  </div>
+  <div class="row">
+    <div class="col-sm-11"></div>
+    <div class="col-sm-1">
+      <fa-icon [icon]="saveChangesIcon" class="es-icon-button" (click)="saveChanges()"></fa-icon>
+    </div>
   </div>
 </form>
