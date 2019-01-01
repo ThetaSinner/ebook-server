@@ -1,11 +1,10 @@
-import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-
+import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { LibraryModule } from './library/library.module';
+import { LibraryAddModule } from './library-add/library-add.module';
 import { LibraryContentModule } from './library-content/library-content.module';
+import { LibraryModule } from './library/library.module';
 
 @NgModule({
   declarations: [
@@ -15,7 +14,8 @@ import { LibraryContentModule } from './library-content/library-content.module';
     BrowserModule,
     AppRoutingModule,
     LibraryModule,
-    LibraryContentModule
+    LibraryContentModule,
+    LibraryAddModule
   ],
   providers: [],
   bootstrap: [AppComponent]
