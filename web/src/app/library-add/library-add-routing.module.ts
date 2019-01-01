@@ -1,8 +1,9 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { LibraryAddWorkspaceComponent } from './library-add-workspace/library-add-workspace.component';
-import { BookAddComponent } from './book-add/book-add.component';
 import { BookUploadComponent } from './book-upload/book-upload.component';
+import { BookRemoteAddComponent } from './book-remote-add/book-remote-add.component';
+import { BookLinkAddComponent } from './book-link-add/book-link-add.component';
 
 const routes: Routes = [
   { 
@@ -10,14 +11,17 @@ const routes: Routes = [
     component: LibraryAddWorkspaceComponent,
     children: [{
         path: '',
-        redirectTo: 'remote',
+        redirectTo: 'upload',
         pathMatch: 'full'
     }, {
         path: 'remote',
-        component: BookAddComponent
+        component: BookRemoteAddComponent
     }, {
         path: 'upload',
         component: BookUploadComponent
+    }, {
+        path: 'link',
+        component: BookLinkAddComponent
     }]
   }
 ];
