@@ -6,6 +6,7 @@ import { LibraryAddWorkspaceComponent } from './library-add-workspace/library-ad
 import { BookUploadComponent } from './book-upload/book-upload.component';
 import { BookRemoteAddComponent } from './book-remote-add/book-remote-add.component';
 import { BookLinkAddComponent } from './book-link-add/book-link-add.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -16,6 +17,7 @@ import { BookLinkAddComponent } from './book-link-add/book-link-add.component';
   ],
   imports: [
     CommonModule,
+    ReactiveFormsModule,
     FontAwesomeModule,
     LibraryAddRoutingModule
   ]

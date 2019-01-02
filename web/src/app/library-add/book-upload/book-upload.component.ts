@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { BookDataService } from 'src/app/library-content/book-data/book-data.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { map } from 'rxjs/operators';
+import { FormGroup, FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-book-upload',
@@ -11,6 +12,9 @@ import { map } from 'rxjs/operators';
 export class BookUploadComponent implements OnInit {
   private files: any;
   private libraryName: string;
+  uploadForm: FormGroup = new FormGroup({
+    files: new FormControl('')
+  });
 
   constructor(
     private activeRoute: ActivatedRoute,
@@ -31,7 +35,7 @@ export class BookUploadComponent implements OnInit {
 
   handleUpload() {
     const sub = this.bookDataService.uploadBooks(this.files, this.libraryName).subscribe(() => {
-      // reset form.
+      this.uploadForm.setControl('files', new FormControl(''))
       sub.unsubscribe();
     });
   }
