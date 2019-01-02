@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
-import { faBook, faUpload, faLink } from '@fortawesome/free-solid-svg-icons';
+import { faBook, faLink, faUpload } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-library-add-workspace',

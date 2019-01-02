@@ -1,3 +1,7 @@
-<p>
-  book-upload works!
-</p>
+<form onSubmit={this.handleUploadFiles}>
+  <div class="form-group">
+    <label for="selectFiles">Choose books to upload</label>
+    <input type="file" id="selectFiles" accept=".pdf" multiple class="form-control-file" (change)="handleFilesSelected($event.target.files)" />
+  </div>
+  <button type="button" class="btn btn-primary" (click)="handleUpload()">Upload</button>
+</form>
