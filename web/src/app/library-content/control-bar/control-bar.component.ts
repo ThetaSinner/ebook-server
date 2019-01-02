@@ -1,6 +1,6 @@
 import { AfterViewInit, ChangeDetectorRef, Component, ComponentFactoryResolver, Input, QueryList, ViewChildren } from '@angular/core';
-import { Router } from '@angular/router';
-import { faChevronLeft, IconDefinition } from '@fortawesome/free-solid-svg-icons';
+import { Router, ActivatedRoute } from '@angular/router';
+import { faChevronLeft, IconDefinition, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { InfoHostItem } from './info-host/info-host-item';
 import { InfoHostComponent } from './info-host/info-host.component';
 import { InfoHostDirective } from './info-host/info-host.directive';
@@ -12,6 +12,7 @@ import { InfoHostDirective } from './info-host/info-host.directive';
 })
 export class ControlBarComponent implements AfterViewInit {
   faChevronLeft: IconDefinition = faChevronLeft;
+  faIconAddContent: IconDefinition = faPlus;
 
   @Input() infoItems: InfoHostItem[];
 
@@ -19,6 +20,7 @@ export class ControlBarComponent implements AfterViewInit {
 
   constructor(
     private router: Router,
+    private route: ActivatedRoute,
     private componentFactoryResolver: ComponentFactoryResolver,
     private changeDetectorRef: ChangeDetectorRef
   ) { }
@@ -33,6 +35,10 @@ export class ControlBarComponent implements AfterViewInit {
 
   navigateHome() {
     this.router.navigate(['/libraries']);
+  }
+
+  navigateToAddContent() {
+    this.router.navigate(['add'], {relativeTo: this.route});
   }
 
   loadInfoComponents() {
