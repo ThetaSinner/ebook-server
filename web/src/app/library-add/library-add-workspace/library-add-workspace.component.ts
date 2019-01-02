@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
-import { faBook, faLink, faUpload } from '@fortawesome/free-solid-svg-icons';
+import { faBook, faLink, faUpload, faChevronLeft } from '@fortawesome/free-solid-svg-icons';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 
@@ -14,13 +14,20 @@ export class LibraryAddWorkspaceComponent implements OnInit {
   addBookIcon: IconDefinition = faBook;
   uploadBookIcon: IconDefinition = faUpload;
   addLinkIcon: IconDefinition = faLink;
-  
+  navigateBackIcon: IconDefinition = faChevronLeft;
+
   constructor(
     private router: Router,
     private activeRoute: ActivatedRoute
   ) { }
 
   ngOnInit() {
+  }
+
+  navigateBackToLibrary() {
+    // This is relative to the active route for this component, not the actual url
+    // of the child component that's seen
+    this.router.navigate(['..'], {relativeTo: this.activeRoute});
   }
 
   navigateToAddRemoteBook() {
