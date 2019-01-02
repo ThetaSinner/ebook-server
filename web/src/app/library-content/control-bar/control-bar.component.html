@@ -5,7 +5,7 @@
   <div class="col-sm-2">
     <fa-icon [icon]="faIconAddContent" class="es-icon-button-large" (click)="navigateToAddContent()"></fa-icon>
   </div>
-  <div [class]="'col-sm-' + (11 - 2 * infoItems.length)"></div>
+  <div [class]="'col-sm-' + (9 - 2 * infoItems.length)"></div>
   <div *ngFor="let item of infoItems" class="col-sm-2">
     <ng-template appInfoHost></ng-template>
   </div>
