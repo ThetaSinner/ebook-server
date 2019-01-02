@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { faBook, faLink, faUpload } from '@fortawesome/free-solid-svg-icons';
+import { map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-library-add-workspace',
@@ -12,7 +14,7 @@ export class LibraryAddWorkspaceComponent implements OnInit {
   addBookIcon: IconDefinition = faBook;
   uploadBookIcon: IconDefinition = faUpload;
   addLinkIcon: IconDefinition = faLink;
-
+  
   constructor(
     private router: Router,
     private activeRoute: ActivatedRoute

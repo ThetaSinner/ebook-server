@@ -18,7 +18,7 @@ export class BookUploadComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.activeRoute.paramMap.pipe(
+    this.activeRoute.parent.paramMap.pipe(
       map((params: ParamMap) => params.get('libraryName'))
     ).subscribe(libraryName => {
       this.libraryName = libraryName;
@@ -30,6 +30,9 @@ export class BookUploadComponent implements OnInit {
   }
 
   handleUpload() {
-    this.bookDataService.uploadBooks(this.files, this.libraryName);
+    const sub = this.bookDataService.uploadBooks(this.files, this.libraryName).subscribe(() => {
+      // reset form.
+      sub.unsubscribe();
+    });
   }
 }

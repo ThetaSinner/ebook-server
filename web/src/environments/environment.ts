@@ -4,7 +4,8 @@
 
 export const environment = {
   production: false,
-  mediaServerUrlBase: 'http://localhost:8121'
+  mediaServerUrlBase: 'http://localhost:8121',
+  uploadTimeoutMillis: 5000
 };
 
 /*
