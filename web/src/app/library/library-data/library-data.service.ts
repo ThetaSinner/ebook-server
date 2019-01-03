@@ -35,4 +35,17 @@ export class LibraryDataService {
     
     return throwError('There was an error contacting the library service');
   };
+
+  saveLibrary(libraryName: string): any {
+    const body = {
+        commitLibraries: [
+            {
+                libraryName: libraryName,
+                unload: false
+            }
+        ]
+    };
+
+    return this.httpClient.post(`${environment.mediaServerUrlBase}/libraries/commit`, body);
+  }
 }

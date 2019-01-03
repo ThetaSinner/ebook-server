@@ -7,6 +7,7 @@ import { ChangeInfoComponent } from '../control-bar/change-info/change-info.comp
 import { InfoHostDataSourceService } from '../control-bar/info-host-data-source/info-host-data-source.service';
 import { InfoHostItem } from '../control-bar/info-host/info-host-item';
 import { LibraryInfoComponent } from '../control-bar/library-info/library-info.component';
+import { LibraryDataService } from 'src/app/library/library-data/library-data.service';
 
 @Component({
   selector: 'app-library-content-workspace',
@@ -21,7 +22,8 @@ export class LibraryContentWorkspaceComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private bookDataService: BookDataService,
-    private infoHostDataSourceService: InfoHostDataSourceService
+    private infoHostDataSourceService: InfoHostDataSourceService,
+    private libraryDataService: LibraryDataService
   ) { }
 
   ngOnInit() {
@@ -55,5 +57,11 @@ export class LibraryContentWorkspaceComponent implements OnInit {
 
   handleContentChanged() {
     this.bookDataService.doGetBooks(this.libraryName);
+  }
+
+  handleSaveRequested() {
+    const sub = this.libraryDataService.saveLibrary(this.libraryName).subscribe(() => {
+      sub.unsubscribe();
+    });
   }
 }

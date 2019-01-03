@@ -3,6 +3,7 @@
     <fa-icon [icon]="faChevronLeft" class="es-icon-button-large" (click)="navigateHome()"></fa-icon>
   </div>
   <div class="col-sm-2">
+    <fa-icon [icon]="saveIcon" class="es-icon-button-large" (click)="saveLibrary()"></fa-icon>
     <fa-icon [icon]="faIconAddContent" class="es-icon-button-large" (click)="navigateToAddContent()"></fa-icon>
   </div>
   <div [class]="'col-sm-' + (9 - 2 * infoItems.length)"></div>

@@ -1,9 +1,10 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ComponentFactoryResolver, Input, QueryList, ViewChildren } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ComponentFactoryResolver, Input, QueryList, ViewChildren, Output, EventEmitter } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { faChevronLeft, IconDefinition, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faChevronLeft, IconDefinition, faPlus, faSave } from '@fortawesome/free-solid-svg-icons';
 import { InfoHostItem } from './info-host/info-host-item';
 import { InfoHostComponent } from './info-host/info-host.component';
 import { InfoHostDirective } from './info-host/info-host.directive';
+import { LibraryDataService } from 'src/app/library/library-data/library-data.service';
 
 @Component({
   selector: 'app-control-bar',
@@ -13,8 +14,11 @@ import { InfoHostDirective } from './info-host/info-host.directive';
 export class ControlBarComponent implements AfterViewInit {
   faChevronLeft: IconDefinition = faChevronLeft;
   faIconAddContent: IconDefinition = faPlus;
+  saveIcon: IconDefinition = faSave;
 
   @Input() infoItems: InfoHostItem[];
+
+  @Output() saveRequested = new EventEmitter();
 
   @ViewChildren(InfoHostDirective) infoHosts: QueryList<InfoHostDirective>;
 
@@ -41,7 +45,7 @@ export class ControlBarComponent implements AfterViewInit {
     this.router.navigate(['add'], {relativeTo: this.route});
   }
 
-  loadInfoComponents() {
+  private loadInfoComponents() {
     if (!this.infoHosts || !this.infoItems || this.infoItems.length === 0) {
       return;
     }
@@ -63,5 +67,9 @@ export class ControlBarComponent implements AfterViewInit {
     // You can't change the view while it's mid-render, so kick off a new render cycle because I
     // know it won't cause a loop. Yay all the way home.
     this.changeDetectorRef.detectChanges();
+  }
+
+  saveLibrary() {
+    this.saveRequested.next();
   }
 }
