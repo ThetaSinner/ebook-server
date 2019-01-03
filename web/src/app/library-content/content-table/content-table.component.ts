@@ -1,6 +1,10 @@
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { faChevronDown, faChevronUp, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { InfoHostDataSourceService } from '../control-bar/info-host-data-source/info-host-data-source.service';
+import { InfoHostItem } from '../control-bar/info-host/info-host-item';
+import { LibraryInfoComponent } from '../control-bar/library-info/library-info.component';
 
 @Component({
   selector: 'app-content-table',
@@ -17,12 +21,20 @@ export class ContentTableComponent implements OnInit {
 
   @Output() contentChanged = new EventEmitter();
 
-  constructor() { }
+  constructor(
+    private infoHostDataSourceService: InfoHostDataSourceService
+  ) { }
 
   ngOnInit() {
     this.libraryData$.subscribe(libraryData => {
       this.libraryName = libraryData.libraryName;
       this.tableData$ = libraryData.books$;
+
+      this.tableData$.pipe(
+        map(books => books.length)
+      ).subscribe(numberofBooks => {
+        this.infoHostDataSourceService.replace(new InfoHostItem(LibraryInfoComponent, {libraryName: this.libraryName, numberOfBooks: numberofBooks}));
+      })
     });
   }
 

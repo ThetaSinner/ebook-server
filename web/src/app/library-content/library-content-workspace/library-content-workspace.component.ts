@@ -45,13 +45,7 @@ export class LibraryContentWorkspaceComponent implements OnInit {
     this.infoHostDataSourceService.getItemsStream().subscribe(value => {
       this.infoItems = value;
     });
-
-    this.infoHostDataSourceService.replace(new InfoHostItem(LibraryInfoComponent, {libraryName: 'test', numberOfBooks: 10}));
-
-    setTimeout(() => {
-      this.infoHostDataSourceService.replace(new InfoHostItem(LibraryInfoComponent, {libraryName: 'test', numberOfBooks: 11}));
-    }, 3000);
-
+    
     this.infoHostDataSourceService.replace(new InfoHostItem(ChangeInfoComponent, {numberOfBooksAdded: 2, numberOfBooksDeleted: 1, numberOfBooksChanged: 5}))
   }
 
