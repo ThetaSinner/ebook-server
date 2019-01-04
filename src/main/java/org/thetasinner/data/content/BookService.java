@@ -100,12 +100,14 @@ public class BookService {
     libraryStorage.deleteBook(libraryName, id);
   }
 
-  public void storeBook(String libraryName, MultipartFile file) throws IOException, StorageException {
+  public Book storeBook(String libraryName, MultipartFile file) throws IOException, StorageException {
     LOG.trace("Storing book from file in library with name [{}]", libraryName);
 
     var book = libraryStorage.store(libraryName, file);
 
     libraryService.getLibrary(libraryName).getItem().getBooks().add(book);
+
+    return book;
   }
 
   private void updateBookMetadata(Book book, BookMetadataUpdateRequest bookMetadataUpdateRequest) {

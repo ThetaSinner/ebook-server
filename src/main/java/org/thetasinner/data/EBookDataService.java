@@ -117,7 +117,10 @@ public class EBookDataService {
       throw new StorageException("File is empty");
     }
 
-    bookService.storeBook(name, file);
+    var book = bookService.storeBook(name, file);
+
+    var eventData = new ChangeEventData(BookCreated, book.getId());
+    libraryChangeService.publish(name, eventData);
   }
 
   public List<Book> getBooks(String name) {
