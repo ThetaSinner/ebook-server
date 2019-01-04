@@ -2,13 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
+import { ChangeTracker } from 'src/app/library-change/change-tracker';
+import { LibraryChangeService } from 'src/app/library-change/library-change.service';
+import { LibraryDataService } from 'src/app/library/library-data/library-data.service';
 import { BookDataService } from '../book-data/book-data.service';
 import { ChangeInfoComponent } from '../control-bar/change-info/change-info.component';
 import { InfoHostDataSourceService } from '../control-bar/info-host-data-source/info-host-data-source.service';
 import { InfoHostItem } from '../control-bar/info-host/info-host-item';
-import { LibraryInfoComponent } from '../control-bar/library-info/library-info.component';
-import { LibraryDataService } from 'src/app/library/library-data/library-data.service';
-import { LibraryChangeService } from 'src/app/library-change/library-change.service';
 
 @Component({
   selector: 'app-library-content-workspace',
@@ -19,6 +19,7 @@ export class LibraryContentWorkspaceComponent implements OnInit {
   libraryData$: any;
   infoItems: InfoHostItem[];
   private libraryName: string;
+  private changeTracker: ChangeTracker | null;
 
   constructor(
     private route: ActivatedRoute,
@@ -37,7 +38,10 @@ export class LibraryContentWorkspaceComponent implements OnInit {
         
         this.bookDataService.doGetBooks(libraryName);
 
-        this.libraryChangeService.listen(this.libraryName);
+        this.changeTracker = this.libraryChangeService.listen(this.libraryName);
+        this.changeTracker.changes.subscribe(change => {
+          console.log('changes received', change.bookId, change.changeType);
+        })
 
         return of({
           books$: this.bookDataService.getBooks(libraryName),

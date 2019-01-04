@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
+import { ChangeTracker } from './change-tracker';
 
 @Injectable({
   providedIn: 'root'
@@ -7,27 +8,19 @@ import { environment } from 'src/environments/environment';
 export class LibraryChangeService {
   private serviceSupported = false;
 
-  private sources: Array<EventSource> = [];
-
   constructor() {
     if (typeof(EventSource) !== 'undefined') {
       this.serviceSupported = true;
     }
   }
 
-  listen(libraryName: string) {
+  listen(libraryName: string): ChangeTracker {
     if (!this.serviceSupported) {
       return;
     }
 
     const source = new EventSource(`${environment.mediaServerUrlBase}/events/subscribe/${libraryName}`);
-    source.addEventListener('change', (e) => {
-      console.log('change event', e);
-    }, false);
-    source.onerror = (event) => {
-      console.error('error event', event);
-    }
 
-    this.sources.push(source);
+    return new ChangeTracker(source);
   }
 }
