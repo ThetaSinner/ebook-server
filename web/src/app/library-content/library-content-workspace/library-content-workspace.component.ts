@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
-import { ChangeTracker } from 'src/app/library-change/change-tracker';
+import { ChangeTracker, ChangeType,  } from 'src/app/library-change/change-tracker';
 import { LibraryChangeService } from 'src/app/library-change/library-change.service';
 import { LibraryDataService } from 'src/app/library/library-data/library-data.service';
 import { BookDataService } from '../book-data/book-data.service';
@@ -20,6 +20,12 @@ export class LibraryContentWorkspaceComponent implements OnInit {
   infoItems: InfoHostItem[];
   private libraryName: string;
   private changeTracker: ChangeTracker | null;
+  // will reset on page load. Is that okay?
+  private changeState = {
+    numberOfBooksAdded: 0,
+    numberOfBooksDeleted: 0,
+    numberOfBooksChanged: 0
+  };
 
   constructor(
     private route: ActivatedRoute,
@@ -40,8 +46,22 @@ export class LibraryContentWorkspaceComponent implements OnInit {
 
         this.changeTracker = this.libraryChangeService.listen(this.libraryName);
         this.changeTracker.changes.subscribe(change => {
-          console.log('changes received', change.bookId, change.changeType);
-        })
+          switch (change.changeType) {
+            case ChangeType.BookCreated:
+              this.changeState.numberOfBooksAdded++;
+              break;
+            case ChangeType.BookDeleted:
+              this.changeState.numberOfBooksDeleted++;
+              break;
+            case ChangeType.BookUpdated:
+              this.changeState.numberOfBooksChanged++;
+              break;
+          }
+
+          // can filter some changes by bookId.
+
+          this.infoHostDataSourceService.replace(new InfoHostItem(ChangeInfoComponent, this.changeState));
+        });
 
         return of({
           books$: this.bookDataService.getBooks(libraryName),
@@ -53,8 +73,6 @@ export class LibraryContentWorkspaceComponent implements OnInit {
     this.infoHostDataSourceService.getItemsStream().subscribe(value => {
       this.infoItems = value;
     });
-
-    this.infoHostDataSourceService.replace(new InfoHostItem(ChangeInfoComponent, {numberOfBooksAdded: 2, numberOfBooksDeleted: 1, numberOfBooksChanged: 5}))
   }
 
   handleContentChanged() {

@@ -1,7 +1,13 @@
 import { Subject, Observable } from 'rxjs';
 
+export enum ChangeType {
+    BookCreated = 'BookCreated',
+    BookUpdated = 'BookUpdated',
+    BookDeleted = 'BookDeleted'
+}
+
 export interface LibraryChange {
-    changeType: any;
+    changeType: ChangeType;
     bookId: string;
 }
 
@@ -14,7 +20,7 @@ export class ChangeTracker {
         }, false);
 
         this.source.onerror = (event) => {
-            console.error('error event', event);
+            console.error('problem getting change events', event);
         }
     }
 
