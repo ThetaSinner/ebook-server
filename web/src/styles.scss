@@ -12,3 +12,9 @@
     @extend %icon-button;
     font-size: 2em;
 }
+
+.es-overflow {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

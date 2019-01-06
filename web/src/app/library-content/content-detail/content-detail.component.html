@@ -6,7 +6,7 @@
       </div>
       <div class="col-sm-8">
         <div class="row es-title-line">
-          <div class="col-sm-12">
+          <div class="col-sm-12 es-overflow">
             <h3 class="card-title">{{detailData.title}}</h3>
             <span class="es-faded-text">{{detailData.datePublished | date:'longDate'}}</span>
           </div>
@@ -29,9 +29,9 @@
         </div>
       </div>
       <div class="col-sm-1">
-          <a [href]="readLink" target="_blank"><fa-icon [icon]="readIcon" class="es-icon-button"></fa-icon></a>
-          <fa-icon [icon]="faEditIcon" class="es-icon-button" (click)="handleEdit()"></fa-icon>
-          <fa-icon [icon]="faDeleteIcon" class="es-icon-button" (click)="handleDelete()"></fa-icon>
+          <a [href]="readLink" target="_blank"><fa-icon [icon]="readIcon" class="es-icon-button mr-1"></fa-icon></a>
+          <fa-icon [icon]="faEditIcon" class="es-icon-button mr-1" (click)="handleEdit()"></fa-icon>
+          <fa-icon [icon]="faDeleteIcon" class="es-icon-button mr-1" (click)="handleDelete()"></fa-icon>
       </div>
     </div>
   </div>
