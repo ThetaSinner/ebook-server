@@ -60,4 +60,22 @@ export class BookDataService {
       })
     );
   }
+
+  addBook(libraryName: string, url: string, type: string): any {
+    const request = {
+      name: libraryName,
+      request: {
+        url: url,
+        type: type
+      }
+    };
+
+    return this.client.post(`${environment.mediaServerUrlBase}/books`, request).pipe(
+      timeout(environment.uploadTimeoutMillis),
+      catchError(e => {
+        console.log('Add book error', e);
+        return of(null);
+      })
+    );
+  }
 }
