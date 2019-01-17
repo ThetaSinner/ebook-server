@@ -49,6 +49,11 @@ export class ContentDetailComponent implements OnInit {
   }
 
   get readLink() {
-    return `${environment.mediaServerUrlBase}/books/${this.detailData.title}?name=${this.libraryName}&id=${this.detailData.id}`;
+    if (this.detailData.url && this.detailData.url.type === 'WebLink') {
+      return this.detailData.url.value;
+    }
+    else {
+      return `${environment.mediaServerUrlBase}/books/${this.detailData.title}?name=${this.libraryName}&id=${this.detailData.id}`;
+    }
   }
 }
