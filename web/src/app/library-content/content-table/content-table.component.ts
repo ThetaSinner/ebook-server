@@ -16,8 +16,11 @@ export class ContentTableComponent implements OnInit {
   editDetails: object = {};
 
   @Input() libraryData$;
+
   libraryName: string;
+
   tableData$: Observable<any>;
+  tableData: any;
 
   @Output() contentChanged = new EventEmitter();
 
@@ -31,7 +34,10 @@ export class ContentTableComponent implements OnInit {
       this.tableData$ = libraryData.books$;
 
       this.tableData$.pipe(
-        map(books => books.length)
+        map(books => {
+          this.tableData = books;
+          return books.length
+        })
       ).subscribe(numberofBooks => {
         this.infoHostDataSourceService.replace(new InfoHostItem(LibraryInfoComponent, {libraryName: this.libraryName, numberOfBooks: numberofBooks}));
       })
@@ -78,8 +84,15 @@ export class ContentTableComponent implements OnInit {
     return this.editDetail[rowId];
   }
 
-  finishEdit(rowId: string) {
+  finishEdit(rowId: string, updatedBook: any) {
     this.editDetail[rowId] = false;
+    
+    if (updatedBook == null) {
+      return;
+    }
+    
+    const index = this.tableData.findIndex(book => book.id === updatedBook.id)
+    this.tableData[index] = updatedBook;
   }
 
   handleContentChanged() {

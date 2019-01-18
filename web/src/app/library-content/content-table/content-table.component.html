@@ -8,7 +8,7 @@
   <div class="col-sm-1">Tags</div>
   <div class="col-sm-1"></div>
 </div>
-<div *ngFor="let rowData of tableData$ | async">
+<div *ngFor="let rowData of tableData">
   <div class="row es-book-row">
     <div class="col-sm-2" [title]="rowData.title">{{rowData.title}}</div>
     <div class="col-sm-2" [title]="rowData.authors">{{rowData.authors | valueList}}</div>
@@ -28,7 +28,7 @@
   </div>
   <div class="row es-book-row" *ngIf="isShowDetails(rowData.id) && isEditDetails(rowData.id)">
     <div class="col">
-      <app-content-edit [detailData]="rowData" [libraryName]="libraryName" (editFinished)="finishEdit(rowData.id)"></app-content-edit>
+      <app-content-edit [detailData]="rowData" [libraryName]="libraryName" (editFinished)="finishEdit(rowData.id, $event)"></app-content-edit>
     </div>
   </div>
 </div>

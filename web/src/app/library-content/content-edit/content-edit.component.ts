@@ -134,17 +134,17 @@ export class ContentEditComponent implements OnInit {
       }
     }
 
-    const sub = this.bookDataService.updateBook(this.detailData.id, updateRequest, this.libraryName).subscribe(() => {
-      this.finishEdit();
+    const sub = this.bookDataService.updateBook(this.detailData.id, updateRequest, this.libraryName).subscribe((updatedBook) => {
+      this.finishEdit(updatedBook);
       sub.unsubscribe();
     });
   }
 
-  finishEdit() {
-    this.editFinished.emit('finish');
+  private finishEdit(updatedBook) {
+    this.editFinished.emit(updatedBook);
   }
 
   cancelEdit() {
-    this.editFinished.emit('cancel');
+    this.editFinished.emit(null);
   }
 }
