@@ -6,6 +6,13 @@
   <div class="form-group">
     <label for="isbnInput">ISBN</label>
     <input type="text" class="form-control" id="isbnInput" placeholder="ISBN" formControlName="isbn">
+
+    <div *ngIf="isbn.invalid && (isbn.dirty || isbn.touched)" class="alert alert-danger">
+
+      <div *ngIf="isbn.errors.pattern">
+        Not a valid ISBN
+      </div>
+    </div>
   </div>
   <div class="form-group">
     <label for="publisherInput">Publisher</label>

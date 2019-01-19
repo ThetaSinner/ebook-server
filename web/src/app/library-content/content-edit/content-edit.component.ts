@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray } from '@angular/forms';
+import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { IconDefinition, findIconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { faPlus, faMinus, faCalendarAlt, faCheck, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import { NgbCalendar, NgbDate } from '@ng-bootstrap/ng-bootstrap';
@@ -65,7 +65,8 @@ export class ContentEditComponent implements OnInit {
 
     this.detailForm = this.formBuilder.group({
       title: [this.detailData.title ? this.detailData.title : ''],
-      isbn: [this.detailData.isbn ? this.detailData.isbn : ''],
+      // See https://www.oreilly.com/library/view/regular-expressions-cookbook/9781449327453/ch04s13.html
+      isbn: [this.detailData.isbn ? this.detailData.isbn : '', Validators.pattern('^(?:ISBN(?:-1[03])?:?●)?(?=[0-9X]{10}$|(?=(?:[0-9]+[-●]){3})[-●0-9X]{13}$|97[89][0-9]{10}$|(?=(?:[0-9]+[-●]){4})[-●0-9]{17}$)(?:97[89][-●]?)?[0-9]{1,5}[-●]?[0-9]+[-●]?[0-9]+[-●]?[0-9X]$')],
       publisher: [this.detailData.publisher ? this.detailData.publisher : ''],
       description: [this.detailData.publisher ? this.detailData.publisher : ''],
       rating: [metadata.rating ? metadata.rating : ''],
@@ -146,5 +147,9 @@ export class ContentEditComponent implements OnInit {
 
   cancelEdit() {
     this.editFinished.emit(null);
+  }
+
+  get isbn() { 
+    return this.detailForm.get('isbn'); 
   }
 }
