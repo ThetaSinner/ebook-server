@@ -125,13 +125,13 @@ export class ContentEditComponent implements OnInit {
     }
 
     if (formOutput.rating || formOutput.tags) {
-      updateRequest.metadata = {};
+      updateRequest.bookMetadataUpdateRequest = {};
 
       if (formOutput.rating) {
-        updateRequest.metadata.rating = formOutput.rating;
+        updateRequest.bookMetadataUpdateRequest.rating = formOutput.rating;
       }
       if (formOutput.tags) {
-        updateRequest.metadata.tags = formOutput.tags;
+        updateRequest.bookMetadataUpdateRequest.tags = formOutput.tags;
       }
     }
 
