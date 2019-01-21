@@ -1,0 +1,20 @@
+/* You can add global styles to this file, and also import other style files */
+
+%icon-button {
+    cursor: pointer;
+}
+
+.es-icon-button {
+    @extend %icon-button;
+}
+
+.es-icon-button-large {
+    @extend %icon-button;
+    font-size: 2em;
+}
+
+.es-overflow {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

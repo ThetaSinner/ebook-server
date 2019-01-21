@@ -1,0 +1,25 @@
+%faded-text {
+    font-weight: lighter;
+}
+
+.es-title-line {
+    h3 {
+        display: inline;
+        padding-right: 0.5em;
+    }
+}
+
+.es-subtitle-line {
+    h5 {
+        display: inline;
+        padding-right: 0.5em;
+    }
+}
+
+.es-faded-text {
+    @extend %faded-text;
+}
+
+.es-cover-image {
+    max-width: 100%;
+}

@@ -1,0 +1,92 @@
+<form [formGroup]="detailForm">
+  <div class="row">
+    <div class="col-sm-2"></div>
+    <div class="col-sm-8">
+      <div class="form-group">
+        <label for="titleInput">Title</label>
+        <input type="text" class="form-control" id="titleInput" placeholder="Title" formControlName="title">
+      </div>
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="form-group">
+            <label for="publisherInput">Publisher</label>
+            <input type="text" class="form-control" id="publisherInput" placeholder="Publisher" formControlName="publisher">
+          </div>
+          <div class="form-group">
+            <label for="isbnInput">ISBN</label>
+            <input type="text" class="form-control" id="isbnInput" placeholder="ISBN" formControlName="isbn">
+
+            <div *ngIf="isbn.invalid && (isbn.dirty || isbn.touched)" class="alert alert-danger">
+
+              <div *ngIf="isbn.errors.pattern">
+                Not a valid ISBN
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="ratingInput">Rating</label>
+            <input type="number" min="1" max="5" class="form-control" id="ratingInput" placeholder="Rating"
+              formControlName="rating">
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="form-group">
+            <label for="datePublishedInput">Date published</label><br />
+            <ngb-datepicker id="datePublishedInput" #dp formControlName="datePublished"></ngb-datepicker>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="form-group" formArrayName="authors">
+            <label for="authorInput-1">
+              <span>Authors&nbsp;</span>
+              <fa-icon [icon]="addIcon" class="es-icon-button" (click)="addAuthorInput()"></fa-icon>
+            </label>
+            <div *ngFor="let author of authorsControl.controls; let i=index" class="row">
+              <div class="col-sm-11">
+                <div class="form-group">
+                  <input type="text" class="form-control" [id]="'authorInput-' + i" placeholder="Author"
+                    [formControlName]="i">
+                </div>
+              </div>
+              <div class="col-sm-1">
+                <fa-icon *ngIf="i >= 1" [icon]="removeIcon" class="es-icon-button" (click)="removeAuthorInput(i)"></fa-icon>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="form-group" formArrayName="tags">
+            <label for="tagInput-1">
+              <span>Tags&nbsp;</span>
+              <fa-icon [icon]="addIcon" class="es-icon-button" (click)="addTagInput()"></fa-icon>
+            </label>
+            <div *ngFor="let tag of tagsControl.controls; let i=index" class="row">
+              <div class="col-sm-11">
+                <div class="form-group">
+                  <input type="text" class="form-control" [id]="'tagInput-' + i" placeholder="Tag" [formControlName]="i">
+                </div>
+              </div>
+              <div class="col-sm-1">
+                <fa-icon [icon]="removeIcon" class="es-icon-button" (click)="removeTagInput(i)"></fa-icon>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="descriptionInput">Description</label>
+        <textarea class="form-control" id="descriptionInput" placeholder="Description" formControlName="description"></textarea>
+      </div>
+      <div class="row">
+        <div class="col-sm-11"></div>
+        <div class="col-sm-1">
+          <fa-icon [icon]="saveChangesIcon" class="es-icon-button" (click)="saveChanges()"></fa-icon>
+          <fa-icon [icon]="cancelChangesIcon" class="es-icon-button" (click)="cancelEdit()"></fa-icon>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-2"></div>
+  </div>
+</form>

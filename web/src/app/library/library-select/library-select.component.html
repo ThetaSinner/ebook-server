@@ -1,0 +1,6 @@
+<div class="row es-highlight" *ngFor="let library of libraryData" (click)="selectLibrary(library)">
+  <span class="col">
+    <fa-icon [icon]="faFolderOpen" class="es-library-icon"></fa-icon>
+    <span>{{library}}</span>
+  </span>
+</div>

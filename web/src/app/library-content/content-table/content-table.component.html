@@ -1,0 +1,34 @@
+<div class="row es-book-header-row">
+  <div class="col-sm-2">Title</div>
+  <div class="col-sm-2">Authors</div>
+  <div class="col-sm-2">Publisher</div>
+  <div class="col-sm-1">Date</div>
+  <div class="col-sm-2">ISBN</div>
+  <div class="col-sm-1">Rating</div>
+  <div class="col-sm-1">Tags</div>
+  <div class="col-sm-1"></div>
+</div>
+<div *ngFor="let rowData of tableData">
+  <div class="row es-book-row">
+    <div class="col-sm-2" [title]="rowData.title">{{rowData.title}}</div>
+    <div class="col-sm-2" [title]="rowData.authors">{{rowData.authors | valueList}}</div>
+    <div class="col-sm-2" [title]="rowData.publisher">{{rowData.publisher}}</div>
+    <div class="col-sm-1">{{rowData.datePublished | date:'shortDate'}}</div>
+    <div class="col-sm-2">{{rowData.isbn}}</div>
+    <div class="col-sm-1">{{getRating(rowData)}}</div>
+    <div class="col-sm-1" [title]="getTags(rowData)">{{getTags(rowData) | valueList}}</div>
+    <div class="col-sm-1 text-center" aria-label="Expand Book">
+      <fa-icon [icon]="getIcon(rowData.id)" (click)="toggleDetails(rowData.id)" class="es-icon-button"></fa-icon>
+    </div>
+  </div>
+  <div class="row es-book-row" *ngIf="isShowDetails(rowData.id) && !isEditDetails(rowData.id)">
+    <div class="col">
+      <app-content-detail [detailData]="rowData" [libraryName]="libraryName" (startEdit)="editDetail(rowData.id)" (contentChanged)="handleContentChanged()"></app-content-detail>
+    </div>
+  </div>
+  <div class="row es-book-row" *ngIf="isShowDetails(rowData.id) && isEditDetails(rowData.id)">
+    <div class="col">
+      <app-content-edit [detailData]="rowData" [libraryName]="libraryName" (editFinished)="finishEdit(rowData.id, $event)"></app-content-edit>
+    </div>
+  </div>
+</div>

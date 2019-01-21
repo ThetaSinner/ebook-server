@@ -1,0 +1,7 @@
+<form [formGroup]="addRemoteForm">
+  <div class="form-group">
+    <label for="bookUrl">Path to your book</label>
+    <input type="text" id="bookUrl" class="form-control" formControlName="bookUrl" />
+  </div>
+  <button type="button" class="btn btn-primary" (click)="handleAdd()">Add</button>
+</form>
