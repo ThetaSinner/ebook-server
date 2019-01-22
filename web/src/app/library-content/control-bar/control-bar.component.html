@@ -5,6 +5,7 @@
   <div class="col-sm-2">
     <fa-icon [icon]="saveIcon" class="es-icon-button-large mr-2" (click)="saveLibrary()"></fa-icon>
     <fa-icon [icon]="faIconAddContent" class="es-icon-button-large mr-2" (click)="navigateToAddContent()"></fa-icon>
+    <fa-icon [icon]="reportIcon" class="es-icon-button-large mr-2" (click)="navigateToReport()"></fa-icon>
   </div>
 
   <div *ngIf="infoItems" [class]="'col-sm-' + (9 - 2 * infoItems.length)"></div>

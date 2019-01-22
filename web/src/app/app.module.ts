@@ -5,6 +5,7 @@ import { AppComponent } from './app.component';
 import { LibraryAddModule } from './library-add/library-add.module';
 import { LibraryContentModule } from './library-content/library-content.module';
 import { LibraryModule } from './library/library.module';
+import { LibraryReportModule } from './library-report/library-report.module';
 
 @NgModule({
   declarations: [
@@ -15,7 +16,8 @@ import { LibraryModule } from './library/library.module';
     AppRoutingModule,
     LibraryModule,
     LibraryContentModule,
-    LibraryAddModule
+    LibraryAddModule,
+    LibraryReportModule
   ],
   providers: [],
   bootstrap: [AppComponent]
