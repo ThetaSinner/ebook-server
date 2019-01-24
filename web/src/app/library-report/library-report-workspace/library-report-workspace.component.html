@@ -7,7 +7,11 @@
     <div class="col-sm-11">
       <h2>Library report</h2>
 
-      <p>{{reportData$ | async | json}}</p>
+      <div class="row">
+        <div class="col-sm-6">
+          <app-content-breakdown-chart [metrics$]="metrics"></app-content-breakdown-chart>
+        </div>
+      </div>
     </div>
   </div>
 </div>

@@ -4,9 +4,10 @@ import { LibraryReportWorkspaceComponent } from './library-report-workspace/libr
 import { LibraryReportRoutingModule } from './library-report-routing.module';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ReportDataService } from './report-data/report-data.service';
+import { ContentBreakdownChartComponent } from './content-breakdown-chart/content-breakdown-chart.component';
 
 @NgModule({
-  declarations: [LibraryReportWorkspaceComponent],
+  declarations: [LibraryReportWorkspaceComponent, ContentBreakdownChartComponent],
   imports: [
     CommonModule,
     FontAwesomeModule,
