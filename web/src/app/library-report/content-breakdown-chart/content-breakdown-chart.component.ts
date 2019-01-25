@@ -12,7 +12,7 @@ export class ContentBreakdownChartComponent implements OnInit {
 
   @Input() metrics$: Observable<any>;
 
-  chart: any;
+  private chart: any;
 
   constructor() { }
 

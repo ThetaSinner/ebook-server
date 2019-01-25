@@ -10,4 +10,5 @@ public class ReportCurationMetricsModel {
     private List<BookWithMissingData> booksWithMissingTitles = new ArrayList<>();
     private List<BookWithMissingData> booksWithMissingPublisher = new ArrayList<>();
     private List<BookWithMissingData> booksWithMissingAuthors = new ArrayList<>();
+    private Integer bookTotal;
 }

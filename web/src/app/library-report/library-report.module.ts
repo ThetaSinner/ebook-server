@@ -5,9 +5,10 @@ import { LibraryReportRoutingModule } from './library-report-routing.module';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ReportDataService } from './report-data/report-data.service';
 import { ContentBreakdownChartComponent } from './content-breakdown-chart/content-breakdown-chart.component';
+import { CurationCompletionChartComponent } from './curation-completion-chart/curation-completion-chart.component';
 
 @NgModule({
-  declarations: [LibraryReportWorkspaceComponent, ContentBreakdownChartComponent],
+  declarations: [LibraryReportWorkspaceComponent, ContentBreakdownChartComponent, CurationCompletionChartComponent],
   imports: [
     CommonModule,
     FontAwesomeModule,

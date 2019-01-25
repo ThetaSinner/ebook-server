@@ -41,4 +41,10 @@ export class LibraryReportWorkspaceComponent implements OnInit {
       map((val: any) => val.metrics)
     );
   }
+
+  get curationData() {
+    return this.reportData$.pipe(
+      map((val: any) => val.curationMetrics)
+    );
+  }
 }

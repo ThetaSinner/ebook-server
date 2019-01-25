@@ -50,6 +50,8 @@ public class LibraryMetricsReporter {
         ReportCurationMetricsModel curationMetrics = new ReportCurationMetricsModel();
         report.setCurationMetrics(curationMetrics);
 
+        curationMetrics.setBookTotal(library.getBooks().size());
+
         library.getBooks().forEach(book -> {
             if (StringUtils.isBlank(book.getTitle())) {
                 curationMetrics.getBooksWithMissingTitles().add(
