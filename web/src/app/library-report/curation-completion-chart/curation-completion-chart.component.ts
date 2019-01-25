@@ -44,14 +44,29 @@ export class CurationCompletionChartComponent implements OnInit {
       type: 'bar',
       data: {
         datasets: [{
+          label: 'Curation completion',
           data: chartData,
           backgroundColor: [
-            'rgba(100, 0, 0, 0.5)',
-            'rgba(0, 100, 0, 0.5)',
-            'rgba(0, 0, 100, 0.5)'
+            'rgba(100, 30, 0, 0.5)',
+            'rgba(0, 100, 30, 0.5)',
+            'rgba(30, 0, 100, 0.5)'
           ]
         }],
         labels: chartLabels
+      },
+      options: {
+        legend: {
+          display: false
+        },
+        scales: {
+          yAxes: [{
+            ticks: {
+              beginAtZero: true,
+              min: 0,
+              max: 100
+            }
+          }]
+        }
       }
     });
   }
