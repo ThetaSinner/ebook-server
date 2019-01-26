@@ -9,10 +9,50 @@
 
       <div class="row">
         <div class="col-sm-6">
-          <app-content-breakdown-chart [metrics$]="metrics"></app-content-breakdown-chart>
+          <app-content-breakdown-chart [metrics]="metrics"></app-content-breakdown-chart>
         </div>
         <div class="col-sm-6">
-          <app-curation-completion-chart [curationData$]="curationData"></app-curation-completion-chart>
+          <app-curation-completion-chart [curationData]="curationData"></app-curation-completion-chart>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-6">
+          <h4>Moved books</h4>
+          <div class="row">
+            <div class="col-sm-8">
+              <h5>Web Links</h5>
+            </div>
+            <div class="col-sm-4">
+              <h5>{{unreachableBooksModel?.webLinks?.length || 0}}</h5>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-8">
+              <h5>Local</h5>
+            </div>
+            <div class="col-sm-4">
+              <h5>{{unreachableBooksModel?.localBooks?.length || 0}}</h5>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <h4>Integrity problems</h4>
+          <div class="row">
+            <div class="col-sm-8">
+              <h5>Missing books</h5>
+            </div>
+            <div class="col-sm-4">
+              <h5>{{unreachableBooksModel?.missingBooks?.length || 0}}</h5>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-8">
+              <h5>Unlisted books</h5>
+            </div>
+            <div class="col-sm-4">
+              <h5>{{unreachableBooksModel?.unlistedBooks?.length || 0}}</h5>
+            </div>
+          </div>
         </div>
       </div>
     </div>

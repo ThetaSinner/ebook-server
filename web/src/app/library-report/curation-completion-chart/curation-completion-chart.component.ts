@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, ElementRef, OnChanges, SimpleChanges } from '@angular/core';
 import { Observable } from 'rxjs';
 import Chart from 'chart.js';
 
@@ -7,26 +7,28 @@ import Chart from 'chart.js';
   templateUrl: './curation-completion-chart.component.html',
   styleUrls: ['./curation-completion-chart.component.scss']
 })
-export class CurationCompletionChartComponent implements OnInit {
+export class CurationCompletionChartComponent implements OnInit, OnChanges {
   @ViewChild('curationCompletionChart') curationCompletionChartRef: ElementRef;
 
-  @Input() curationData$: Observable<any>;
+  @Input() curationData: any;
 
   private chart: any;
 
   constructor() { }
 
   ngOnInit() {
-    const sub = this.curationData$.subscribe(curationData => {
-      this.buildChart(curationData);
-      sub.unsubscribe();
-    });
+    if (this.curationData) {
+      this.buildChart(this.curationData);
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.curationData.currentValue) {
+      this.buildChart(changes.curationData.currentValue);
+    }
   }
 
   private buildChart(curationData) {
-    console.log(curationData);
-    console.log((curationData.booksWithMissingTitles.length / curationData.bookTotal) * 100);
-
     const chartData = [
       ((curationData.bookTotal - curationData.booksWithMissingTitles.length) / curationData.bookTotal) * 100,
       ((curationData.bookTotal - curationData.booksWithMissingPublisher.length) / curationData.bookTotal) * 100,

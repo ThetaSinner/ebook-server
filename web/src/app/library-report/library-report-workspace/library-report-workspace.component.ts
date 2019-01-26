@@ -12,7 +12,11 @@ import { ReportDataService } from '../report-data/report-data.service';
 })
 export class LibraryReportWorkspaceComponent implements OnInit {
   navigateBackIcon: IconDefinition = faChevronLeft;
-  reportData$: any;
+  reportData: any;
+
+  metrics: any;
+  curationData: any;
+  unreachableBooksModel: any;
 
   constructor(
     private router: Router,
@@ -21,30 +25,26 @@ export class LibraryReportWorkspaceComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.reportData$ = this.activedRoute.paramMap.pipe(
+    const sub = this.activedRoute.paramMap.pipe(
       switchMap((params: ParamMap) => {
         const libraryName = params.get('libraryName');
 
         return this.reportService.getReportData(libraryName)
       })
-    );
+    ).subscribe((val: any) => {
+      this.reportData = val;
+
+      this.metrics = val.metrics;
+      this.curationData = val.curationMetrics;
+      this.unreachableBooksModel = val.unreachableBooksModel;
+
+      sub.unsubscribe();
+    });
   }
 
   navigateBackToLibrary() {
     // This is relative to the active route for this component, not the actual url
     // of the child component that's seen
     this.router.navigate(['..'], {relativeTo: this.activedRoute});
-  }
-
-  get metrics() {
-    return this.reportData$.pipe(
-      map((val: any) => val.metrics)
-    );
-  }
-
-  get curationData() {
-    return this.reportData$.pipe(
-      map((val: any) => val.curationMetrics)
-    );
   }
 }

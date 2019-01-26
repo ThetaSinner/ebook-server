@@ -1,5 +1,4 @@
-import { Component, Input, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Component, Input, OnInit, ViewChild, ElementRef, OnChanges, SimpleChanges } from '@angular/core';
 import Chart from 'chart.js';
 
 @Component({
@@ -7,20 +6,25 @@ import Chart from 'chart.js';
   templateUrl: './content-breakdown-chart.component.html',
   styleUrls: ['./content-breakdown-chart.component.scss']
 })
-export class ContentBreakdownChartComponent implements OnInit {
+export class ContentBreakdownChartComponent implements OnInit, OnChanges {
   @ViewChild('breakdownChart') breakdownChartRef: ElementRef;
 
-  @Input() metrics$: Observable<any>;
+  @Input() metrics: any;
 
   private chart: any;
 
   constructor() { }
 
   ngOnInit() {
-    const sub = this.metrics$.subscribe(metrics => {
-      this.buildChart(metrics);
-      sub.unsubscribe();
-    });
+    if (this.metrics) {
+      this.buildChart(this.metrics);
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.metrics.currentValue) {
+      this.buildChart(changes.metrics.currentValue);
+    }
   }
 
   private buildChart(metrics) {
