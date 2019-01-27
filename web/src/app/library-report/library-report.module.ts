@@ -6,9 +6,11 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ReportDataService } from './report-data/report-data.service';
 import { ContentBreakdownChartComponent } from './content-breakdown-chart/content-breakdown-chart.component';
 import { CurationCompletionChartComponent } from './curation-completion-chart/curation-completion-chart.component';
+import { WebLinkFixComponent } from './report-fixing/web-link-fix/web-link-fix.component';
+import { FixingWorkspaceComponent } from './report-fixing/fixing-workspace/fixing-workspace.component';
 
 @NgModule({
-  declarations: [LibraryReportWorkspaceComponent, ContentBreakdownChartComponent, CurationCompletionChartComponent],
+  declarations: [LibraryReportWorkspaceComponent, ContentBreakdownChartComponent, CurationCompletionChartComponent, WebLinkFixComponent, FixingWorkspaceComponent],
   imports: [
     CommonModule,
     FontAwesomeModule,

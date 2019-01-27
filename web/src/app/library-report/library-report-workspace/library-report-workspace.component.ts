@@ -18,11 +18,18 @@ export class LibraryReportWorkspaceComponent implements OnInit {
   curationData: any;
   unreachableBooksModel: any;
 
+  reportFixModel: any;
+
   constructor(
     private router: Router,
     private activedRoute: ActivatedRoute,
     private reportService: ReportDataService
-  ) { }
+  ) { 
+    this.reportFixModel = {
+      report: null,
+      fixWebLinks: false
+    };
+  }
 
   ngOnInit() {
     const sub = this.activedRoute.paramMap.pipe(
@@ -33,6 +40,7 @@ export class LibraryReportWorkspaceComponent implements OnInit {
       })
     ).subscribe((val: any) => {
       this.reportData = val;
+      this.reportFixModel.report = val;
 
       this.metrics = val.metrics;
       this.curationData = val.curationMetrics;
@@ -46,5 +54,9 @@ export class LibraryReportWorkspaceComponent implements OnInit {
     // This is relative to the active route for this component, not the actual url
     // of the child component that's seen
     this.router.navigate(['..'], {relativeTo: this.activedRoute});
+  }
+
+  toggleWebLinkFixes() {
+    this.reportFixModel.fixWebLinks = !this.reportFixModel.fixWebLinks;
   }
 }
