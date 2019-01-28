@@ -18,3 +18,8 @@
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+.row.es-highlight:hover {
+    background: lightgray;
+    cursor: pointer;
+}

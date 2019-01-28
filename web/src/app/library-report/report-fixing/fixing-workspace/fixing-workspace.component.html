@@ -1,7 +1,7 @@
 <div class="container">
-  <div class="row" *ngIf="reportFixModel.fixWebLinks">
+  <div class="row" *ngIf="reportFixModel.fixWebLinks && fixWebLinks">
     <div class="col">
-      <app-web-link-fix></app-web-link-fix>
+      <app-web-link-fix [fixWebLinks]="fixWebLinks"></app-web-link-fix>
     </div>
   </div>
 </div>

@@ -18,38 +18,38 @@
       <div class="row">
         <div class="col-sm-6">
           <h4>Moved books</h4>
-          <div class="row" (click)="toggleWebLinkFixes()">
-            <div class="col-sm-8">
+          <div class="row es-highlight" (click)="toggleWebLinkFixes()">
+            <div class="col-sm-11">
               <h5>Web Links</h5>
             </div>
-            <div class="col-sm-4">
+            <div class="col-sm-1">
               <h5>{{unreachableBooksModel?.webLinks?.length || 0}}</h5>
             </div>
           </div>
-          <div class="row">
-            <div class="col-sm-8">
+          <div class="row es-highlight">
+            <div class="col-sm-11">
               <h5>Local</h5>
             </div>
-            <div class="col-sm-4">
+            <div class="col-sm-1">
               <h5>{{unreachableBooksModel?.localBooks?.length || 0}}</h5>
             </div>
           </div>
         </div>
         <div class="col-sm-6">
           <h4>Integrity problems</h4>
-          <div class="row">
-            <div class="col-sm-8">
+          <div class="row es-highlight">
+            <div class="col-sm-11">
               <h5>Missing books</h5>
             </div>
-            <div class="col-sm-4">
+            <div class="col-sm-1">
               <h5>{{unreachableBooksModel?.missingBooks?.length || 0}}</h5>
             </div>
           </div>
-          <div class="row">
-            <div class="col-sm-8">
+          <div class="row es-highlight">
+            <div class="col-sm-11">
               <h5>Unlisted books</h5>
             </div>
-            <div class="col-sm-4">
+            <div class="col-sm-1">
               <h5>{{unreachableBooksModel?.unlistedBooks?.length || 0}}</h5>
             </div>
           </div>
