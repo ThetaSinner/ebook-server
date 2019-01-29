@@ -40,7 +40,10 @@ export class LibraryReportWorkspaceComponent implements OnInit {
       })
     ).subscribe((val: any) => {
       this.reportData = val;
-      this.reportFixModel.report = val;
+
+      const temp = Object.assign({}, this.reportFixModel);
+      temp.report = val;
+      this.reportFixModel = temp;
 
       this.metrics = val.metrics;
       this.curationData = val.curationMetrics;

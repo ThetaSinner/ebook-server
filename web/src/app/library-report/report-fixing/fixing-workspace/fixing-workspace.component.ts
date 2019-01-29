@@ -1,21 +1,34 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
 
 @Component({
   selector: 'app-fixing-workspace',
   templateUrl: './fixing-workspace.component.html',
   styleUrls: ['./fixing-workspace.component.scss']
 })
-export class FixingWorkspaceComponent implements OnInit {
+export class FixingWorkspaceComponent implements OnInit, OnChanges {
   @Input() reportFixModel: any;
   fixWebLinks: any;
 
   constructor() { }
 
   ngOnInit() {
-    console.log('got things', this.reportFixModel);
+    this.renderFixingWorkspace();
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.reportFixModel.currentValue) {
+      this.reportFixModel = changes.reportFixModel.currentValue
+      this.renderFixingWorkspace();
+    }
+  }
+
+  renderFixingWorkspace() {
+    if (!this.reportFixModel) {
+      return;
+    }
 
     const report = this.reportFixModel.report;
-    if (report == null) {
+    if (!report) {
       return;
     }
 
