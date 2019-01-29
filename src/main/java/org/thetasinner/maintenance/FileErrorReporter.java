@@ -140,6 +140,7 @@ public class FileErrorReporter implements IErrorReporter {
 
     unreachableWebLink.setBookId(book.getId());
     unreachableWebLink.setReportId(UUID.randomUUID().toString());
+    unreachableWebLink.setBrokenLink(book.getUrl().getValue());
     unreachableWebLink.setStatusCode(statusCode);
   }
 }

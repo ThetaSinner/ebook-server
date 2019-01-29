@@ -7,4 +7,5 @@ public class UnreachableWebLink {
     private String bookId;
     private String reportId;
     private int statusCode;
+    private String brokenLink;
 }

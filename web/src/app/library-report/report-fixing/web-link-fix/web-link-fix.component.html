@@ -1,5 +1,11 @@
 <div class="row" *ngFor="let fixWebLink of fixWebLinks">
   <div class="col">
-    <p>{{fixWebLink.bookId}}</p>
+    <p>Broken link: <a href="{{fixWebLink.brokenLink}}" target="_blank">{{fixWebLink.brokenLink}}</a>. Got HTTP status code <b>{{fixWebLink.statusCode}}</b> while GETting the book's URL.</p>
+    <form>
+      <div class="form-group">
+        <input type="text" class="form-control" />
+      </div>
+      <button class="btn btn-primary">Update</button>
+    </form>
   </div>
 </div>
