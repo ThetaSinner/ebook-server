@@ -10,7 +10,11 @@ export class WebLinkFixComponent implements OnInit, OnChanges {
   @Input() fixWebLinks: any;
   updateInputsForm: FormGroup;
 
-  constructor(private formBuilder: FormBuilder) { }
+  constructor(private formBuilder: FormBuilder) {
+    this.updateInputsForm = formBuilder.group({
+      updateInputs: formBuilder.array([])
+    });
+  }
 
   ngOnInit() {
     this.buildForm();
@@ -41,11 +45,10 @@ export class WebLinkFixComponent implements OnInit, OnChanges {
   }
 
   getFixWebLink(index: number) {
-    console.log(index);
     return this.fixWebLinks[index];
   }
 
-  run() {
-
+  updateBrokenWebLink(index: number) {
+    console.log(this.updateInputs.at(index).value);
   }
 }

@@ -1,17 +1,13 @@
 <div [formGroup]="updateInputsForm">
   <div formArrayName="updateInputs">
     <div class="row es-group-left mb-3" *ngFor="let updateInput of updateInputs.controls; let i = index">
-        <div class="col">
-          <!-- <a href="{{getFixWebLink(i).brokenLink}}" target="_blank">{{getFixWebLink(i).brokenLink}}</a> -->
-          <!-- <b>{{getFixWebLink(i).statusCode}}</b> -->
-          <p>Broken link: . Got HTTP status code  while GETting the book's URL.</p>
-          <form>
-            <div class="form-group">
-              <input type="text" class="form-control" value="{{getFixWebLink(i).brokenLink}}" [formControlName]="i" />
-            </div>
-            <button class="btn btn-primary" (click)="run()">Update</button>
-          </form>
+      <div class="col">
+        <p>Broken link: <a href="{{getFixWebLink(i).brokenLink}}" target="_blank">{{getFixWebLink(i).brokenLink}}</a>. Got HTTP status code <b>{{getFixWebLink(i).statusCode}}</b> while GETting the book's URL.</p>
+        <div class="form-group">
+          <input type="text" class="form-control" value="{{getFixWebLink(i).brokenLink}}" [formControlName]="i" />
         </div>
+        <button class="btn btn-primary" (click)="updateBrokenWebLink(i)">Update</button>
       </div>
+    </div>
   </div>
 </div>

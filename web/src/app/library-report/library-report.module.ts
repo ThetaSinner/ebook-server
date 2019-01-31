@@ -8,13 +8,12 @@ import { ContentBreakdownChartComponent } from './content-breakdown-chart/conten
 import { CurationCompletionChartComponent } from './curation-completion-chart/curation-completion-chart.component';
 import { WebLinkFixComponent } from './report-fixing/web-link-fix/web-link-fix.component';
 import { FixingWorkspaceComponent } from './report-fixing/fixing-workspace/fixing-workspace.component';
-import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [LibraryReportWorkspaceComponent, ContentBreakdownChartComponent, CurationCompletionChartComponent, WebLinkFixComponent, FixingWorkspaceComponent],
   imports: [
     CommonModule,
-    FormsModule, // WTF angular
     ReactiveFormsModule,
     FontAwesomeModule,
     LibraryReportRoutingModule
