@@ -7,6 +7,7 @@ import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/cor
 })
 export class FixingWorkspaceComponent implements OnInit, OnChanges {
   @Input() reportFixModel: any;
+  @Input() libraryName: string;
   fixWebLinks: any;
 
   constructor() { }

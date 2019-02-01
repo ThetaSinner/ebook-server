@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormArray, FormGroup } from '@angular/forms';
+import { BookDataService } from 'src/app/library-content/book-data/book-data.service';
 
 @Component({
   selector: 'app-web-link-fix',
@@ -8,9 +9,13 @@ import { FormBuilder, FormArray, FormGroup } from '@angular/forms';
 })
 export class WebLinkFixComponent implements OnInit, OnChanges {
   @Input() fixWebLinks: any;
+  @Input() libraryName: string;
   updateInputsForm: FormGroup;
 
-  constructor(private formBuilder: FormBuilder) {
+  constructor(
+    private formBuilder: FormBuilder,
+    private bookService: BookDataService
+  ) {
     this.updateInputsForm = formBuilder.group({
       updateInputs: formBuilder.array([])
     });
@@ -49,6 +54,12 @@ export class WebLinkFixComponent implements OnInit, OnChanges {
   }
 
   updateBrokenWebLink(index: number) {
-    console.log(this.updateInputs.at(index).value);
+    const sub = this.bookService.updateBook(this.fixWebLinks[index].bookId, {
+      op: "replace",
+      path: "/url/value",
+      value: this.updateInputs.at(index).value
+    }, this.libraryName).subscribe(() => {
+      sub.unsubscribe();
+    });
   }
 }

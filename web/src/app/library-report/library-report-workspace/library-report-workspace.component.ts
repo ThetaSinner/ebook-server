@@ -19,6 +19,7 @@ export class LibraryReportWorkspaceComponent implements OnInit {
   unreachableBooksModel: any;
 
   reportFixModel: any;
+  libraryName: string;
 
   constructor(
     private router: Router,
@@ -35,6 +36,7 @@ export class LibraryReportWorkspaceComponent implements OnInit {
     const sub = this.activedRoute.paramMap.pipe(
       switchMap((params: ParamMap) => {
         const libraryName = params.get('libraryName');
+        this.libraryName = libraryName;
 
         return this.reportService.getReportData(libraryName)
       })
