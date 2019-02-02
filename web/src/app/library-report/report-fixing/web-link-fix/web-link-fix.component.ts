@@ -54,11 +54,11 @@ export class WebLinkFixComponent implements OnInit, OnChanges {
   }
 
   updateBrokenWebLink(index: number) {
-    const sub = this.bookService.updateBook(this.fixWebLinks[index].bookId, {
+    const sub = this.bookService.updateBook(this.fixWebLinks[index].bookId, [{
       op: "replace",
       path: "/url/value",
       value: this.updateInputs.at(index).value
-    }, this.libraryName).subscribe(() => {
+    }], this.libraryName).subscribe(() => {
       sub.unsubscribe();
     });
   }

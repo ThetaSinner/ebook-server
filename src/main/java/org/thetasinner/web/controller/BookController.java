@@ -1,5 +1,6 @@
 package org.thetasinner.web.controller;
 
+import com.github.fge.jsonpatch.JsonPatchException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,7 +15,6 @@ import org.thetasinner.data.EBookDataService;
 import org.thetasinner.data.model.Book;
 import org.thetasinner.web.error.EBookControllerException;
 import org.thetasinner.web.model.BookAddRequest;
-import org.thetasinner.web.model.BookUpdateRequest;
 import org.thetasinner.web.model.EmptyJsonResponse;
 import org.thetasinner.web.model.RequestBase;
 import org.thetasinner.web.model.UploadResponse;
@@ -61,8 +61,8 @@ public class BookController {
 
   @RequestMapping(value = "/{id}", method = RequestMethod.PATCH)
   public @ResponseBody
-  Book updateBook(@PathVariable("id") String id, @RequestBody RequestBase<BookUpdateRequest> bookUpdateRequest) {
-    return dataService.updateBook(id, bookUpdateRequest.getName(), bookUpdateRequest.getRequest());
+  Book updateBook(@PathVariable("id") String id, @RequestParam("libraryName") String libraryName, @RequestBody String bookPatch) throws IOException, JsonPatchException {
+    return dataService.updateBook(id, libraryName, bookPatch);
   }
 
   @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)

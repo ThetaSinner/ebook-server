@@ -1,5 +1,6 @@
 package org.thetasinner.data;
 
+import com.github.fge.jsonpatch.JsonPatchException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -20,7 +21,6 @@ import org.thetasinner.data.storage.StorageException;
 import org.thetasinner.web.events.ChangeEventData;
 import org.thetasinner.web.events.LibraryChangeService;
 import org.thetasinner.web.model.BookAddRequest;
-import org.thetasinner.web.model.BookUpdateRequest;
 import org.thetasinner.web.model.CommitLibrary;
 import org.thetasinner.web.model.CommitRequest;
 
@@ -36,7 +36,6 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.thetasinner.web.events.ChangeEventData.ChangeType.BookCreated;
-import static org.thetasinner.web.events.ChangeEventData.ChangeType.BookDeleted;
 import static org.thetasinner.web.events.ChangeEventData.ChangeType.BookUpdated;
 
 @Service
@@ -174,16 +173,16 @@ public class EBookDataService {
     bookService.deleteBook(name, id);
   }
 
-  public Book updateBook(String id, String name, BookUpdateRequest bookUpdateRequest) {
+  public Book updateBook(String id, String name, String bookPatch) throws IOException, JsonPatchException {
     if (StringUtils.isEmpty(id)) {
       throw new InvalidRequestException("Missing request param: id");
     }
 
-    if (bookUpdateRequest == null) {
+    if (bookPatch == null) {
       throw new InvalidRequestException("Missing request body");
     }
 
-    Book book = bookService.updateBook(id, name, bookUpdateRequest);
+    Book book = bookService.updateBook(id, name, bookPatch);
 
     // Publish book updated change event.
     ChangeEventData eventData = new ChangeEventData(BookUpdated, id);

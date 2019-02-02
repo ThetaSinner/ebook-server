@@ -30,12 +30,7 @@ export class BookDataService {
   }
 
   updateBook(id: string, updateRequest: any, libraryName: string): any {
-    const body = {
-      name: libraryName,
-      request: updateRequest
-    };
-
-    return this.client.patch(`${environment.mediaServerUrlBase}/books/${id}`, body);
+    return this.client.patch(`${environment.mediaServerUrlBase}/books/${id}?libraryName=${libraryName}`, updateRequest);
   }
 
   deleteBook(id: string, libraryName: string): Observable<any> {

@@ -1,24 +1,23 @@
 package org.thetasinner.data.content;
 
-import org.apache.commons.collections4.CollectionUtils;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.fge.jsonpatch.JsonPatch;
+import com.github.fge.jsonpatch.JsonPatchException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.thetasinner.data.exception.EBookNotFoundException;
 import org.thetasinner.data.model.Book;
-import org.thetasinner.data.model.BookMetadata;
 import org.thetasinner.data.model.TypedUrl;
 import org.thetasinner.data.storage.ILibraryStorage;
 import org.thetasinner.data.storage.StorageException;
-import org.thetasinner.web.model.BookMetadataUpdateRequest;
-import org.thetasinner.web.model.BookUpdateRequest;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 public class BookService {
@@ -53,43 +52,18 @@ public class BookService {
     return library.getBooks();
   }
 
-  public Book updateBook(String id, String name, BookUpdateRequest bookUpdateRequest) {
+  public Book updateBook(String id, String name, String bookUpdateRequest) throws JsonPatchException, IOException {
     LOG.info("Updating book with id [{}] in library [{}]", id, name);
 
     Book book = getBook(name, id);
 
-    if (bookUpdateRequest.getTitle() != null) {
-      book.setTitle(bookUpdateRequest.getTitle());
-    }
+    var mapper = new ObjectMapper();
+    var patch = mapper.readValue(bookUpdateRequest, JsonPatch.class);
+    var patchedNode = patch.apply(mapper.convertValue(book, JsonNode.class));
+    var updatedBook = mapper.convertValue(patchedNode, Book.class);
+    putBook(name, updatedBook);
 
-    if (bookUpdateRequest.getIsbn() != null) {
-      book.setIsbn(bookUpdateRequest.getIsbn());
-    }
-
-    if (!CollectionUtils.isEmpty(bookUpdateRequest.getAuthors())) {
-      // Ensure the list of authors only contains unique values.
-      book.setAuthors(
-              bookUpdateRequest.getAuthors().stream().distinct().collect(Collectors.toList())
-      );
-    }
-
-    if (bookUpdateRequest.getPublisher() != null) {
-      book.setPublisher(bookUpdateRequest.getPublisher());
-    }
-
-    if (bookUpdateRequest.getDatePublished() != null) {
-      book.setDatePublished(bookUpdateRequest.getDatePublished());
-    }
-
-    if (bookUpdateRequest.getDescription() != null) {
-      book.setDescription(bookUpdateRequest.getDescription());
-    }
-
-    if (bookUpdateRequest.getBookMetadataUpdateRequest() != null) {
-      updateBookMetadata(book, bookUpdateRequest.getBookMetadataUpdateRequest());
-    }
-
-    return book;
+    return updatedBook;
   }
 
   public void deleteBook(String libraryName, String id) {
@@ -110,25 +84,6 @@ public class BookService {
     return book;
   }
 
-  private void updateBookMetadata(Book book, BookMetadataUpdateRequest bookMetadataUpdateRequest) {
-    BookMetadata bookMetadata = book.getMetadata();
-    if (bookMetadata == null) {
-      bookMetadata = new BookMetadata();
-      book.setMetadata(bookMetadata);
-    }
-
-    if (!CollectionUtils.isEmpty(bookMetadataUpdateRequest.getTags())) {
-      // Ensure the list of tags only contains unique values.
-      bookMetadata.setTags(
-              bookMetadataUpdateRequest.getTags().stream().distinct().collect(Collectors.toList())
-      );
-    }
-
-    if (bookMetadataUpdateRequest.getRating() != null) {
-      bookMetadata.setRating(bookMetadataUpdateRequest.getRating());
-    }
-  }
-
   public Book getBook(String libraryName, String id) {
     LOG.trace("Getting book with id [{}] from library [{}]", id, libraryName);
 
@@ -145,5 +100,19 @@ public class BookService {
     } else {
       throw new EBookNotFoundException("Book not found");
     }
+  }
+
+  private void putBook(String libraryName, Book book) {
+    LOG.trace("Putting book with id [{}] from library [{}]", book.getId(), libraryName);
+
+    var library = libraryService.getLibrary(libraryName).getItem();
+
+    Optional<Book> first = library.getBooks().stream().filter(b -> book.getId().equals(b.getId())).findFirst();
+    if (!first.isPresent()) {
+      throw new EBookNotFoundException("Missing book for put operation");
+    }
+
+    var index = library.getBooks().indexOf(first.get());
+    library.getBooks().set(index, book);
   }
 }
