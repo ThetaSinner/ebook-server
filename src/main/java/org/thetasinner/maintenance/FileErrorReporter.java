@@ -114,6 +114,7 @@ public class FileErrorReporter implements IErrorReporter {
 
       unreachableLocalBook.setBookId(book.getId());
       unreachableLocalBook.setReportId(UUID.randomUUID().toString());
+      unreachableLocalBook.setBrokenPath(book.getUrl().getValue());
     }
   }
 

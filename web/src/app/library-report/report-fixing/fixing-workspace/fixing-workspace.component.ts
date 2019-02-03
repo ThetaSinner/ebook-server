@@ -9,6 +9,7 @@ export class FixingWorkspaceComponent implements OnInit, OnChanges {
   @Input() reportFixModel: any;
   @Input() libraryName: string;
   fixWebLinks: any;
+  fixLocalBooks: any;
 
   constructor() { }
 
@@ -36,6 +37,10 @@ export class FixingWorkspaceComponent implements OnInit, OnChanges {
     const unreachableBooksModel = report.unreachableBooksModel;
     if (unreachableBooksModel && unreachableBooksModel.webLinks) {
       this.fixWebLinks = unreachableBooksModel.webLinks;
+    }
+
+    if (unreachableBooksModel && unreachableBooksModel.localBooks) {
+      this.fixLocalBooks = unreachableBooksModel.localBooks;
     }
   }
 }

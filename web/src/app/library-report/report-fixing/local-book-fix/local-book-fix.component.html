@@ -1,0 +1,13 @@
+<div [formGroup]="updateInputsForm">
+  <div formArrayName="updateInputs">
+    <div class="row es-group-left mb-3" *ngFor="let updateInput of updateInputs.controls; let i = index">
+      <div class="col">
+        <p>Broken path: <em>{{getFixLocalBook(i).brokenPath}}</em>.</p>
+        <div class="form-group">
+          <input type="text" class="form-control" value="{{getFixLocalBook(i).brokenPath}}" [formControlName]="i" />
+        </div>
+        <button class="btn btn-primary" (click)="updateBrokenLocalBook(i)">Update</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -9,9 +9,10 @@ import { CurationCompletionChartComponent } from './curation-completion-chart/cu
 import { WebLinkFixComponent } from './report-fixing/web-link-fix/web-link-fix.component';
 import { FixingWorkspaceComponent } from './report-fixing/fixing-workspace/fixing-workspace.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { LocalBookFixComponent } from './report-fixing/local-book-fix/local-book-fix.component';
 
 @NgModule({
-  declarations: [LibraryReportWorkspaceComponent, ContentBreakdownChartComponent, CurationCompletionChartComponent, WebLinkFixComponent, FixingWorkspaceComponent],
+  declarations: [LibraryReportWorkspaceComponent, ContentBreakdownChartComponent, CurationCompletionChartComponent, WebLinkFixComponent, FixingWorkspaceComponent, LocalBookFixComponent],
   imports: [
     CommonModule,
     ReactiveFormsModule,

@@ -28,7 +28,8 @@ export class LibraryReportWorkspaceComponent implements OnInit {
   ) { 
     this.reportFixModel = {
       report: null,
-      fixWebLinks: false
+      fixWebLinks: false,
+      fixLocalBooks: false
     };
   }
 
@@ -63,5 +64,9 @@ export class LibraryReportWorkspaceComponent implements OnInit {
 
   toggleWebLinkFixes() {
     this.reportFixModel.fixWebLinks = !this.reportFixModel.fixWebLinks;
+  }
+
+  toggleLocalBookFixes() {
+    this.reportFixModel.fixLocalBooks = !this.reportFixModel.fixLocalBooks;
   }
 }

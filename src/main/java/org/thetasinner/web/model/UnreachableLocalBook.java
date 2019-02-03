@@ -6,4 +6,5 @@ import lombok.Data;
 public class UnreachableLocalBook {
     private String bookId;
     private String reportId;
+    private String brokenPath;
 }

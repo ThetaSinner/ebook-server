@@ -4,4 +4,9 @@
       <app-web-link-fix [fixWebLinks]="fixWebLinks" [libraryName]="libraryName"></app-web-link-fix>
     </div>
   </div>
+  <div class="row" *ngIf="reportFixModel.fixLocalBooks">
+    <div class="col">
+      <app-local-book-fix [fixLocalBooks]="fixLocalBooks" [libraryName]="libraryName"></app-local-book-fix>
+    </div>
+  </div>
 </div>
