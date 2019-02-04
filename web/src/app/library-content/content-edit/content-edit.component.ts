@@ -4,6 +4,7 @@ import { IconDefinition, findIconDefinition } from '@fortawesome/fontawesome-svg
 import { faPlus, faMinus, faCalendarAlt, faCheck, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import { NgbCalendar, NgbDate } from '@ng-bootstrap/ng-bootstrap';
 import { BookDataService } from '../book-data/book-data.service';
+import { compare } from 'fast-json-patch';
 
 @Component({
   selector: 'app-content-edit',
@@ -103,42 +104,62 @@ export class ContentEditComponent implements OnInit {
   saveChanges() {
     const formOutput = this.detailForm.getRawValue();
 
-    const updateRequest: any = {};
+    // Create update request with the fields that can't be edited.
+    const updatedBook: any = {
+      id: this.detailData.id,
+      url: this.detailData.url,
+      covers: this.detailData.covers
+    };
+
     if (formOutput.title) {
-      updateRequest.title = formOutput.title;
+      updatedBook.title = formOutput.title;
     }
     if (formOutput.isbn) {
-      updateRequest.isbn = formOutput.isbn;
+      updatedBook.isbn = formOutput.isbn;
     }
     if (formOutput.publisher) {
-      updateRequest.publisher = formOutput.publisher;
+      updatedBook.publisher = formOutput.publisher;
     }
     if (formOutput.description) {
-      updateRequest.description = formOutput.description;
+      updatedBook.description = formOutput.description;
     }
     if (formOutput.datePublished) {
       const dateStruct = formOutput.datePublished;
-      updateRequest.datePublished = new Date(dateStruct.year, dateStruct.month - 1, dateStruct.day);
+      updatedBook.datePublished = new Date(dateStruct.year, dateStruct.month - 1, dateStruct.day);
     }
-    if (formOutput.authors) {
-      updateRequest.authors = formOutput.authors;
+    
+    if (this.isArrayValid(formOutput, 'authors')) {
+      updatedBook.authors = formOutput.authors.filter((author: any) => author);
     }
 
-    if (formOutput.rating || formOutput.tags) {
-      updateRequest.bookMetadataUpdateRequest = {};
+    if (formOutput.rating || this.isArrayValid(formOutput, 'tags')) {
+      updatedBook.metadata = {};
 
       if (formOutput.rating) {
-        updateRequest.bookMetadataUpdateRequest.rating = formOutput.rating;
+        updatedBook.metadata.rating = formOutput.rating;
       }
-      if (formOutput.tags) {
-        updateRequest.bookMetadataUpdateRequest.tags = formOutput.tags;
+
+      if (this.isArrayValid(formOutput, 'tags')) {
+        updatedBook.metadata.tags = formOutput.tags.filter(tag => tag);
       }
     }
 
-    const sub = this.bookDataService.updateBook(this.detailData.id, updateRequest, this.libraryName).subscribe((updatedBook) => {
+    const diff = compare(this.detailData, updatedBook);
+
+    const sub = this.bookDataService.updateBook(this.detailData.id, diff, this.libraryName).subscribe((updatedBook) => {
       this.finishEdit(updatedBook);
       sub.unsubscribe();
     });
+  }
+
+  private isArrayValid(objectToTest: object, field: string) {
+    if (objectToTest[field]) {
+      const array = objectToTest[field].filter((val: any) => val);
+      
+      return array.length
+    }
+
+    return false;
   }
 
   private finishEdit(updatedBook) {
