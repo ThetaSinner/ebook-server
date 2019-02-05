@@ -17,6 +17,8 @@ export class LibraryReportWorkspaceComponent implements OnInit {
   metrics: any;
   curationData: any;
   unreachableBooksModel: any;
+  missingBooks: any;
+  unlistedBooks: any;
 
   reportFixModel: any;
   libraryName: string;
@@ -48,9 +50,13 @@ export class LibraryReportWorkspaceComponent implements OnInit {
       temp.report = val;
       this.reportFixModel = temp;
 
+      console.log(val);
+
       this.metrics = val.metrics;
       this.curationData = val.curationMetrics;
       this.unreachableBooksModel = val.unreachableBooksModel;
+      this.missingBooks = val.missingBooks;
+      this.unlistedBooks = val.unlistedBooks;
 
       sub.unsubscribe();
     });
