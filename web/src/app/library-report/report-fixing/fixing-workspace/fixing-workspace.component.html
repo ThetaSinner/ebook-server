@@ -9,4 +9,9 @@
       <app-local-book-fix [fixLocalBooks]="fixLocalBooks" [libraryName]="libraryName"></app-local-book-fix>
     </div>
   </div>
+  <div class="row" *ngIf="reportFixModel.fixMissingBooks">
+    <div class="col">
+      <app-missing-book-fix [fixMissingBooks]="fixMissingBooks" [libraryName]="libraryName"></app-missing-book-fix>
+    </div>
+  </div>
 </div>
