@@ -1,3 +1,6 @@
-<p>
-  missing-book-fix works!
-</p>
+<div class="row es-group-left mb-3" *ngFor="let missingBook of fixMissingBooks">
+  <div class="col">
+    <p>Book with id <em>{{missingBook.missingBookId}}</em> is missing. It used to be stored here <em>{{missingBook.invalidUrl}}</em>.</p>
+    <p>This problem cannot be resolved automatically!</p>
+  </div>
+</div>

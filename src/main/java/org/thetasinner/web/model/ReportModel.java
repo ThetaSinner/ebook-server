@@ -12,7 +12,7 @@ import java.util.UUID;
 public class ReportModel {
   private final String reportId;
   private List<MissingBook> missingBooks = new ArrayList<>();
-  private List<MissingBook> unlistedBooks = new ArrayList<>();
+  private List<UnlistedBook> unlistedBooks = new ArrayList<>();
   private ReportMetricsModel metrics;
   private UnreachableBooksModel unreachableBooksModel;
   private ReportCurationMetricsModel curationMetrics;

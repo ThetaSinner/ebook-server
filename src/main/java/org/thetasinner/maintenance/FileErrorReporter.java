@@ -8,11 +8,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.thetasinner.data.content.BookService;
 import org.thetasinner.data.content.LibraryService;
 import org.thetasinner.data.model.Book;
 import org.thetasinner.data.storage.file.FileLibraryStorage;
 import org.thetasinner.web.model.MissingBook;
 import org.thetasinner.web.model.ReportModel;
+import org.thetasinner.web.model.UnlistedBook;
 import org.thetasinner.web.model.UnreachableBooksModel;
 import org.thetasinner.web.model.UnreachableLocalBook;
 import org.thetasinner.web.model.UnreachableWebLink;
@@ -32,12 +34,14 @@ public class FileErrorReporter implements IErrorReporter {
   private static final Logger LOG = LoggerFactory.getLogger(FileLibraryStorage.class);
 
   private final LibraryService libraryService;
+  private final BookService bookService;
 
   private String dataPath;
 
   @Autowired
-  public FileErrorReporter(LibraryService libraryService) {
+  public FileErrorReporter(LibraryService libraryService, BookService bookService) {
     this.libraryService = libraryService;
+    this.bookService = bookService;
   }
 
   @Value("${es.data.path:esdata}")
@@ -77,12 +81,23 @@ public class FileErrorReporter implements IErrorReporter {
     var booksWhichAreNotListed = Sets.difference(storedBooks, listedBooks);
 
     booksWhichAreNotStored.forEach(
-            notStoredBook -> report.getMissingBooks().add(new MissingBook(notStoredBook, UUID.randomUUID().toString()))
+            notStoredBook -> report.getMissingBooks().add(buildMissingBook(notStoredBook, libraryName))
     );
 
     booksWhichAreNotListed.forEach(
-            notListedBook -> report.getUnlistedBooks().add(new MissingBook(notListedBook, UUID.randomUUID().toString()))
+            notListedBook -> report.getUnlistedBooks().add(new UnlistedBook(notListedBook, UUID.randomUUID().toString()))
     );
+  }
+
+  private MissingBook buildMissingBook(String bookId, String libraryName) {
+    var missingBook = new MissingBook();
+
+    var book = this.bookService.getBook(libraryName, bookId);
+    missingBook.setMissingBookId(bookId);
+    missingBook.setInvalidUrl(book.getUrl().getValue());
+    missingBook.setIssueId(UUID.randomUUID().toString());
+
+    return missingBook;
   }
 
   @Override
@@ -97,7 +112,6 @@ public class FileErrorReporter implements IErrorReporter {
         case WebLink:
           testWebLinkReachable(book, report.getUnreachableBooksModel());
           break;
-        case LocalManaged:
         case LocalUnmanaged:
           testLocalBookReachable(book, report.getUnreachableBooksModel());
           break;

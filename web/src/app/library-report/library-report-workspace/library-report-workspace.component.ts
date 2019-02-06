@@ -51,8 +51,6 @@ export class LibraryReportWorkspaceComponent implements OnInit {
       temp.report = val;
       this.reportFixModel = temp;
 
-      console.log(val);
-
       this.metrics = val.metrics;
       this.curationData = val.curationMetrics;
       this.unreachableBooksModel = val.unreachableBooksModel;

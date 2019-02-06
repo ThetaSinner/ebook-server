@@ -7,8 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class MissingBook {
+public class UnlistedBook {
   private String missingBookId;
   private String issueId;
-  private String invalidUrl;
 }
