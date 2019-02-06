@@ -68,6 +68,17 @@ export class CurationCompletionChartComponent implements OnInit, OnChanges {
               max: 100
             }
           }]
+        },
+        onClick: (context) => {
+          const clickedElement = this.chart.getElementAtEvent(context);
+          
+          if (!clickedElement.length) {
+            return;
+          }
+
+          const columnIndex = clickedElement[0]._index;
+
+          console.log(`Show completion helper for ${chartLabels[columnIndex]}`);
         }
       }
     });
