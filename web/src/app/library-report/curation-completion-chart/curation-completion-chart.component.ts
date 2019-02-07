@@ -2,6 +2,12 @@ import { Component, OnInit, Input, ViewChild, ElementRef, OnChanges, SimpleChang
 import { Observable } from 'rxjs';
 import Chart from 'chart.js';
 
+enum CurationDataFieldName {
+  Title,
+  Publisher,
+  Authors
+}
+
 @Component({
   selector: 'app-curation-completion-chart',
   templateUrl: './curation-completion-chart.component.html',
@@ -13,6 +19,8 @@ export class CurationCompletionChartComponent implements OnInit, OnChanges {
   @Input() curationData: any;
 
   private chart: any;
+
+  private chartSelectionState: CurationDataFieldName[] = [];
 
   constructor() { }
 
@@ -78,9 +86,30 @@ export class CurationCompletionChartComponent implements OnInit, OnChanges {
 
           const columnIndex = clickedElement[0]._index;
 
-          console.log(`Show completion helper for ${chartLabels[columnIndex]}`);
+          this.toggleChartColumn(chartLabels[columnIndex]);
         }
       }
     });
+  }
+
+  private toggleChartColumn(name: string): any {
+    const fieldName = this.getCurationDataFieldName(name);
+
+    if (this.chartSelectionState.indexOf(fieldName) === -1) {
+      this.chartSelectionState.push(fieldName);
+    }
+    else {
+      this.chartSelectionState = this.chartSelectionState.filter(x => x !== fieldName);
+    }
+
+    console.log(this.chartSelectionState);
+  }
+
+  private getCurationDataFieldName(name: string): CurationDataFieldName {
+    return {
+      Titles: CurationDataFieldName.Title,
+      Publishers: CurationDataFieldName.Publisher,
+      Authors: CurationDataFieldName.Authors
+    }[name];
   }
 }
