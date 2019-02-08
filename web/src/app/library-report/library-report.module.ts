@@ -11,9 +11,10 @@ import { FixingWorkspaceComponent } from './report-fixing/fixing-workspace/fixin
 import { ReactiveFormsModule } from '@angular/forms';
 import { LocalBookFixComponent } from './report-fixing/local-book-fix/local-book-fix.component';
 import { MissingBookFixComponent } from './report-fixing/missing-book-fix/missing-book-fix.component';
+import { CurationMetricsFixComponent } from './report-fixing/curation-metrics-fix/curation-metrics-fix.component';
 
 @NgModule({
-  declarations: [LibraryReportWorkspaceComponent, ContentBreakdownChartComponent, CurationCompletionChartComponent, WebLinkFixComponent, FixingWorkspaceComponent, LocalBookFixComponent, MissingBookFixComponent],
+  declarations: [LibraryReportWorkspaceComponent, ContentBreakdownChartComponent, CurationCompletionChartComponent, WebLinkFixComponent, FixingWorkspaceComponent, LocalBookFixComponent, MissingBookFixComponent, CurationMetricsFixComponent],
   imports: [
     CommonModule,
     ReactiveFormsModule,

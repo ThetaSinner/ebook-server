@@ -11,6 +11,7 @@ export class FixingWorkspaceComponent implements OnInit, OnChanges {
   fixWebLinks: any;
   fixLocalBooks: any;
   fixMissingBooks: any;
+  curationMetrics: any;
 
   constructor() { }
 
@@ -39,6 +40,10 @@ export class FixingWorkspaceComponent implements OnInit, OnChanges {
       this.fixMissingBooks = report.missingBooks;
     }
 
+    if (report.curationMetrics) {
+      this.curationMetrics = report.curationMetrics;
+    }
+
     const unreachableBooksModel = report.unreachableBooksModel;
     if (unreachableBooksModel && unreachableBooksModel.webLinks) {
       this.fixWebLinks = unreachableBooksModel.webLinks;
@@ -47,5 +52,9 @@ export class FixingWorkspaceComponent implements OnInit, OnChanges {
     if (unreachableBooksModel && unreachableBooksModel.localBooks) {
       this.fixLocalBooks = unreachableBooksModel.localBooks;
     }
+  }
+
+  get showCurationCompletion(): boolean {
+    return this.reportFixModel.fixCurationFieldNames.length;
   }
 }

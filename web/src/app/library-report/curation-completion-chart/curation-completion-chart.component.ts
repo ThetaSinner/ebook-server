@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ViewChild, ElementRef, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, ElementRef, OnChanges, SimpleChanges, Output, EventEmitter } from '@angular/core';
 import { Observable } from 'rxjs';
 import Chart from 'chart.js';
 
@@ -17,6 +17,8 @@ export class CurationCompletionChartComponent implements OnInit, OnChanges {
   @ViewChild('curationCompletionChart') curationCompletionChartRef: ElementRef;
 
   @Input() curationData: any;
+
+  @Output() selectionChange: EventEmitter<CurationDataFieldName[]> = new EventEmitter();
 
   private chart: any;
 
@@ -102,7 +104,7 @@ export class CurationCompletionChartComponent implements OnInit, OnChanges {
       this.chartSelectionState = this.chartSelectionState.filter(x => x !== fieldName);
     }
 
-    console.log(this.chartSelectionState);
+    this.selectionChange.emit(this.chartSelectionState);
   }
 
   private getCurationDataFieldName(name: string): CurationDataFieldName {
