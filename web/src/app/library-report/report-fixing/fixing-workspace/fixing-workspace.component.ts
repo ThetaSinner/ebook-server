@@ -53,8 +53,4 @@ export class FixingWorkspaceComponent implements OnInit, OnChanges {
       this.fixLocalBooks = unreachableBooksModel.localBooks;
     }
   }
-
-  get showCurationCompletion(): boolean {
-    return this.reportFixModel.fixCurationFieldNames.length;
-  }
 }
