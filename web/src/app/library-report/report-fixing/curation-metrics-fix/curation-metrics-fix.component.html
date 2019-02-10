@@ -1,3 +1,6 @@
-<p>
-  curation-metrics-fix works!
-</p>
+<div *ngFor="let model of renderModel">
+  <p>{{model.bookId}}</p>
+  <input type="text" *ngIf="model.title" placeholder="Title" />
+  <input type="text" *ngIf="model.publisher" placeholder="Publisher" />
+  <input type="text" *ngIf="model.authors" placeholder="Authors" />
+</div>

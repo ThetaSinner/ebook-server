@@ -1,8 +1,7 @@
-import { Component, OnInit, Input, ViewChild, ElementRef, OnChanges, SimpleChanges, Output, EventEmitter } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import Chart from 'chart.js';
 
-enum CurationDataFieldName {
+export enum CurationDataFieldName {
   Title,
   Publisher,
   Authors
