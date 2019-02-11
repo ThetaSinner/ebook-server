@@ -12,32 +12,6 @@ There's already an excellent tool for working with ebooks called [Calibre](https
 - The metadata is in readable format. Nobody likes being locked into a product. Having metadata easy to pick up and move into another product is what makes this tool different.
 - As a consequence of having your metadata in a JSON file, it's very easy to version and undo changes to your data.
 
-## Running E2E tests
-
-You'll need to install protractor
-
-`npm install -g protractor`
-
-and launch a Selenium server
-
-`webdriver-manager update`
-
-`webdriver-manager start`
-
-You should then start up the ebook-server using
-
-`.\gradlew.bat bootRun`
-
-Followed by the webapp
-
-`npm run build:dev`
-
-`npm run serve`
-
-Now you're ready to launch the tests
-
-`cd UI && protractor .\e2e\conf.js`
-
 ## Changes
 
 7th of December, 2018 Version 1.3.0
