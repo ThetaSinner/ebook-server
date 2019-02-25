@@ -22,12 +22,13 @@ export class LibraryReportWorkspaceComponent implements OnInit {
 
   reportFixModel: any;
   libraryName: string;
+  fixCurationFieldNames: any[] = [];
 
   constructor(
     private router: Router,
     private activedRoute: ActivatedRoute,
     private reportService: ReportDataService
-  ) { 
+  ) {
     this.reportFixModel = {
       report: null,
       fixWebLinks: false,
@@ -81,6 +82,6 @@ export class LibraryReportWorkspaceComponent implements OnInit {
   }
 
   handleCurationCompletionSelectionChange(selection) {
-    this.reportFixModel.fixCurationFieldNames = selection;
+    this.fixCurationFieldNames = selection;
   }
 }
