@@ -1,6 +1,14 @@
-<div *ngFor="let model of renderModel">
-  <p>{{model.bookId}}</p>
-  <input type="text" *ngIf="model.title" placeholder="Title" />
-  <input type="text" *ngIf="model.publisher" placeholder="Publisher" />
-  <input type="text" *ngIf="model.authors" placeholder="Authors" />
+<div class="row es-group-left mb-3" *ngFor="let model of renderModel">
+  <div class="col">
+    <p>{{model.bookId}}</p>
+    <div class="form-group">
+      <input type="text" *ngIf="model.title" class="form-control" placeholder="Title" />
+    </div>
+    <div class="form-group">
+      <input type="text" *ngIf="model.publisher" class="form-control" placeholder="Publisher" />
+    </div>
+    <div class="form-group">
+      <input type="text" *ngIf="model.authors" class="form-control" placeholder="Authors" />
+    </div>
+  </div>
 </div>
