@@ -80,7 +80,7 @@ export class CurationCompletionChartComponent implements OnInit, OnChanges {
         },
         onClick: (context) => {
           const clickedElement = this.chart.getElementAtEvent(context);
-          
+
           if (!clickedElement.length) {
             return;
           }
@@ -103,7 +103,9 @@ export class CurationCompletionChartComponent implements OnInit, OnChanges {
       this.chartSelectionState = this.chartSelectionState.filter(x => x !== fieldName);
     }
 
-    this.selectionChange.emit(this.chartSelectionState);
+    // Always emit a new array for Angular change detection.
+    const selected = JSON.parse(JSON.stringify(this.chartSelectionState));
+    this.selectionChange.emit(selected);
   }
 
   private getCurationDataFieldName(name: string): CurationDataFieldName {

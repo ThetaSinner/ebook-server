@@ -20,7 +20,7 @@ export class FixingWorkspaceComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes.reportFixModel.currentValue) {
+    if (changes.reportFixModel && changes.reportFixModel.currentValue) {
       this.reportFixModel = changes.reportFixModel.currentValue
       this.renderFixingWorkspace();
     }
