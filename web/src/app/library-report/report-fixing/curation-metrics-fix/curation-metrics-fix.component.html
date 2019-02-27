@@ -1,14 +1,19 @@
-<div class="row es-group-left mb-3" *ngFor="let model of renderModel">
-  <div class="col">
-    <p>{{model.bookId}}</p>
-    <div class="form-group">
-      <input type="text" *ngIf="model.title" class="form-control" placeholder="Title" />
-    </div>
-    <div class="form-group">
-      <input type="text" *ngIf="model.publisher" class="form-control" placeholder="Publisher" />
-    </div>
-    <div class="form-group">
-      <input type="text" *ngIf="model.authors" class="form-control" placeholder="Authors" />
+<div [formGroup]="fixForm">
+  <div formArrayName="fixItems">
+    <div class="row es-group-left mb-3" *ngFor="let fixItem of fixItems.controls; let i = index">
+      <div class="col" [formGroupName]="i">
+        <p>Missing curation data for book <em>model.uriFragment</em></p>
+        <div class="form-group" *ngIf="fixItem.get('title')">
+          <input type="text" class="form-control" placeholder="Title" formControlName="title" />
+        </div>
+        <div class="form-group" *ngIf="fixItem.get('publisher')">
+          <input type="text" class="form-control" placeholder="Publisher" formControlName="publisher" />
+        </div>
+        <div class="form-group" *ngIf="fixItem.get('authors')">
+          <input type="text" class="form-control" placeholder="Authors" formControlName="authors" />
+        </div>
+        <button class="btn btn-primary" (click)="updateCurationForModel(i)">Update</button>
+      </div>
     </div>
   </div>
 </div>

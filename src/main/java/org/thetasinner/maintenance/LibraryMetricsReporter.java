@@ -14,6 +14,7 @@ import org.thetasinner.web.model.ReportCurationMetricsModel;
 import org.thetasinner.web.model.ReportMetricsModel;
 import org.thetasinner.web.model.ReportModel;
 
+import java.nio.file.Paths;
 import java.util.UUID;
 
 @Component
@@ -76,6 +77,12 @@ public class LibraryMetricsReporter {
     private BookWithMissingData createBookWithMissingData(Book book) {
         var bookWithMissingData = new BookWithMissingData();
 
+        if (book.getUrl().getType() == TypedUrl.Type.LocalManaged || book.getUrl().getType() == TypedUrl.Type.LocalUnmanaged) {
+            bookWithMissingData.setUriFragment(Paths.get(book.getUrl().getValue()).getFileName().toString());
+        }
+        else {
+            bookWithMissingData.setUriFragment(book.getUrl().getValue());
+        }
         bookWithMissingData.setBookId(book.getId());
         bookWithMissingData.setReportId(UUID.randomUUID().toString());
 
