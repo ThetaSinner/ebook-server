@@ -1,6 +1,8 @@
 import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CurationDataFieldName } from '../../curation-completion-chart/curation-completion-chart.component';
 import { FormGroup, FormBuilder, FormArray } from '@angular/forms';
+import { BookDataService } from 'src/app/library-content/book-data/book-data.service';
+import { compare } from 'fast-json-patch';
 
 @Component({
   selector: 'app-curation-metrics-fix',
@@ -12,9 +14,13 @@ export class CurationMetricsFixComponent implements OnInit, OnChanges {
   @Input() fixCurationFieldNames: any[] = [];
   @Input() libraryName: string;
 
+  renderModel: any[];
   fixForm: FormGroup;
 
-  constructor(private formBuilder: FormBuilder) { }
+  constructor(
+    private formBuilder: FormBuilder,
+    private bookService: BookDataService
+  ) { }
 
   ngOnInit() {
     this.makeRenderModel();
@@ -46,22 +52,28 @@ export class CurationMetricsFixComponent implements OnInit, OnChanges {
       this.curationMetrics.booksWithMissingAuthors.reduce(this.makeReducer('authors'), model);
     }
 
+    this.renderModel = Object.keys(model).map(key => {
+      const v = model[key];
+      v.bookId = key;
+      return v;
+    });
+
+    const fixItems = this.renderModel.map(model => {
+      const group = {};
+      if (model.title) {
+        group['title'] = [''];
+      }
+      if (model.publisher) {
+        group['publisher'] = [''];
+      }
+      if (model.authors) {
+        group['authors'] = [''];
+      }
+      return this.formBuilder.group(group);
+    })
+
     this.fixForm = this.formBuilder.group({
-      fixItems: this.formBuilder.array(Object.keys(model).map(key => {
-        const v = model[key];
-        v.bookId = key;
-        const group = {};
-        if (v.title) {
-          group['title'] = [''];
-        }
-        if (v.publisher) {
-          group['publisher'] = [''];
-        }
-        if (v.authors) {
-          group['authors'] = [''];
-        }
-        return this.formBuilder.group(group);
-      }))
+      fixItems: this.formBuilder.array(fixItems)
     });
   }
 
@@ -71,7 +83,19 @@ export class CurationMetricsFixComponent implements OnInit, OnChanges {
 
   updateCurationForModel(index: number) {
     const group = this.fixItems.at(index) as FormGroup;
-    console.log(group.getRawValue());
+    const formData = group.getRawValue();
+
+    const updatedBook = {
+      title: formData.title,
+      publisher: formData.publisher
+    };
+
+    const diff = compare({}, updatedBook);
+
+    const sub = this.bookService.updateBook(this.renderModel[index].bookId, diff, this.libraryName)
+      .subscribe(() => {
+        sub.unsubscribe();
+      });
   }
 
   private makeReducer(addkey: string) {

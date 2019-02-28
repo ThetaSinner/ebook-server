@@ -2,7 +2,7 @@
   <div formArrayName="fixItems">
     <div class="row es-group-left mb-3" *ngFor="let fixItem of fixItems.controls; let i = index">
       <div class="col" [formGroupName]="i">
-        <p>Missing curation data for book <em>model.uriFragment</em></p>
+        <p>Missing curation data for book <em>{{renderModel[i].uriFragment}}</em></p>
         <div class="form-group" *ngIf="fixItem.get('title')">
           <input type="text" class="form-control" placeholder="Title" formControlName="title" />
         </div>
