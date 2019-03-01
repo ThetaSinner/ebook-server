@@ -9,8 +9,11 @@
         <div class="form-group" *ngIf="fixItem.get('publisher')">
           <input type="text" class="form-control" placeholder="Publisher" formControlName="publisher" />
         </div>
-        <div class="form-group" *ngIf="fixItem.get('authors')">
-          <input type="text" class="form-control" placeholder="Authors" formControlName="authors" />
+        <div *ngIf="fixItem.get('authors')" formArrayName="authors">
+          <fa-icon [icon]="faPlusIcon" class="es-icon-button mr-1" (click)="addAuthorControl(fixItem)"></fa-icon>
+          <div class="form-group" *ngFor="let authorItem of fixItem.get('authors').controls; let ai = index">
+            <input type="text" class="form-control" placeholder="Authors" [formControlName]="ai" />
+          </div>
         </div>
         <button class="btn btn-primary" (click)="updateCurationForModel(i)">Update</button>
       </div>

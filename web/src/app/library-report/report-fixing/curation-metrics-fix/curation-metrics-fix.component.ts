@@ -3,6 +3,8 @@ import { CurationDataFieldName } from '../../curation-completion-chart/curation-
 import { FormGroup, FormBuilder, FormArray } from '@angular/forms';
 import { BookDataService } from 'src/app/library-content/book-data/book-data.service';
 import { compare } from 'fast-json-patch';
+import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-curation-metrics-fix',
@@ -13,6 +15,8 @@ export class CurationMetricsFixComponent implements OnInit, OnChanges {
   @Input() curationMetrics: any;
   @Input() fixCurationFieldNames: any[] = [];
   @Input() libraryName: string;
+
+  faPlusIcon: IconDefinition = faPlus;
 
   renderModel: any[];
   fixForm: FormGroup;
@@ -67,7 +71,9 @@ export class CurationMetricsFixComponent implements OnInit, OnChanges {
         group['publisher'] = [''];
       }
       if (model.authors) {
-        group['authors'] = [''];
+        group['authors'] = this.formBuilder.array([
+          this.formBuilder.control('')
+        ]);
       }
       return this.formBuilder.group(group);
     })
@@ -79,6 +85,11 @@ export class CurationMetricsFixComponent implements OnInit, OnChanges {
 
   get fixItems(): FormArray {
     return this.fixForm.get('fixItems') as FormArray;
+  }
+
+  addAuthorControl(fixItem: FormGroup) {
+    const authors = fixItem.get('authors') as FormArray;
+    authors.push(this.formBuilder.control(''));
   }
 
   updateCurationForModel(index: number) {
