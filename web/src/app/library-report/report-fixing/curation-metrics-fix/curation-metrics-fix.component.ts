@@ -4,7 +4,7 @@ import { FormGroup, FormBuilder, FormArray } from '@angular/forms';
 import { BookDataService } from 'src/app/library-content/book-data/book-data.service';
 import { compare } from 'fast-json-patch';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faMinus } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-curation-metrics-fix',
@@ -17,6 +17,7 @@ export class CurationMetricsFixComponent implements OnInit, OnChanges {
   @Input() libraryName: string;
 
   faPlusIcon: IconDefinition = faPlus;
+  faMinusIcon: IconDefinition = faMinus;
 
   renderModel: any[];
   fixForm: FormGroup;
@@ -92,13 +93,19 @@ export class CurationMetricsFixComponent implements OnInit, OnChanges {
     authors.push(this.formBuilder.control(''));
   }
 
+  removeAuthorControl(fixItem: FormGroup, index: number) {
+    const authors = fixItem.get('authors') as FormArray;
+    authors.removeAt(index);
+  }
+
   updateCurationForModel(index: number) {
     const group = this.fixItems.at(index) as FormGroup;
     const formData = group.getRawValue();
 
     const updatedBook = {
       title: formData.title,
-      publisher: formData.publisher
+      publisher: formData.publisher,
+      authors: formData.authors
     };
 
     const diff = compare({}, updatedBook);

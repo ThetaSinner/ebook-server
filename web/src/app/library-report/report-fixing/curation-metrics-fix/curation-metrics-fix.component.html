@@ -4,15 +4,24 @@
       <div class="col" [formGroupName]="i">
         <p>Missing curation data for book <em>{{renderModel[i].uriFragment}}</em></p>
         <div class="form-group" *ngIf="fixItem.get('title')">
-          <input type="text" class="form-control" placeholder="Title" formControlName="title" />
+          <label [for]="'curationTitle-' + i">Title</label>
+          <input [id]="'curationTitle-' + i" type="text" class="form-control" placeholder="Title" formControlName="title" />
         </div>
         <div class="form-group" *ngIf="fixItem.get('publisher')">
-          <input type="text" class="form-control" placeholder="Publisher" formControlName="publisher" />
+            <label [for]="'curationPublisher-' + i">Publisher</label>
+          <input [id]="'curationPublisher-' + i" type="text" class="form-control" placeholder="Publisher" formControlName="publisher" />
         </div>
         <div *ngIf="fixItem.get('authors')" formArrayName="authors">
-          <fa-icon [icon]="faPlusIcon" class="es-icon-button mr-1" (click)="addAuthorControl(fixItem)"></fa-icon>
+          <p>Authors <fa-icon [icon]="faPlusIcon" class="es-icon-button mr-1" (click)="addAuthorControl(fixItem)"></fa-icon></p>
           <div class="form-group" *ngFor="let authorItem of fixItem.get('authors').controls; let ai = index">
-            <input type="text" class="form-control" placeholder="Authors" [formControlName]="ai" />
+            <div class="row">
+              <div class="col-sm-11">
+                <input type="text" class="form-control" placeholder="Author" [formControlName]="ai" />
+              </div>
+              <div class="col-sm-1" *ngIf="ai != 0">
+                  <fa-icon [icon]="faMinusIcon" class="es-icon-button mr-1" (click)="removeAuthorControl(fixItem, ai)"></fa-icon>
+              </div>
+            </div>
           </div>
         </div>
         <button class="btn btn-primary" (click)="updateCurationForModel(i)">Update</button>
