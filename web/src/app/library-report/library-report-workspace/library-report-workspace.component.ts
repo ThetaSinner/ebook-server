@@ -33,6 +33,7 @@ export class LibraryReportWorkspaceComponent implements OnInit {
       fixWebLinks: false,
       fixLocalBooks: false,
       fixMissingBooks: false,
+      fixUnlistedBooks: false,
       fixCurationFieldNames: []
     };
   }
@@ -78,6 +79,10 @@ export class LibraryReportWorkspaceComponent implements OnInit {
 
   toggleMissingBookFixes() {
     this.reportFixModel.fixMissingBooks = !this.reportFixModel.fixMissingBooks;
+  }
+
+  toggleUnlistedBookFixes() {
+    this.reportFixModel.fixUnlistedBooks = !this.reportFixModel.fixUnlistedBooks;
   }
 
   handleCurationCompletionSelectionChange(selection) {

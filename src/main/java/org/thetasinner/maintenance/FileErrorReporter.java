@@ -23,8 +23,13 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toSet;
 import static org.thetasinner.data.model.TypedUrl.Type.LocalManaged;
@@ -82,10 +87,18 @@ public class FileErrorReporter implements IErrorReporter {
 
     booksWhichAreNotStored.forEach(
             notStoredBook -> report.getMissingBooks().add(buildMissingBook(notStoredBook, libraryName))
+
     );
 
     booksWhichAreNotListed.forEach(
-            notListedBook -> report.getUnlistedBooks().add(new UnlistedBook(notListedBook, UUID.randomUUID().toString()))
+            notListedBook -> {
+              File[] files = Paths.get(dataPath, libraryName, notListedBook).toFile().listFiles(File::isFile);
+              List<String> fileNames = new ArrayList<>();
+              if (files != null) {
+                fileNames = Arrays.stream(files).map(File::getName).collect(Collectors.toList());
+              }
+              report.getUnlistedBooks().add(new UnlistedBook(notListedBook, fileNames, UUID.randomUUID().toString()));
+            }
     );
   }
 

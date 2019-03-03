@@ -12,6 +12,7 @@ export class FixingWorkspaceComponent implements OnInit, OnChanges {
   fixLocalBooks: any;
   fixMissingBooks: any;
   curationMetrics: any;
+  fixUnlistedBooks: any;
 
   constructor() { }
 
@@ -38,6 +39,10 @@ export class FixingWorkspaceComponent implements OnInit, OnChanges {
 
     if (report.missingBooks) {
       this.fixMissingBooks = report.missingBooks;
+    }
+
+    if (report.unlistedBooks) {
+      this.fixUnlistedBooks = report.unlistedBooks;
     }
 
     if (report.curationMetrics) {

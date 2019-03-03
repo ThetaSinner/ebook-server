@@ -14,6 +14,11 @@
       <app-missing-book-fix [fixMissingBooks]="fixMissingBooks" [libraryName]="libraryName"></app-missing-book-fix>
     </div>
   </div>
+  <div class="row" *ngIf="reportFixModel.fixUnlistedBooks">
+    <div class="col">
+      <app-unlisted-book-fix [fixUnlistedBooks]="fixUnlistedBooks" [libraryName]="libraryName"></app-unlisted-book-fix>
+    </div>
+  </div>
   <div class="row" *ngIf="reportFixModel.fixCurationFieldNames.length">
     <div class="col">
       <app-curation-metrics-fix [curationMetrics]="curationMetrics" [fixCurationFieldNames]="reportFixModel.fixCurationFieldNames" [libraryName]="libraryName"></app-curation-metrics-fix>

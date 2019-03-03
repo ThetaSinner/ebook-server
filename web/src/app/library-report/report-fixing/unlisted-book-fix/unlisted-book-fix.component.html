@@ -1,0 +1,10 @@
+<div class="row es-group-left mb-3" *ngFor="let unlistedBook of fixUnlistedBooks">
+  <div class="col">
+    <p>Book with id <em>{{unlistedBook.missingBookId}}</em> is not listed. The stored documents are:</p>
+    <ul>
+      <li *ngFor="let docName of unlistedBook.documentNames">{{docName}}</li>
+    </ul>
+    <button class="btn btn-secondary">Remove this book</button>&nbsp;
+    <button class="btn btn-primary">Add to library</button>
+  </div>
+</div>
