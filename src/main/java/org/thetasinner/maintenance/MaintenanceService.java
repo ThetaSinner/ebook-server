@@ -2,6 +2,7 @@ package org.thetasinner.maintenance;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.thetasinner.web.model.ReportFixModel;
 import org.thetasinner.web.model.ReportModel;
 
 import java.io.FileNotFoundException;
@@ -27,5 +28,9 @@ public class MaintenanceService {
     libraryMetricsReporter.reportCurationMetrics(libraryName, report);
 
     return report;
+  }
+
+  public void applyReportFixes(String libraryName, String reportId, ReportFixModel reportFixModel) {
+    System.out.println("Applying report fixes");
   }
 }
