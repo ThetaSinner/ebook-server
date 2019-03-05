@@ -31,8 +31,7 @@ public class MaintenanceController {
   }
 
   @RequestMapping(path = "/report/{reportId}", method = RequestMethod.PUT)
-  public @ResponseBody EmptyJsonResponse createReport(@PathVariable String reportId, @RequestParam(name = "libraryName") String libraryName, @RequestBody ReportFixModel reportFixModel) {
-    maintenanceService.applyReportFixes(libraryName, reportId, reportFixModel);
-    return new EmptyJsonResponse();
+  public @ResponseBody ReportModel createReport(@PathVariable String reportId, @RequestParam(name = "libraryName") String libraryName, @RequestBody ReportFixModel reportFixModel) throws FileNotFoundException {
+    return maintenanceService.applyReportFixes(libraryName, reportId, reportFixModel);
   }
 }

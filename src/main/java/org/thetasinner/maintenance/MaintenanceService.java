@@ -30,7 +30,8 @@ public class MaintenanceService {
     return report;
   }
 
-  public void applyReportFixes(String libraryName, String reportId, ReportFixModel reportFixModel) {
+  public ReportModel applyReportFixes(String libraryName, String reportId, ReportFixModel reportFixModel) throws FileNotFoundException {
     System.out.println("Applying report fixes");
+    return createReport(libraryName);
   }
 }

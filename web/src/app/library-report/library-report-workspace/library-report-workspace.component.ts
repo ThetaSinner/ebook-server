@@ -88,4 +88,8 @@ export class LibraryReportWorkspaceComponent implements OnInit {
   handleCurationCompletionSelectionChange(selection) {
     this.reportFixModel.fixCurationFieldNames = selection;
   }
+
+  applyFieldFix($event) {
+    console.log('apply fix', $event);
+  }
 }

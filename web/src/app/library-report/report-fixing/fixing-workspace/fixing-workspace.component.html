@@ -16,7 +16,7 @@
   </div>
   <div class="row" *ngIf="reportFixModel.fixUnlistedBooks">
     <div class="col">
-      <app-unlisted-book-fix [fixUnlistedBooks]="fixUnlistedBooks" [libraryName]="libraryName"></app-unlisted-book-fix>
+      <app-unlisted-book-fix [fixUnlistedBooks]="fixUnlistedBooks" [libraryName]="libraryName" (fieldFix)="handleFieldFix($event)"></app-unlisted-book-fix>
     </div>
   </div>
   <div class="row" *ngIf="reportFixModel.fixCurationFieldNames.length">

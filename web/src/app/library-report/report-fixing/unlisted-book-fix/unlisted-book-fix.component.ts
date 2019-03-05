@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
 @Component({
   selector: 'app-unlisted-book-fix',
@@ -9,9 +9,24 @@ export class UnlistedBookFixComponent implements OnInit {
   @Input() fixUnlistedBooks: any;
   @Input() libraryName: string;
 
+  @Output() fieldFix: EventEmitter<any> = new EventEmitter();
+
   constructor() { }
 
   ngOnInit() {
   }
 
+  removeUnlistedBook(unlistedBook: any) {
+    this.fieldFix.emit({
+      reportFixFieldId: unlistedBook.issueId,
+      fixAction: 'RemoveUnlisted'
+    });
+  }
+
+  addUnlistedBook(unlistedBook: any) {
+    this.fieldFix.emit({
+      reportFixFieldId: unlistedBook.issueId,
+      fixAction: 'AddUnlisted'
+    });
+  }
 }

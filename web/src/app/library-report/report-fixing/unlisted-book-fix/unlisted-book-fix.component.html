@@ -4,7 +4,7 @@
     <ul>
       <li *ngFor="let docName of unlistedBook.documentNames">{{docName}}</li>
     </ul>
-    <button class="btn btn-secondary">Remove this book</button>&nbsp;
-    <button class="btn btn-primary">Add to library</button>
+    <button class="btn btn-secondary" (click)="removeUnlistedBook(unlistedBook)">Remove this book</button>&nbsp;
+    <button class="btn btn-primary" (click)="addUnlistedBook(unlistedBook)">Add to library</button>
   </div>
 </div>

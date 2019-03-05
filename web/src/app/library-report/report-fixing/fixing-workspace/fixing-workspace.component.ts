@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, SimpleChanges, Output, EventEmitter } from '@angular/core';
 
 @Component({
   selector: 'app-fixing-workspace',
@@ -8,6 +8,9 @@ import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/cor
 export class FixingWorkspaceComponent implements OnInit, OnChanges {
   @Input() reportFixModel: any;
   @Input() libraryName: string;
+
+  @Output() fieldFix: EventEmitter<any> = new EventEmitter();
+
   fixWebLinks: any;
   fixLocalBooks: any;
   fixMissingBooks: any;
@@ -57,5 +60,9 @@ export class FixingWorkspaceComponent implements OnInit, OnChanges {
     if (unreachableBooksModel && unreachableBooksModel.localBooks) {
       this.fixLocalBooks = unreachableBooksModel.localBooks;
     }
+  }
+
+  handleFieldFix($event) {
+    this.fieldFix.emit($event);
   }
 }
