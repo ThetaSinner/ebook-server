@@ -18,7 +18,7 @@ public interface ILibraryStorage {
 
   Book store(String name, MultipartFile file) throws StorageException, IOException;
 
-  void deleteBook(String id, String name);
+  boolean deleteBook(String id, String name);
 
   List<String> getLibraries();
 

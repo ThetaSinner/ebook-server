@@ -70,8 +70,6 @@ public class BookService {
     LOG.trace("Deleting book with id [{}] from library [{}]", id, libraryName);
 
     libraryService.getLibrary(libraryName).getItem().getBooks().removeIf(b -> id.equals(b.getId()));
-
-    libraryStorage.deleteBook(libraryName, id);
   }
 
   public Book storeBook(String libraryName, MultipartFile file) throws IOException, StorageException {
@@ -114,5 +112,9 @@ public class BookService {
 
     var index = library.getBooks().indexOf(first.get());
     library.getBooks().set(index, book);
+  }
+
+  public void deleteBookFromStorage(String libraryName, String bookId) {
+    libraryStorage.deleteBook(bookId, libraryName);
   }
 }

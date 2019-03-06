@@ -90,6 +90,13 @@ export class LibraryReportWorkspaceComponent implements OnInit {
   }
 
   applyFieldFix($event) {
-    console.log('apply fix', $event);
+    const fixModel = {
+      reportModel: this.reportData,
+      reportFixFieldModels: [$event]
+    };
+
+    const sub = this.reportService.applyFieldFix(this.libraryName, this.reportData.reportId, fixModel).subscribe(() => {
+      sub.unsubscribe();
+    });
   }
 }

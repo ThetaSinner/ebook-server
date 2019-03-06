@@ -14,4 +14,10 @@ export class ReportDataService {
 
     return this.client.get(`${environment.mediaServerUrlBase}/maintenance/report`, options)
   }
+
+  applyFieldFix(libraryName: string, reportId: any, fieldFix: any) {
+    const options = { params: new HttpParams().set('libraryName', libraryName) };
+
+    return this.client.put(`${environment.mediaServerUrlBase}/maintenance/report/${reportId}`, fieldFix, options);
+  }
 }

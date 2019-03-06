@@ -166,8 +166,8 @@ public class FileLibraryStorage implements ILibraryStorage {
 
 
   @Override
-  public void deleteBook(String id, String name) {
-    // TODO If this entry was a file then it should be deleted here.
+  public boolean deleteBook(String id, String name) {
+    return Paths.get(getLibraryDirectory(name), id).toFile().delete();
   }
 
   @Override

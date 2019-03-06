@@ -224,4 +224,8 @@ public class EBookDataService {
     IOUtils.copy(inputStream, outputStream);
     return "image/png";
   }
+
+  public void deleteBookFromStorage(String libraryName, String bookId) {
+    bookService.deleteBookFromStorage(libraryName, bookId);
+  }
 }
