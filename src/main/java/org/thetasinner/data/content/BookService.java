@@ -114,7 +114,7 @@ public class BookService {
     library.getBooks().set(index, book);
   }
 
-  public void deleteBookFromStorage(String libraryName, String bookId) {
+  public void deleteBookFromStorage(String libraryName, String bookId) throws IOException {
     libraryStorage.deleteBook(bookId, libraryName);
   }
 }

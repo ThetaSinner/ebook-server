@@ -9,6 +9,7 @@ import org.thetasinner.web.model.ReportModel;
 import org.thetasinner.web.model.UnlistedBook;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import static org.thetasinner.web.model.ReportFixFieldModel.*;
 import static org.thetasinner.web.model.ReportFixFieldModel.FixAction.*;
@@ -48,7 +49,11 @@ public class MaintenanceService {
 
       reportFixModel.getReportModel().getUnlistedBooks().forEach(unlistedBook -> {
         if (searchFieldId.equals(unlistedBook.getIssueId())) {
-          fixUnlistedBook(libraryName, unlistedBook, fixField.fixAction);
+          try {
+            fixUnlistedBook(libraryName, unlistedBook, fixField.fixAction);
+          } catch (IOException e) {
+            e.printStackTrace();
+          }
         }
       });
     });
@@ -56,7 +61,7 @@ public class MaintenanceService {
     return createReport(libraryName);
   }
 
-  private void fixUnlistedBook(String libraryName, UnlistedBook unlistedBook, FixAction fixAction) {
+  private void fixUnlistedBook(String libraryName, UnlistedBook unlistedBook, FixAction fixAction) throws IOException {
     switch (fixAction) {
       case AddUnlisted:
 

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -166,8 +167,8 @@ public class FileLibraryStorage implements ILibraryStorage {
 
 
   @Override
-  public boolean deleteBook(String id, String name) {
-    return Paths.get(getLibraryDirectory(name), id).toFile().delete();
+  public void deleteBook(String id, String name) throws IOException {
+    FileUtils.deleteDirectory(Paths.get(getLibraryDirectory(name), id).toFile());
   }
 
   @Override

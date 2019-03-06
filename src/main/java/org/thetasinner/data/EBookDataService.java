@@ -225,7 +225,7 @@ public class EBookDataService {
     return "image/png";
   }
 
-  public void deleteBookFromStorage(String libraryName, String bookId) {
+  public void deleteBookFromStorage(String libraryName, String bookId) throws IOException {
     bookService.deleteBookFromStorage(libraryName, bookId);
   }
 }
