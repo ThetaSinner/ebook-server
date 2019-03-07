@@ -111,6 +111,13 @@ public class EBookDataService {
     return failed;
   }
 
+  public void recoverStoredBook(String name, String id) throws StorageException, IOException {
+    var book = bookService.recoverStoredBook(name, id);
+
+    var eventData = new ChangeEventData(BookCreated, book.getId());
+    libraryChangeService.publish(name, eventData);
+  }
+
   private void store(String name, MultipartFile file) throws StorageException, IOException {
     if (file.isEmpty()) {
       throw new StorageException("File is empty");

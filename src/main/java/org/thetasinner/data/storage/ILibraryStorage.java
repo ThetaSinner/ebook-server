@@ -27,4 +27,6 @@ public interface ILibraryStorage {
   void storeCover(Book book, MultipartFile cover) throws StorageException;
 
   FileInputStream getCoverInputStream(Book book) throws FileNotFoundException;
+
+  Book recover(String name, String id);
 }

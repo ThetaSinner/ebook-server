@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -153,6 +154,22 @@ public class FileLibraryStorage implements ILibraryStorage {
     return book;
   }
 
+  @Override
+  public Book recover(String libraryName, String id) {
+    File[] files = Paths.get(getLibraryDirectory(libraryName), id).toFile().listFiles((dir, name) -> ".pdf".equals(FilenameUtils.getExtension(name)));
+    if (files == null || files.length != 1) {
+      throw new IllegalStateException("Failed to recover book because no PDF was found");
+    }
+
+    File bookToRecover = files[0];
+
+    Book book = new Book();
+    book.setId(id);
+    book.setUrl(new TypedUrl(bookToRecover.getPath(), TypedUrl.Type.LocalManaged));
+    book.setTitle(bookToRecover.getName());
+    return book;
+  }
+
   private void extractAndStoreCover(String storagePath, String fileStoragePath) throws IOException {
     var images = PdfImageExtractor.extract(new File(fileStoragePath), new ExtractionProperties());
     if (images.size() == 0) {
@@ -262,8 +279,6 @@ public class FileLibraryStorage implements ILibraryStorage {
 
     return new FileInputStream(file);
   }
-
-
 
   private String getLibraryPath(String name) {
     return getLibraryDirectory(name) + "library.json";

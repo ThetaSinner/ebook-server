@@ -117,4 +117,14 @@ public class BookService {
   public void deleteBookFromStorage(String libraryName, String bookId) throws IOException {
     libraryStorage.deleteBook(bookId, libraryName);
   }
+
+  public Book recoverStoredBook(String name, String id) {
+    LOG.trace("Recovering stored book for library with name [{}]", name);
+
+    var book = libraryStorage.recover(name, id);
+
+    libraryService.getLibrary(name).getItem().getBooks().add(book);
+
+    return book;
+  }
 }

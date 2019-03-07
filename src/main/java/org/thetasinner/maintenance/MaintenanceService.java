@@ -3,6 +3,7 @@ package org.thetasinner.maintenance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.thetasinner.data.EBookDataService;
+import org.thetasinner.data.storage.StorageException;
 import org.thetasinner.web.model.ReportFixFieldModel;
 import org.thetasinner.web.model.ReportFixModel;
 import org.thetasinner.web.model.ReportModel;
@@ -51,7 +52,7 @@ public class MaintenanceService {
         if (searchFieldId.equals(unlistedBook.getIssueId())) {
           try {
             fixUnlistedBook(libraryName, unlistedBook, fixField.fixAction);
-          } catch (IOException e) {
+          } catch (IOException | StorageException e) {
             e.printStackTrace();
           }
         }
@@ -61,10 +62,10 @@ public class MaintenanceService {
     return createReport(libraryName);
   }
 
-  private void fixUnlistedBook(String libraryName, UnlistedBook unlistedBook, FixAction fixAction) throws IOException {
+  private void fixUnlistedBook(String libraryName, UnlistedBook unlistedBook, FixAction fixAction) throws IOException, StorageException {
     switch (fixAction) {
       case AddUnlisted:
-
+        this.eBookDataService.recoverStoredBook(libraryName, unlistedBook.getMissingBookId());
         break;
       case RemoveUnlisted:
         this.eBookDataService.deleteBookFromStorage(libraryName, unlistedBook.getMissingBookId());
