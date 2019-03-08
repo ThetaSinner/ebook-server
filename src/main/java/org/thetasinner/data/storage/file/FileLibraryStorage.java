@@ -156,7 +156,7 @@ public class FileLibraryStorage implements ILibraryStorage {
 
   @Override
   public Book recover(String libraryName, String id) {
-    File[] files = Paths.get(getLibraryDirectory(libraryName), id).toFile().listFiles((dir, name) -> ".pdf".equals(FilenameUtils.getExtension(name)));
+    File[] files = Paths.get(getLibraryDirectory(libraryName), id).toFile().listFiles((dir, name) -> "pdf".equals(FilenameUtils.getExtension(name)));
     if (files == null || files.length != 1) {
       throw new IllegalStateException("Failed to recover book because no PDF was found");
     }
