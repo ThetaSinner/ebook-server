@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.thetasinner.data.content.BookService;
@@ -111,7 +112,7 @@ public class EBookDataService {
     return failed;
   }
 
-  public void recoverStoredBook(String name, String id) throws StorageException, IOException {
+  public void recoverStoredBook(String name, String id) {
     var book = bookService.recoverStoredBook(name, id);
 
     var eventData = new ChangeEventData(BookCreated, book.getId());
@@ -122,6 +123,8 @@ public class EBookDataService {
     if (file.isEmpty()) {
       throw new StorageException("File is empty");
     }
+
+    System.out.println(file.getContentType());
 
     var book = bookService.storeBook(name, file);
 

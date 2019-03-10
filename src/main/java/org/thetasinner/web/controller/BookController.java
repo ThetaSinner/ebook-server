@@ -91,4 +91,12 @@ public class BookController {
       throw new EBookControllerException("Failed to get cover", e);
     }
   }
+
+  @RequestMapping(value = "/upload", method = RequestMethod.POST)
+  public @ResponseBody
+  UploadResponse upload(@RequestParam(name = "name") String name, @RequestParam(name = "files") MultipartFile[] files) {
+    List<Integer> failedUploadIndices = dataService.storeAll(name, files);
+
+    return new UploadResponse(failedUploadIndices);
+  }
 }

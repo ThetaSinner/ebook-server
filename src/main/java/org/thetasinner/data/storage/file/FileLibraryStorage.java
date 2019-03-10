@@ -182,7 +182,6 @@ public class FileLibraryStorage implements ILibraryStorage {
     ImageIO.write(im, "PNG", outPath.toFile());
   }
 
-
   @Override
   public void deleteBook(String id, String name) throws IOException {
     FileUtils.deleteDirectory(Paths.get(getLibraryDirectory(name), id).toFile());

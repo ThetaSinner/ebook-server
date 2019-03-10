@@ -47,7 +47,7 @@ export class BookDataService {
 
     formData.append('name', libraryName);
 
-    return this.client.post(`${environment.mediaServerUrlBase}/libraries/upload`, formData).pipe(
+    return this.client.post(`${environment.mediaServerUrlBase}/books/upload`, formData).pipe(
       timeout(environment.uploadTimeoutMillis),
       catchError(e => {
         console.log('Upload error', e);
