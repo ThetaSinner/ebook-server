@@ -38,6 +38,7 @@ import java.util.List;
 
 import static org.thetasinner.web.events.ChangeEventData.ChangeType.BookCreated;
 import static org.thetasinner.web.events.ChangeEventData.ChangeType.BookUpdated;
+import static org.thetasinner.web.events.ChangeEventData.ChangeType.VideoCreated;
 
 @Service
 public class EBookDataService {
@@ -141,7 +142,10 @@ public class EBookDataService {
       libraryChangeService.publish(libraryName, eventData);
     }
     else if (contentTypeService.isVideoContentType(contentType)) {
-      videoService.storeVideo(libraryName, file);
+      var video = videoService.storeVideo(libraryName, file);
+
+      var eventData = new ChangeEventData(VideoCreated, video.getId());
+      libraryChangeService.publish(libraryName, eventData);
     }
   }
 

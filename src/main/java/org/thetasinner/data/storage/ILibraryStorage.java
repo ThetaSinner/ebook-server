@@ -16,7 +16,7 @@ public interface ILibraryStorage {
 
   void create(String name);
 
-  Book store(String name, MultipartFile file) throws StorageException, IOException;
+  StorageResult store(String name, MultipartFile file) throws StorageException, IOException;
 
   void deleteBook(String id, String name) throws IOException;
 

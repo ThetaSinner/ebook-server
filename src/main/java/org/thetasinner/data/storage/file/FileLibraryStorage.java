@@ -18,6 +18,7 @@ import org.thetasinner.data.model.Library;
 import org.thetasinner.data.model.TypedUrl;
 import org.thetasinner.data.storage.ILibraryStorage;
 import org.thetasinner.data.storage.StorageException;
+import org.thetasinner.data.storage.StorageResult;
 
 import javax.imageio.ImageIO;
 import java.io.File;
@@ -127,7 +128,7 @@ public class FileLibraryStorage implements ILibraryStorage {
   }
 
   @Override
-  public Book store(String libraryName, MultipartFile file) throws StorageException, IOException {
+  public StorageResult store(String libraryName, MultipartFile file) throws StorageException, IOException {
     var fileName = validateUploadFile(file);
 
     UUID uuid = UUID.randomUUID();
@@ -146,12 +147,11 @@ public class FileLibraryStorage implements ILibraryStorage {
 
     extractAndStoreCover(storagePath, fileStoragePath);
 
-    // Once everything else is in place, add the book to the library.
-    Book book = new Book();
-    book.setId(uuid.toString());
-    book.setUrl(new TypedUrl(fileStoragePath, TypedUrl.Type.LocalManaged));
-    book.setTitle(fileName);
-    return book;
+    var result = new StorageResult();
+    result.setId(uuid.toString());
+    result.setFileName(fileName);
+    result.setUrl(new TypedUrl(fileStoragePath, TypedUrl.Type.LocalManaged));
+    return result;
   }
 
   @Override

@@ -14,6 +14,7 @@ public class ChangeEventData {
   public enum ChangeType {
     BookCreated,
     BookUpdated,
-    BookDeleted
+    BookDeleted,
+    VideoCreated
   }
 }

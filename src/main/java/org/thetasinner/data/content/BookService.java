@@ -75,7 +75,12 @@ public class BookService {
   public Book storeBook(String libraryName, MultipartFile file) throws IOException, StorageException {
     LOG.trace("Storing book from file in library with name [{}]", libraryName);
 
-    var book = libraryStorage.store(libraryName, file);
+    var storageResult = libraryStorage.store(libraryName, file);
+
+    Book book = new Book();
+    book.setId(storageResult.getId());
+    book.setUrl(storageResult.getUrl());
+    book.setTitle(storageResult.getFileName());
 
     libraryService.getLibrary(libraryName).getItem().getBooks().add(book);
 

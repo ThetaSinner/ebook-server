@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.thetasinner.data.model.Video;
 import org.thetasinner.data.storage.ILibraryStorage;
 import org.thetasinner.data.storage.StorageException;
 
@@ -22,13 +23,18 @@ public class VideoService {
     this.libraryStorage = libraryStorage;
   }
 
-  public void storeVideo(String libraryName, MultipartFile file) throws IOException, StorageException {
+  public Video storeVideo(String libraryName, MultipartFile file) throws IOException, StorageException {
     LOG.trace("Storing video from file in library with name [{}]", libraryName);
 
-    // var book = libraryStorage.store(libraryName, file);
+    var storageResult = libraryStorage.store(libraryName, file);
 
-    // libraryService.getLibrary(libraryName).getItem().getBooks().add(book);
+    var video = new Video();
+    video.setId(storageResult.getId());
+    video.setUrl(storageResult.getUrl());
+    video.setTitle(storageResult.getFileName());
 
-    // return book;
+    libraryService.getLibrary(libraryName).getItem().getVideos().add(video);
+
+    return video;
   }
 }
