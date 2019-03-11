@@ -6,11 +6,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.thetasinner.data.content.BookService;
 import org.thetasinner.data.content.LibraryService;
+import org.thetasinner.data.content.VideoService;
 import org.thetasinner.data.exception.EBookDataServiceException;
 import org.thetasinner.data.exception.EBookDataServiceInputValidationException;
 import org.thetasinner.data.exception.EBookFileNotFoundException;
@@ -51,12 +51,18 @@ public class EBookDataService {
 
   private final ILibraryStorage libraryStorage;
 
+  private final ContentTypeService contentTypeService;
+
+  private final VideoService videoService;
+
   @Autowired
-  public EBookDataService(LibraryChangeService changeService, LibraryService libraryService, BookService bookService, ILibraryStorage libraryStorage) {
+  public EBookDataService(LibraryChangeService changeService, LibraryService libraryService, BookService bookService, ILibraryStorage libraryStorage, ContentTypeService contentTypeService, VideoService videoService) {
     this.libraryChangeService = changeService;
     this.libraryService = libraryService;
     this.bookService = bookService;
     this.libraryStorage = libraryStorage;
+    this.contentTypeService = contentTypeService;
+    this.videoService = videoService;
   }
 
   public void commit(CommitRequest commitRequest) {
@@ -119,17 +125,24 @@ public class EBookDataService {
     libraryChangeService.publish(name, eventData);
   }
 
-  private void store(String name, MultipartFile file) throws StorageException, IOException {
+  private void store(String libraryName, MultipartFile file) throws StorageException, IOException {
     if (file.isEmpty()) {
       throw new StorageException("File is empty");
     }
 
-    System.out.println(file.getContentType());
+    String contentType = file.getContentType();
+    if (contentType == null) {
+      LOG.error("Will not store file [{}] because it does not have a content type.", file.getName());
+    }
+    else if (contentTypeService.isBookContentType(contentType)) {
+      var book = bookService.storeBook(libraryName, file);
 
-    var book = bookService.storeBook(name, file);
-
-    var eventData = new ChangeEventData(BookCreated, book.getId());
-    libraryChangeService.publish(name, eventData);
+      var eventData = new ChangeEventData(BookCreated, book.getId());
+      libraryChangeService.publish(libraryName, eventData);
+    }
+    else if (contentTypeService.isVideoContentType(contentType)) {
+      videoService.storeVideo(libraryName, file);
+    }
   }
 
   public List<Book> getBooks(String name) {
