@@ -91,7 +91,7 @@ public class EBookTestClient {
             .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
             .create();
 
-    var requestEntity = new HttpEntity<>(gson.toJson(request), headers);
+    var requestEntity = new HttpEntity<>(request, headers);
 
     return restTemplate.exchange(urlHelper.buildRequestUrl("/books/{id}?libraryName={libraryName}", port), HttpMethod.PATCH, requestEntity, Book.class, bookId, libraryName);
   }
