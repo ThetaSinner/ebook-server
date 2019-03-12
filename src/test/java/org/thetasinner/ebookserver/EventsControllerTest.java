@@ -1,5 +1,6 @@
 package org.thetasinner.ebookserver;
 
+import org.apache.commons.lang3.SerializationUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,15 +12,15 @@ import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.thetasinner.data.model.Book;
 import org.thetasinner.ebookserver.helper.EBookTestClient;
+import org.thetasinner.ebookserver.helper.PatchHelper;
 import org.thetasinner.ebookserver.helper.TestDataHelper;
 import org.thetasinner.ebookserver.helper.TestInfrastructureHelper;
 import org.thetasinner.ebookserver.helper.UrlHelper;
 import org.thetasinner.web.events.ChangeEventData;
 import org.thetasinner.web.model.BookAddRequest;
-import org.thetasinner.web.model.BookUpdateRequest;
 import org.thetasinner.web.model.RequestBase;
-import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 
 import java.io.IOException;
@@ -32,7 +33,6 @@ import java.util.concurrent.TimeUnit;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -49,6 +49,9 @@ public class EventsControllerTest {
 
   @Autowired
   private UrlHelper urlHelper;
+
+  @Autowired
+  private PatchHelper patchHelper;
 
   // Should be BeforeAll, but running with SpringRunner which is using JUnit4.
   @BeforeClass
@@ -105,7 +108,7 @@ public class EventsControllerTest {
   }
 
   @Test
-  public void eventTriggeredWhenBookUpdated() throws InterruptedException {
+  public void eventTriggeredWhenBookUpdated() throws InterruptedException, IOException {
     var NUMBER_OF_COUNT_DOWNS_REQUIRED = 1;
     var lock = new CountDownLatch(NUMBER_OF_COUNT_DOWNS_REQUIRED);
 
@@ -118,19 +121,20 @@ public class EventsControllerTest {
     var books = bookList.getBody();
     assertNotNull(books);
     assertEquals(1, books.size());
-    var bookId = books.get(0).getId();
+    Book originalBook = books.get(0);
+    var bookId = originalBook.getId();
 
     var eventStream = createSubscriptionRequest(libraryName);
 
     var changes = new ArrayList<ChangeEventData>();
     captureEvents(lock, eventStream, changes);
 
-    var request = new RequestBase<BookUpdateRequest>();
-    request.setName(libraryName);
-    BookUpdateRequest bookUpdateRequest = new BookUpdateRequest();
-    request.setRequest(bookUpdateRequest);
-    bookUpdateRequest.setTitle("I updated the title!");
-    eBookTestClient.updateBook(request, bookId, port);
+    var modifiedBook = SerializationUtils.clone(originalBook);
+    modifiedBook.setTitle("I updated the title!");
+
+    var patch = patchHelper.getJsonPatch(originalBook, modifiedBook);
+
+    eBookTestClient.updateBook(patch, bookId, libraryName, port);
 
     var countDownSucceeded = lock.await(5, TimeUnit.SECONDS);
     assertTrue(countDownSucceeded);

@@ -3,6 +3,7 @@ package org.thetasinner.ebookserver;
 import com.google.gson.Gson;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
+import org.apache.commons.lang3.SerializationUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,15 +15,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.thetasinner.data.model.Book;
+import org.thetasinner.data.model.BookMetadata;
 import org.thetasinner.data.model.Library;
 import org.thetasinner.data.model.TypedUrl;
 import org.thetasinner.ebookserver.helper.EBookTestClient;
+import org.thetasinner.ebookserver.helper.PatchHelper;
 import org.thetasinner.ebookserver.helper.ResourceHelper;
 import org.thetasinner.ebookserver.helper.TestDataHelper;
 import org.thetasinner.ebookserver.helper.TestInfrastructureHelper;
 import org.thetasinner.web.model.BookAddRequest;
-import org.thetasinner.web.model.BookMetadataUpdateRequest;
-import org.thetasinner.web.model.BookUpdateRequest;
 import org.thetasinner.web.model.RequestBase;
 
 import java.io.FileFilter;
@@ -59,6 +60,9 @@ public class EBookControllerTest {
 
   @Autowired
   private TestDataHelper testDataHelper;
+
+  @Autowired
+  private PatchHelper patchHelper;
 
   // Should be BeforeAll, but running with SpringRunner which is using JUnit4.
   @BeforeClass
@@ -358,7 +362,7 @@ public class EBookControllerTest {
   }
 
   @Test
-  public void updateAllFieldsOnBook() {
+  public void updateAllFieldsOnBook() throws IOException {
     var libraryName = testDataHelper.getCurrentMethodName();
     var response = eBookTestClient.createLibrary(libraryName, this.port);
     assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -371,49 +375,47 @@ public class EBookControllerTest {
     var books = booksResponse.getBody();
     assertNotNull(books);
 
-    var request = new RequestBase<BookUpdateRequest>();
-    request.setName(libraryName);
-    BookUpdateRequest bookUpdateRequest = new BookUpdateRequest();
-    request.setRequest(bookUpdateRequest);
+    var originalBook = books.get(0);
+    assertNotNull(originalBook);
 
-    bookUpdateRequest.setDatePublished(new Date());
-    bookUpdateRequest.setDescription("An enlightening read");
-    bookUpdateRequest.setIsbn("123049845903845");
-    bookUpdateRequest.setPublisher("A mighty press");
-    bookUpdateRequest.setTitle("Code Smells Everywhere");
+    var modifiedBook = SerializationUtils.clone(originalBook);
+    modifiedBook.setDatePublished(new Date());
+    modifiedBook.setDescription("An enlightening read");
+    modifiedBook.setIsbn("123049845903845");
+    modifiedBook.setPublisher("A mighty press");
+    modifiedBook.setTitle("Code Smells Everywhere");
 
     var authors = new ArrayList<String>();
     authors.add("Randy C. Markus");
-    bookUpdateRequest.setAuthors(authors);
+    modifiedBook.setAuthors(authors);
 
-    BookMetadataUpdateRequest bookMetadataUpdateRequest = new BookMetadataUpdateRequest();
-    bookUpdateRequest.setBookMetadataUpdateRequest(bookMetadataUpdateRequest);
-
-    bookMetadataUpdateRequest.setRating((byte) 4);
+    BookMetadata metadata = new BookMetadata();
+    modifiedBook.setMetadata(metadata);
+    metadata.setRating((byte) 4);
 
     var tags = new ArrayList<String>();
     tags.add("code-quality");
     tags.add("software-development");
     tags.add("python");
-    bookMetadataUpdateRequest.setTags(tags);
+    metadata.setTags(tags);
 
-    String bookId = books.get(0).getId();
-    ResponseEntity<Book> result = eBookTestClient.updateBook(request, bookId, this.port);
+    var patch = patchHelper.getJsonPatch(originalBook, modifiedBook);
+
+    String bookId = originalBook.getId();
+    ResponseEntity<Book> result = eBookTestClient.updateBook(patch, bookId, libraryName, this.port);
     assertEquals(HttpStatus.OK, result.getStatusCode());
 
     var updatedBook = result.getBody();
     assertNotNull(updatedBook);
 
-    System.out.println(updatedBook);
-
-    assertEquals(bookUpdateRequest.getTitle(), updatedBook.getTitle());
-    assertEquals(bookUpdateRequest.getDatePublished(), updatedBook.getDatePublished());
-    assertEquals(bookUpdateRequest.getDescription(), updatedBook.getDescription());
-    assertEquals(bookUpdateRequest.getIsbn(), updatedBook.getIsbn());
-    assertEquals(bookUpdateRequest.getPublisher(), updatedBook.getPublisher());
-    assertIterableEquals(bookUpdateRequest.getAuthors(), updatedBook.getAuthors());
-    assertEquals(bookUpdateRequest.getBookMetadataUpdateRequest().getRating(), updatedBook.getMetadata().getRating());
-    assertIterableEquals(bookUpdateRequest.getBookMetadataUpdateRequest().getTags(), updatedBook.getMetadata().getTags());
+    assertEquals(modifiedBook.getTitle(), updatedBook.getTitle());
+    assertEquals(modifiedBook.getDatePublished(), updatedBook.getDatePublished());
+    assertEquals(modifiedBook.getDescription(), updatedBook.getDescription());
+    assertEquals(modifiedBook.getIsbn(), updatedBook.getIsbn());
+    assertEquals(modifiedBook.getPublisher(), updatedBook.getPublisher());
+    assertIterableEquals(modifiedBook.getAuthors(), updatedBook.getAuthors());
+    assertEquals(modifiedBook.getMetadata().getRating(), updatedBook.getMetadata().getRating());
+    assertIterableEquals(modifiedBook.getMetadata().getTags(), updatedBook.getMetadata().getTags());
   }
 
   @Test

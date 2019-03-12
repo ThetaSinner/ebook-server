@@ -1,5 +1,6 @@
 package org.thetasinner.ebookserver.helper;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.gson.GsonBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -17,7 +18,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.thetasinner.data.model.Book;
 import org.thetasinner.ebookserver.EmptyRequest;
 import org.thetasinner.web.model.BookAddRequest;
-import org.thetasinner.web.model.BookUpdateRequest;
 import org.thetasinner.web.model.CommitLibrary;
 import org.thetasinner.web.model.CommitRequest;
 import org.thetasinner.web.model.EmptyJsonResponse;
@@ -67,7 +67,7 @@ public class EBookTestClient {
 
     var requestEntity = new HttpEntity<>(body, headers);
 
-    return restTemplate.postForEntity(urlHelper.buildRequestUrl("/libraries/upload", port), requestEntity, String.class);
+    return restTemplate.postForEntity(urlHelper.buildRequestUrl("/books/upload", port), requestEntity, String.class);
   }
 
   public ResponseEntity<EmptyJsonResponse> commitLibrary(String libraryName, boolean unload, int port) {
@@ -83,7 +83,7 @@ public class EBookTestClient {
     restTemplate.delete(urlHelper.buildRequestUrl("/books/{id}?name={name}", port), bookId, libraryName);
   }
 
-  public ResponseEntity<Book> updateBook(RequestBase<BookUpdateRequest> request, String bookId, int port) {
+  public ResponseEntity<Book> updateBook(JsonNode request, String bookId, String libraryName, int port) {
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
 
@@ -93,7 +93,7 @@ public class EBookTestClient {
 
     var requestEntity = new HttpEntity<>(gson.toJson(request), headers);
 
-    return restTemplate.exchange(urlHelper.buildRequestUrl("/books/{id}", port), HttpMethod.PATCH, requestEntity, Book.class, bookId);
+    return restTemplate.exchange(urlHelper.buildRequestUrl("/books/{id}?libraryName={libraryName}", port), HttpMethod.PATCH, requestEntity, Book.class, bookId, libraryName);
   }
 
   public ResponseEntity<List<Book>> getBookList(String libraryName, int port) {
