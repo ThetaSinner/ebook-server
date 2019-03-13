@@ -1,7 +1,6 @@
 package org.thetasinner.ebookserver.helper;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.google.gson.GsonBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -86,10 +85,6 @@ public class EBookTestClient {
   public ResponseEntity<Book> updateBook(JsonNode request, String bookId, String libraryName, int port) {
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
-
-    var gson = new GsonBuilder()
-            .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
-            .create();
 
     var requestEntity = new HttpEntity<>(request, headers);
 

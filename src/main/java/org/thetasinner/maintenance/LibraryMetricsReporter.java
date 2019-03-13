@@ -78,7 +78,10 @@ public class LibraryMetricsReporter {
         var bookWithMissingData = new BookWithMissingData();
 
         if (book.getUrl().getType() == TypedUrl.Type.LocalManaged || book.getUrl().getType() == TypedUrl.Type.LocalUnmanaged) {
-            bookWithMissingData.setUriFragment(Paths.get(book.getUrl().getValue()).getFileName().toString());
+            var fileName = Paths.get(book.getUrl().getValue()).getFileName();
+            if (fileName != null) {
+                bookWithMissingData.setUriFragment(fileName.toString());
+            }
         }
         else {
             bookWithMissingData.setUriFragment(book.getUrl().getValue());
