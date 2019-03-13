@@ -1,9 +1,17 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
-import { faBook, faLink, faUpload, faChevronLeft } from '@fortawesome/free-solid-svg-icons';
-import { map } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import {Component, OnInit} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
+import {IconDefinition} from '@fortawesome/fontawesome-svg-core';
+import {faBook, faChevronLeft, faLink, faUpload} from '@fortawesome/free-solid-svg-icons';
+
+enum MediaType {
+  Books,
+  Videos
+}
+
+const mediaTypeNames = {
+  [MediaType.Books]: "Books",
+  [MediaType.Videos]: "Videos"
+};
 
 @Component({
   selector: 'app-library-add-workspace',
@@ -15,6 +23,21 @@ export class LibraryAddWorkspaceComponent implements OnInit {
   uploadBookIcon: IconDefinition = faUpload;
   addLinkIcon: IconDefinition = faLink;
   navigateBackIcon: IconDefinition = faChevronLeft;
+
+  private _selectedMediaType: MediaType = MediaType.Books;
+
+  set selectedMediaType(val: string) {
+    let mediaType = Object.keys(mediaTypeNames).find(key => mediaTypeNames[key] === val);
+    this._selectedMediaType = parseInt(mediaType);
+  }
+
+  get selectedMediaType() {
+    return mediaTypeNames[this._selectedMediaType]
+  }
+
+  get mediaTypes(): string[] {
+    return Object.keys(mediaTypeNames).map(key => mediaTypeNames[key])
+  }
 
   constructor(
     private router: Router,
