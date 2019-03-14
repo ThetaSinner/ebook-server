@@ -19,16 +19,19 @@ const mediaTypeNames = {
   styleUrls: ['./library-add-workspace.component.scss']
 })
 export class LibraryAddWorkspaceComponent implements OnInit {
-  addBookIcon: IconDefinition = faBook;
-  uploadBookIcon: IconDefinition = faUpload;
+  addIcon: IconDefinition = faBook;
+  uploadIcon: IconDefinition = faUpload;
   addLinkIcon: IconDefinition = faLink;
   navigateBackIcon: IconDefinition = faChevronLeft;
 
   private _selectedMediaType: MediaType = MediaType.Books;
+  private _selectedAddMethod: string = 'upload';
 
   set selectedMediaType(val: string) {
     let mediaType = Object.keys(mediaTypeNames).find(key => mediaTypeNames[key] === val);
     this._selectedMediaType = parseInt(mediaType);
+
+    this.applyRouting();
   }
 
   get selectedMediaType() {
@@ -53,15 +56,33 @@ export class LibraryAddWorkspaceComponent implements OnInit {
     this.router.navigate(['..'], {relativeTo: this.activeRoute});
   }
 
-  navigateToAddRemoteBook() {
-    this.router.navigate(['remote'], {relativeTo: this.activeRoute});
+  selectAddRemoteMedia() {
+    this._selectedAddMethod = 'remote';
+    this.applyRouting();
   }
 
-  navigateToUploadBook() {
-    this.router.navigate(['upload'], {relativeTo: this.activeRoute});
+  selectUploadMedia() {
+    this._selectedAddMethod = 'upload';
+    this.applyRouting();
   }
 
-  navigateToAddBookLink() {
-    this.router.navigate(['link'], {relativeTo: this.activeRoute});
+  selectAddMediaLink() {
+    this._selectedAddMethod = 'link';
+    this.applyRouting();
+  }
+
+  private applyRouting() {
+    let routeBase = {
+      [MediaType.Books]: "book",
+      [MediaType.Videos]: "video"
+    }[this._selectedMediaType];
+
+    this.router.navigate([routeBase, this._selectedAddMethod], {relativeTo: this.activeRoute}).then(succeeded => {
+      if (!succeeded) {
+        console.error('Routing failed, try again?');
+      }
+    }).catch(e => {
+      console.error('Failure while attempting to apply routing', e);
+    });
   }
 }

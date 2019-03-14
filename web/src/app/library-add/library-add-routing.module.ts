@@ -1,9 +1,10 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
-import { LibraryAddWorkspaceComponent } from './library-add-workspace/library-add-workspace.component';
-import { BookUploadComponent } from './book-upload/book-upload.component';
-import { BookRemoteAddComponent } from './book-remote-add/book-remote-add.component';
-import { BookLinkAddComponent } from './book-link-add/book-link-add.component';
+import {NgModule} from '@angular/core';
+import {RouterModule, Routes} from '@angular/router';
+import {LibraryAddWorkspaceComponent} from './library-add-workspace/library-add-workspace.component';
+import {BookUploadComponent} from './book-upload/book-upload.component';
+import {BookRemoteAddComponent} from './book-remote-add/book-remote-add.component';
+import {BookLinkAddComponent} from './book-link-add/book-link-add.component';
+import {VideoUploadComponent} from "./video-upload/video-upload/video-upload.component";
 
 const routes: Routes = [
   { 
@@ -14,14 +15,17 @@ const routes: Routes = [
         redirectTo: 'upload',
         pathMatch: 'full'
     }, {
-        path: 'remote',
+        path: 'book/remote',
         component: BookRemoteAddComponent
     }, {
-        path: 'upload',
+        path: 'book/upload',
         component: BookUploadComponent
     }, {
-        path: 'link',
+        path: 'book/link',
         component: BookLinkAddComponent
+    }, {
+      path: 'video/upload',
+      component: VideoUploadComponent
     }]
   }
 ];

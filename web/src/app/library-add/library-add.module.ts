@@ -7,13 +7,14 @@ import {BookUploadComponent} from './book-upload/book-upload.component';
 import {BookRemoteAddComponent} from './book-remote-add/book-remote-add.component';
 import {BookLinkAddComponent} from './book-link-add/book-link-add.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {VideoUploadComponent} from './video-upload/video-upload/video-upload.component';
 
 @NgModule({
   declarations: [
     LibraryAddWorkspaceComponent, 
     BookUploadComponent,
     BookRemoteAddComponent, 
-    BookLinkAddComponent
+    BookLinkAddComponent, VideoUploadComponent
   ],
   imports: [
     CommonModule,
