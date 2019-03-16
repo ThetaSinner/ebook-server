@@ -6,12 +6,12 @@ import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 
 import java.awt.image.RenderedImage;
-import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
 public class PdfImageExtractor {
-  public static ArrayList<RenderedImage> extract(File source, ExtractionProperties extractionProperties) throws IOException {
+  public static ArrayList<RenderedImage> extract(FileInputStream source, ExtractionProperties extractionProperties) throws IOException {
     var doc = PDDocument.load(source);
 
     var images = new ArrayList<RenderedImage>();

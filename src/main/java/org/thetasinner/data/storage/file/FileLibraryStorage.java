@@ -21,6 +21,7 @@ import org.thetasinner.data.storage.StorageException;
 import org.thetasinner.data.storage.StorageResult;
 
 import javax.imageio.ImageIO;
+import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -128,7 +129,7 @@ public class FileLibraryStorage implements ILibraryStorage {
   }
 
   @Override
-  public StorageResult store(String libraryName, MultipartFile file) throws StorageException, IOException {
+  public StorageResult store(String libraryName, MultipartFile file) throws StorageException {
     var fileName = validateUploadFile(file);
 
     UUID uuid = UUID.randomUUID();
@@ -144,8 +145,6 @@ public class FileLibraryStorage implements ILibraryStorage {
     } catch (IOException e) {
       throw new StorageException("Error saving the file", e);
     }
-
-    extractAndStoreCover(storagePath, fileStoragePath);
 
     var result = new StorageResult();
     result.setId(uuid.toString());
@@ -170,16 +169,12 @@ public class FileLibraryStorage implements ILibraryStorage {
     return book;
   }
 
-  private void extractAndStoreCover(String storagePath, String fileStoragePath) throws IOException {
-    var images = PdfImageExtractor.extract(new File(fileStoragePath), new ExtractionProperties());
-    if (images.size() == 0) {
-      return;
-    }
-
+  @Override
+  public void storeCover(String libraryName, String id, RenderedImage image) throws IOException {
+    String storagePath = getLibraryDirectory(libraryName) + id;
     var outPath = Paths.get(storagePath, COVER_FILE);
 
-    var im = images.get(0);
-    ImageIO.write(im, "PNG", outPath.toFile());
+    ImageIO.write(image, "PNG", outPath.toFile());
   }
 
   @Override

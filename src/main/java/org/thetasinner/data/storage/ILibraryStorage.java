@@ -4,6 +4,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.thetasinner.data.model.Book;
 import org.thetasinner.data.model.Library;
 
+import java.awt.image.RenderedImage;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -17,6 +18,8 @@ public interface ILibraryStorage {
   void create(String name);
 
   StorageResult store(String name, MultipartFile file) throws StorageException, IOException;
+
+  void storeCover(String libraryName, String id, RenderedImage image) throws IOException;
 
   void deleteBook(String id, String name) throws IOException;
 

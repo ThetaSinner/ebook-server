@@ -9,11 +9,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.thetasinner.data.exception.EBookNotFoundException;
+import org.thetasinner.data.image.ExtractionProperties;
+import org.thetasinner.data.image.PdfImageExtractor;
 import org.thetasinner.data.model.Book;
 import org.thetasinner.data.model.TypedUrl;
 import org.thetasinner.data.storage.ILibraryStorage;
 import org.thetasinner.data.storage.StorageException;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -84,7 +87,19 @@ public class BookService {
 
     libraryService.getLibrary(libraryName).getItem().getBooks().add(book);
 
+    extractCover(libraryName, book);
+
     return book;
+  }
+
+  private void extractCover(String libraryName, Book book) throws IOException {
+    var bookStream = libraryStorage.getBookInputStream(book);
+    var images = PdfImageExtractor.extract(bookStream, new ExtractionProperties());
+    if (images.size() == 0) {
+      return;
+    }
+
+    libraryStorage.storeCover(libraryName, book.getId(), images.get(0));
   }
 
   public Book getBook(String libraryName, String id) {
