@@ -112,6 +112,7 @@ public class EBookDataService {
         store(name, file);
         storeIndex++;
       } catch (StorageException | IOException e) {
+        LOG.error("Storage error", e);
         failed.add(storeIndex);
       }
     }

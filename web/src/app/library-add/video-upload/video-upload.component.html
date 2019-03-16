@@ -1,3 +1,7 @@
-<p>
-  video-upload works!
-</p>
+<form>
+  <div class="form-group">
+    <label for="selectFiles">Choose videos to upload</label>
+    <input type="file" id="selectFiles" accept="video/*" multiple class="form-control-file" (change)="handleFilesSelected($event.target.files)" />
+  </div>
+  <button type="button" class="btn btn-primary" (click)="handleUpload()">Upload</button>
+</form>

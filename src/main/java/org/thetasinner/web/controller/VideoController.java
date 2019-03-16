@@ -1,6 +1,7 @@
 package org.thetasinner.web.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -25,7 +26,7 @@ public class VideoController {
   }
 
 
-  @RequestMapping(value = "/upload", method = RequestMethod.POST)
+  @RequestMapping(value = "/upload", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public @ResponseBody
   UploadResponse upload(@RequestParam(name = "name") String name, @RequestParam(name = "files") MultipartFile[] files) {
     List<Integer> failedUploadIndices = dataService.storeAll(name, files);
