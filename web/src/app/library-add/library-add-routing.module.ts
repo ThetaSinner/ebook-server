@@ -4,7 +4,9 @@ import {LibraryAddWorkspaceComponent} from './library-add-workspace/library-add-
 import {BookUploadComponent} from './book-upload/book-upload.component';
 import {BookRemoteAddComponent} from './book-remote-add/book-remote-add.component';
 import {BookLinkAddComponent} from './book-link-add/book-link-add.component';
-import {VideoUploadComponent} from "./video-upload/video-upload/video-upload.component";
+import {VideoUploadComponent} from "./video-upload/video-upload.component";
+import {VideoRemoteAddComponent} from "./video-remote-add/video-remote-add.component";
+import {VideoLinkAddComponent} from "./video-link-add/video-link-add.component";
 
 const routes: Routes = [
   { 
@@ -12,7 +14,7 @@ const routes: Routes = [
     component: LibraryAddWorkspaceComponent,
     children: [{
         path: '',
-        redirectTo: 'upload',
+        redirectTo: 'book/upload',
         pathMatch: 'full'
     }, {
         path: 'book/remote',
@@ -24,8 +26,14 @@ const routes: Routes = [
         path: 'book/link',
         component: BookLinkAddComponent
     }, {
+      path: 'video/remote',
+      component: VideoRemoteAddComponent
+    }, {
       path: 'video/upload',
       component: VideoUploadComponent
+    }, {
+      path: 'video/link',
+      component: VideoLinkAddComponent
     }]
   }
 ];
