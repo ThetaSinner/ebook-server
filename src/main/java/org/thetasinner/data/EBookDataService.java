@@ -27,6 +27,7 @@ import org.thetasinner.web.model.CommitRequest;
 
 import javax.servlet.ServletOutputStream;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -255,5 +256,13 @@ public class EBookDataService {
 
   public void deleteBookFromStorage(String libraryName, String bookId) throws IOException {
     bookService.deleteBookFromStorage(libraryName, bookId);
+  }
+
+  public String getVideo(String id, String name, ServletOutputStream outputStream) throws IOException {
+    var video = videoService.getVideo(name, id);
+    var videoContent = libraryStorage.getVideoInputStream(video);
+    IOUtils.copy(videoContent.getInputStream(), outputStream);
+
+    return videoContent.getContentType();
   }
 }

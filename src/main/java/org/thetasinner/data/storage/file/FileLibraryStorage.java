@@ -11,14 +11,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.multipart.MultipartFile;
 import org.thetasinner.data.exception.EBookDataServiceException;
-import org.thetasinner.data.image.ExtractionProperties;
-import org.thetasinner.data.image.PdfImageExtractor;
 import org.thetasinner.data.model.Book;
 import org.thetasinner.data.model.Library;
 import org.thetasinner.data.model.TypedUrl;
+import org.thetasinner.data.model.Video;
 import org.thetasinner.data.storage.ILibraryStorage;
 import org.thetasinner.data.storage.StorageException;
 import org.thetasinner.data.storage.StorageResult;
+import org.thetasinner.data.storage.VideoContent;
 
 import javax.imageio.ImageIO;
 import java.awt.image.RenderedImage;
@@ -212,6 +212,26 @@ public class FileLibraryStorage implements ILibraryStorage {
     }
 
     return new FileInputStream(file);
+  }
+
+  @Override
+  public VideoContent getVideoInputStream(Video video) throws IOException {
+    TypedUrl typedUrl = video.getUrl();
+    if (typedUrl.getType() != TypedUrl.Type.LocalManaged && typedUrl.getType() != TypedUrl.Type.LocalUnmanaged) {
+      throw new EBookDataServiceException("Not a local video");
+    }
+
+    File file = new File(typedUrl.getValue());
+    if (!file.canRead()) {
+      throw new EBookDataServiceException("Video file is not accessible");
+    }
+
+    var contentType = Files.probeContentType(file.toPath());
+
+    VideoContent videoContent = new VideoContent();
+    videoContent.setContentType(contentType);
+    videoContent.setInputStream(new FileInputStream(file));
+    return videoContent;
   }
 
   @Override

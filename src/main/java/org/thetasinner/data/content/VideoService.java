@@ -4,11 +4,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.thetasinner.data.exception.EBookNotFoundException;
 import org.thetasinner.data.model.Video;
 import org.thetasinner.data.storage.ILibraryStorage;
 import org.thetasinner.data.storage.StorageException;
 
 import java.io.IOException;
+import java.util.Optional;
 
 @Service
 public class VideoService {
@@ -36,5 +38,23 @@ public class VideoService {
     libraryService.getLibrary(libraryName).getItem().getVideos().add(video);
 
     return video;
+  }
+
+  public Video getVideo(String libraryName, String id) {
+    LOG.trace("Getting video with id [{}] from library [{}]", id, libraryName);
+
+    var library = libraryService.getLibrary(libraryName).getItem();
+    Optional<Video> video = library.getVideos()
+            .stream()
+            .filter(b -> id.equals(b.getId()))
+            .findFirst();
+
+    // TODO Find first is not necessarily safe to use if multiple books were to have the same id.
+
+    if (video.isPresent()) {
+      return video.get();
+    } else {
+      throw new EBookNotFoundException("Video not found");
+    }
   }
 }

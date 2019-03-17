@@ -7,10 +7,12 @@ import { LibraryContentModule } from './library-content/library-content.module';
 import { LibraryModule } from './library/library.module';
 import { LibraryReportModule } from './library-report/library-report.module';
 import {VideoDataService} from "./service/video-data/video-data.service";
+import { PlaybackComponent } from './video/playback/playback.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    PlaybackComponent
   ],
   imports: [
     BrowserModule,

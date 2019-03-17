@@ -3,6 +3,7 @@ package org.thetasinner.data.storage;
 import org.springframework.web.multipart.MultipartFile;
 import org.thetasinner.data.model.Book;
 import org.thetasinner.data.model.Library;
+import org.thetasinner.data.model.Video;
 
 import java.awt.image.RenderedImage;
 import java.io.FileInputStream;
@@ -32,4 +33,6 @@ public interface ILibraryStorage {
   FileInputStream getCoverInputStream(Book book) throws FileNotFoundException;
 
   Book recover(String name, String id);
+
+  VideoContent getVideoInputStream(Video video) throws IOException;
 }
