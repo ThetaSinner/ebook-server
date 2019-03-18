@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormArray, FormGroup } from '@angular/forms';
-import { BookDataService } from 'src/app/library-content/book-data/book-data.service';
+import { BookDataService } from 'src/app/service/book-data/book-data.service';
 
 @Component({
   selector: 'app-web-link-fix',

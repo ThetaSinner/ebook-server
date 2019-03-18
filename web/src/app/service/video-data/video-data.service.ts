@@ -27,4 +27,8 @@ export class VideoDataService {
       })
     );
   }
+
+  static getPlaybackUrl(libraryName: string, videoId: string): string {
+    return `${environment.mediaServerUrlBase}/videos/${videoId}?name=${libraryName}`;
+  }
 }

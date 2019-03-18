@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { faBookmark, faPen, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { environment } from 'src/environments/environment';
-import { BookDataService } from '../book-data/book-data.service';
+import { BookDataService } from '../../service/book-data/book-data.service';
 
 @Component({
   selector: 'app-content-detail',

@@ -1,6 +1,6 @@
 import { Component, OnInit, SimpleChanges, Input } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray } from '@angular/forms';
-import { BookDataService } from 'src/app/library-content/book-data/book-data.service';
+import { BookDataService } from 'src/app/service/book-data/book-data.service';
 
 @Component({
   selector: 'app-local-book-fix',

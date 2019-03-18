@@ -8,6 +8,7 @@ import { LibraryModule } from './library/library.module';
 import { LibraryReportModule } from './library-report/library-report.module';
 import {VideoDataService} from "./service/video-data/video-data.service";
 import { PlaybackComponent } from './video/playback/playback.component';
+import {BookDataService} from "./service/book-data/book-data.service";
 
 @NgModule({
   declarations: [
@@ -22,7 +23,10 @@ import { PlaybackComponent } from './video/playback/playback.component';
     LibraryAddModule,
     LibraryReportModule
   ],
-  providers: [VideoDataService],
+  providers: [
+    BookDataService,
+    VideoDataService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

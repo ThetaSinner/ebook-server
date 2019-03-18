@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, FormBuilder } from '@angular/forms';
 import { ParamMap, ActivatedRoute } from '@angular/router';
 import { map } from 'rxjs/operators';
-import { BookDataService } from 'src/app/library-content/book-data/book-data.service';
+import { BookDataService } from 'src/app/service/book-data/book-data.service';
 
 @Component({
   selector: 'app-book-link-add',

@@ -5,7 +5,7 @@ import { switchMap } from 'rxjs/operators';
 import { ChangeTracker, ChangeType,  } from 'src/app/library-change/change-tracker';
 import { LibraryChangeService } from 'src/app/library-change/library-change.service';
 import { LibraryDataService } from 'src/app/library/library-data/library-data.service';
-import { BookDataService } from '../book-data/book-data.service';
+import { BookDataService } from '../../service/book-data/book-data.service';
 import { ChangeInfoComponent } from '../control-bar/change-info/change-info.component';
 import { InfoHostDataSourceService } from '../control-bar/info-host-data-source/info-host-data-source.service';
 import { InfoHostItem } from '../control-bar/info-host/info-host-item';

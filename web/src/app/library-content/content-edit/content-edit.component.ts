@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { IconDefinition, findIconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { faPlus, faMinus, faCalendarAlt, faCheck, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import { NgbCalendar, NgbDate } from '@ng-bootstrap/ng-bootstrap';
-import { BookDataService } from '../book-data/book-data.service';
+import { BookDataService } from '../../service/book-data/book-data.service';
 import { compare } from 'fast-json-patch';
 
 @Component({

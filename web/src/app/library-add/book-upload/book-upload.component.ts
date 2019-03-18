@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { BookDataService } from 'src/app/library-content/book-data/book-data.service';
+import { BookDataService } from 'src/app/service/book-data/book-data.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { map } from 'rxjs/operators';
 import { FormGroup, FormControl } from '@angular/forms';

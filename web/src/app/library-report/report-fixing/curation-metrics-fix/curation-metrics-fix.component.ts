@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CurationDataFieldName } from '../../curation-completion-chart/curation-completion-chart.component';
 import { FormGroup, FormBuilder, FormArray } from '@angular/forms';
-import { BookDataService } from 'src/app/library-content/book-data/book-data.service';
+import { BookDataService } from 'src/app/service/book-data/book-data.service';
 import { compare } from 'fast-json-patch';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { faPlus, faMinus } from '@fortawesome/free-solid-svg-icons';
