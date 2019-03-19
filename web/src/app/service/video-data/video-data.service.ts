@@ -1,8 +1,8 @@
-import { Injectable } from '@angular/core';
-import {Observable, of} from "rxjs";
-import {HttpClient} from "@angular/common/http";
+import {Injectable} from '@angular/core';
+import {Observable, of, Subject} from "rxjs";
+import {HttpClient, HttpParams} from "@angular/common/http";
 import {environment} from "../../../environments/environment";
-import {catchError, timeout} from "rxjs/operators";
+import {catchError, map, shareReplay, timeout} from "rxjs/operators";
 
 @Injectable({
   providedIn: 'root'
@@ -10,6 +10,25 @@ import {catchError, timeout} from "rxjs/operators";
 export class VideoDataService {
 
   constructor(private client: HttpClient) { }
+
+  private videoSubjects = new Map<string, Subject<any>>();
+
+  doGetVideos(libraryName: string) {
+    if (!this.videoSubjects[libraryName]) {
+      this.videoSubjects[libraryName] = new Subject();
+    }
+
+    const options = { params: new HttpParams().set('name', libraryName) };
+
+    this.client.get(`${environment.mediaServerUrlBase}/books`, options).pipe(
+      map(videos => this.videoSubjects[libraryName].next(videos)),
+      shareReplay(1)
+    ).subscribe();
+  }
+
+  getVideos(libraryName: string): Observable<any> {
+    return this.videoSubjects[libraryName].asObservable();
+  }
 
   uploadVideos(files: FileList, libraryName: string): Observable<any> {
     const formData = new FormData();

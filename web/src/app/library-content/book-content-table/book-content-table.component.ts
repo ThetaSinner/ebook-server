@@ -1,17 +1,17 @@
-import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
-import { faChevronDown, faChevronUp, IconDefinition } from '@fortawesome/free-solid-svg-icons';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { InfoHostDataSourceService } from '../control-bar/info-host-data-source/info-host-data-source.service';
-import { InfoHostItem } from '../control-bar/info-host/info-host-item';
-import { LibraryInfoComponent } from '../control-bar/library-info/library-info.component';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {faChevronDown, faChevronUp, IconDefinition} from '@fortawesome/free-solid-svg-icons';
+import {Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
+import {InfoHostDataSourceService} from '../control-bar/info-host-data-source/info-host-data-source.service';
+import {InfoHostItem} from '../control-bar/info-host/info-host-item';
+import {LibraryInfoComponent} from '../control-bar/library-info/library-info.component';
 
 @Component({
-  selector: 'app-content-table',
-  templateUrl: './content-table.component.html',
-  styleUrls: ['./content-table.component.scss']
+  selector: 'app-book-content-table',
+  templateUrl: './book-content-table.component.html',
+  styleUrls: ['./book-content-table.component.scss']
 })
-export class ContentTableComponent implements OnInit {
+export class BookContentTableComponent implements OnInit {
   showDetails: object = {};
   editDetails: object = {};
 

@@ -1,14 +1,15 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, ParamMap } from '@angular/router';
-import { of } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
-import { ChangeTracker, ChangeType,  } from 'src/app/library-change/change-tracker';
-import { LibraryChangeService } from 'src/app/library-change/library-change.service';
-import { LibraryDataService } from 'src/app/library/library-data/library-data.service';
-import { BookDataService } from '../../service/book-data/book-data.service';
-import { ChangeInfoComponent } from '../control-bar/change-info/change-info.component';
-import { InfoHostDataSourceService } from '../control-bar/info-host-data-source/info-host-data-source.service';
-import { InfoHostItem } from '../control-bar/info-host/info-host-item';
+import {Component, OnInit} from '@angular/core';
+import {ActivatedRoute, ParamMap} from '@angular/router';
+import {of} from 'rxjs';
+import {switchMap} from 'rxjs/operators';
+import {ChangeTracker, ChangeType,} from 'src/app/library-change/change-tracker';
+import {LibraryChangeService} from 'src/app/library-change/library-change.service';
+import {LibraryDataService} from 'src/app/library/library-data/library-data.service';
+import {BookDataService} from '../../service/book-data/book-data.service';
+import {ChangeInfoComponent} from '../control-bar/change-info/change-info.component';
+import {InfoHostDataSourceService} from '../control-bar/info-host-data-source/info-host-data-source.service';
+import {InfoHostItem} from '../control-bar/info-host/info-host-item';
+import {VideoDataService} from "../../service/video-data/video-data.service";
 
 @Component({
   selector: 'app-library-content-workspace',
@@ -32,17 +33,19 @@ export class LibraryContentWorkspaceComponent implements OnInit {
     private bookDataService: BookDataService,
     private infoHostDataSourceService: InfoHostDataSourceService,
     private libraryDataService: LibraryDataService,
-    private libraryChangeService: LibraryChangeService
+    private libraryChangeService: LibraryChangeService,
+    private videoDataService: VideoDataService
   ) { }
 
   ngOnInit() {
-    
     this.libraryData$ = this.route.paramMap.pipe(
       switchMap((params: ParamMap) => {
         const libraryName = params.get('libraryName');
         this.libraryName = libraryName;
         
         this.bookDataService.doGetBooks(libraryName);
+
+        this.videoDataService.doGetVideos(libraryName);
 
         this.changeTracker = this.libraryChangeService.listen(this.libraryName);
         this.changeTracker.changes.subscribe(change => {
@@ -65,6 +68,7 @@ export class LibraryContentWorkspaceComponent implements OnInit {
 
         return of({
           books$: this.bookDataService.getBooks(libraryName),
+          videos$: this.videoDataService.getVideos(libraryName),
           libraryName: libraryName 
         });
       })
