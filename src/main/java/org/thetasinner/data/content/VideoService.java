@@ -10,6 +10,7 @@ import org.thetasinner.data.storage.ILibraryStorage;
 import org.thetasinner.data.storage.StorageException;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -56,5 +57,12 @@ public class VideoService {
     } else {
       throw new EBookNotFoundException("Video not found");
     }
+  }
+
+  public List<Video> getVideos(String libraryName) {
+    LOG.trace("Getting videos for library [{}]", libraryName);
+
+    var library = libraryService.getLibrary(libraryName).getItem();
+    return library.getVideos();
   }
 }

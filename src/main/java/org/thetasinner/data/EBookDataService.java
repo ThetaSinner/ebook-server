@@ -17,6 +17,7 @@ import org.thetasinner.data.exception.EBookFileNotFoundException;
 import org.thetasinner.data.exception.InvalidRequestException;
 import org.thetasinner.data.model.Book;
 import org.thetasinner.data.model.TypedUrl;
+import org.thetasinner.data.model.Video;
 import org.thetasinner.data.storage.ILibraryStorage;
 import org.thetasinner.data.storage.StorageException;
 import org.thetasinner.web.events.ChangeEventData;
@@ -27,7 +28,6 @@ import org.thetasinner.web.model.CommitRequest;
 
 import javax.servlet.ServletOutputStream;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -264,5 +264,11 @@ public class EBookDataService {
     IOUtils.copy(videoContent.getInputStream(), outputStream);
 
     return videoContent.getContentType();
+  }
+
+  public List<Video> getVideos(String name) {
+    var videos = videoService.getVideos(name);
+
+    return videos == null ? new ArrayList<>() : videos;
   }
 }

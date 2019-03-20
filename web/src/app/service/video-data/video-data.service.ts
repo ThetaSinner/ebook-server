@@ -20,7 +20,7 @@ export class VideoDataService {
 
     const options = { params: new HttpParams().set('name', libraryName) };
 
-    this.client.get(`${environment.mediaServerUrlBase}/books`, options).pipe(
+    this.client.get(`${environment.mediaServerUrlBase}/videos`, options).pipe(
       map(videos => this.videoSubjects[libraryName].next(videos)),
       shareReplay(1)
     ).subscribe();

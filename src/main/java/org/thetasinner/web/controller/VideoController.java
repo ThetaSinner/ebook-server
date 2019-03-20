@@ -11,11 +11,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.thetasinner.data.EBookDataService;
+import org.thetasinner.data.model.Video;
 import org.thetasinner.web.error.EBookControllerException;
 import org.thetasinner.web.model.UploadResponse;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.websocket.server.PathParam;
 import java.io.IOException;
 import java.util.List;
 
@@ -28,6 +28,12 @@ public class VideoController {
   @Autowired
   VideoController(EBookDataService dataService) {
     this.dataService = dataService;
+  }
+
+  @RequestMapping(method = RequestMethod.GET)
+  public @ResponseBody
+  List<Video> getBooks(@RequestParam(name = "name") String name) {
+    return dataService.getVideos(name);
   }
 
   @RequestMapping(value = "/upload", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
