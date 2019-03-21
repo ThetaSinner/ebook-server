@@ -1,3 +1,11 @@
-<p>
-  video-summary-table works!
-</p>
+<div class="row es-book-header-row">
+  <div class="col-sm-2">Title</div>
+  <div class="col-sm-1">Duration</div>
+  <div class="col-sm-1">Rating</div>
+  <div class="col-sm-1">Tags</div>
+  <div class="col-sm-5"></div>
+</div>
+<div class="row es-book-row" *ngFor="let video of videos$ | async">
+  <div class="col-sm-2">{{video.title}}</div>
+  <div class="col-sm-2">{{video.duration}}</div>
+</div>

@@ -1,5 +1,7 @@
 <div class="container">
   <app-control-bar [infoItems]="infoItems" (saveRequested)="handleSaveRequested()"></app-control-bar>
+  <h4>Books</h4>
   <app-book-content-table [libraryData$]="libraryData$" (contentChanged)="handleContentChanged()"></app-book-content-table>
+  <h4>Videos</h4>
   <app-video-summary-table [videos$]="(libraryData$ | async)?.videos$"></app-video-summary-table>
 </div>

@@ -8,6 +8,7 @@ import org.thetasinner.data.exception.EBookNotFoundException;
 import org.thetasinner.data.model.Video;
 import org.thetasinner.data.storage.ILibraryStorage;
 import org.thetasinner.data.storage.StorageException;
+import org.thetasinner.data.storage.StorageResult;
 
 import java.io.IOException;
 import java.util.List;
@@ -31,14 +32,22 @@ public class VideoService {
 
     var storageResult = libraryStorage.store(libraryName, file);
 
+    long duration = getDuration(storageResult);
+
     var video = new Video();
     video.setId(storageResult.getId());
     video.setUrl(storageResult.getUrl());
     video.setTitle(storageResult.getFileName());
+    video.setDuration(duration);
 
     libraryService.getLibrary(libraryName).getItem().getVideos().add(video);
 
     return video;
+  }
+
+  private long getDuration(StorageResult storageResult) {
+    // Xuggler does not appear to work with OpenJDK 11. Find something else!
+    return 0;
   }
 
   public Video getVideo(String libraryName, String id) {
@@ -50,7 +59,7 @@ public class VideoService {
             .filter(b -> id.equals(b.getId()))
             .findFirst();
 
-    // TODO Find first is not necessarily safe to use if multiple books were to have the same id.
+    // TODO Find first is not necessarily safe to use if multiple videos were to have the same id.
 
     if (video.isPresent()) {
       return video.get();
