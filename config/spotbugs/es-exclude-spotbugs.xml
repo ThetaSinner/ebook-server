@@ -8,6 +8,11 @@
         <Method name="getLibraries" />
         <Bug code="RCN" />
     </Match>
+    <Match>
+        <Class name="org.thetasinner.data.storage.file.FileLibraryStorage" />
+        <Method name="getVideoInputStream" />
+        <Bug code="OBL" />
+    </Match>
 
     <Match>
         <Or>
