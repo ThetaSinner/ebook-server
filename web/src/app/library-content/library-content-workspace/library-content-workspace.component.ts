@@ -79,8 +79,12 @@ export class LibraryContentWorkspaceComponent implements OnInit {
     });
   }
 
-  handleContentChanged() {
+  handleBooksChanged() {
     this.bookDataService.doGetBooks(this.libraryName);
+  }
+
+  handleVideosChanged() {
+    this.videoDataService.doGetVideos(this.libraryName);
   }
 
   handleSaveRequested() {

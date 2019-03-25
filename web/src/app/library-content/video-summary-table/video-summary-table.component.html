@@ -3,9 +3,27 @@
   <div class="col-sm-1">Duration</div>
   <div class="col-sm-1">Rating</div>
   <div class="col-sm-1">Tags</div>
-  <div class="col-sm-5"></div>
+  <div class="col-sm-6"></div>
+  <div class="col-sm-1"></div>
 </div>
 <div class="row es-book-row" *ngFor="let video of videos$ | async">
   <div class="col-sm-2">{{video.title}}</div>
   <div class="col-sm-2">{{video.duration}}</div>
+  <div class="col-sm-1"></div>
+  <div class="col-sm-1"></div>
+  <div class="col-sm-5"></div>
+  <div class="col-sm-1 text-center" aria-label="Expand Video">
+    <fa-icon [icon]="getIcon(video.id)" (click)="toggleDetails(video.id)" class="es-icon-button"></fa-icon>
+  </div>
+
+  <div class="row es-book-row" *ngIf="isShowDetails(video.id) && !isEditDetails(video.id)">
+    <div class="col">
+      <app-content-detail [detailData]="video" [libraryName]="libraryName" (startEdit)="editDetail(video.id)" (contentChanged)="handleContentChanged()"></app-content-detail>
+    </div>
+  </div>
+  <div class="row es-book-row" *ngIf="isShowDetails(video.id) && isEditDetails(video.id)">
+    <div class="col">
+      <app-content-edit [detailData]="video" [libraryName]="libraryName" (editFinished)="finishEdit(video.id, $event)"></app-content-edit>
+    </div>
+  </div>
 </div>

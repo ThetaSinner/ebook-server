@@ -77,7 +77,7 @@ export class BookContentTableComponent implements OnInit {
   }
 
   editDetail(rowId: string) {
-    this.editDetail[rowId] = !this.editDetail[rowId];
+    this.editDetails[rowId] = !this.editDetails[rowId];
   }
 
   isEditDetails(rowId: string): boolean {
@@ -91,7 +91,7 @@ export class BookContentTableComponent implements OnInit {
       return;
     }
     
-    const index = this.tableData.findIndex(book => book.id === updatedBook.id)
+    const index = this.tableData.findIndex(book => book.id === updatedBook.id);
     this.tableData[index] = updatedBook;
   }
 
