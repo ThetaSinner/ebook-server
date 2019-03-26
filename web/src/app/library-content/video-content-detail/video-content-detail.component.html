@@ -1,0 +1,30 @@
+<div class="card">
+  <div class="card-body">
+    <div class="row">
+      <div class="col-sm-3">
+        <img [src]="getImgSource()" alt="No Cover" class="es-thumbnail">
+      </div>
+      <div class="col-sm-8">
+        <div class="row es-title-line">
+          <div class="col-sm-12 es-overflow">
+            <h3 class="card-title">{{video.title}}</h3>
+            <span class="es-faded-text">{{video.datePublished | date:'longDate'}}</span>
+          </div>
+        </div>
+        <div class="row es-subtitle-line">
+          <div class="col-sm-12">
+            <h5 class="card-title">
+              <span class="es-faded-text">Description&nbsp;</span>
+              <span>{{video.description}}</span>
+            </h5>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-1">
+        <a [href]="readLink" target="_blank"><fa-icon [icon]="readIcon" class="es-icon-button mr-1"></fa-icon></a>
+        <fa-icon [icon]="faEditIcon" class="es-icon-button mr-1" (click)="handleEdit()"></fa-icon>
+        <fa-icon [icon]="faDeleteIcon" class="es-icon-button mr-1" (click)="handleDelete()"></fa-icon>
+      </div>
+    </div>
+  </div>
+</div>

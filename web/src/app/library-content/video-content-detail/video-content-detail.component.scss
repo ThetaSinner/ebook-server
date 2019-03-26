@@ -1,0 +1,18 @@
+%faded-text {
+  font-weight: lighter;
+}
+
+.es-title-line {
+  h3 {
+    display: inline;
+    padding-right: 0.5em;
+  }
+}
+
+.es-faded-text {
+  @extend %faded-text;
+}
+
+.es-thumbnail {
+  max-width: 100%;
+}

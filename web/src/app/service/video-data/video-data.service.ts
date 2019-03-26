@@ -50,4 +50,10 @@ export class VideoDataService {
   static getPlaybackUrl(libraryName: string, videoId: string): string {
     return `${environment.mediaServerUrlBase}/videos/${videoId}?name=${libraryName}`;
   }
+
+  deleteBook(id: string, libraryName: string) {
+    const options = { params: new HttpParams().set('name', libraryName) };
+
+    return this.client.delete(`${environment.mediaServerUrlBase}/videos/${id}`, options);
+  }
 }
