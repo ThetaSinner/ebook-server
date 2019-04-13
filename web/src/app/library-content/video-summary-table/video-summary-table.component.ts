@@ -58,6 +58,14 @@ export class VideoSummaryTableComponent implements OnInit {
     this.videos[index] = updatedBook;
   }
 
+  getTags(video: any) {
+    if (video.videoMetadata && video.videoMetadata.tags) {
+      return video.videoMetadata.tags;
+    }
+
+    return [];
+  }
+
   handleContentChanged() {
     this.contentChanged.next();
   }

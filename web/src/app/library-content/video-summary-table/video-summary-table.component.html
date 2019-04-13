@@ -9,10 +9,10 @@
 <div *ngFor="let video of videos$ | async">
   <div class="row es-book-row">
     <div class="col-sm-2">{{video.title}}</div>
-    <div class="col-sm-2">{{video.duration}}</div>
-    <div class="col-sm-1"></div>
-    <div class="col-sm-1"></div>
-    <div class="col-sm-5"></div>
+    <div class="col-sm-1">{{video.duration}}</div>
+    <div class="col-sm-1">{{video.videoMetadata ? video.videoMetadata.rating : ''}}</div>
+    <div class="col-sm-1">{{getTags(video) | valueList}}</div>
+    <div class="col-sm-6"></div>
     <div class="col-sm-1 text-center" aria-label="Expand Video">
       <fa-icon [icon]="getIcon(video.id)" (click)="toggleDetails(video.id)" class="es-icon-button"></fa-icon>
     </div>
