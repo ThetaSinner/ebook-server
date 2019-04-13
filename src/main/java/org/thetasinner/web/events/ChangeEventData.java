@@ -15,6 +15,7 @@ public class ChangeEventData {
     BookCreated,
     BookUpdated,
     BookDeleted,
-    VideoCreated
+    VideoCreated,
+    VideoUpdated
   }
 }

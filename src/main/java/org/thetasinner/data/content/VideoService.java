@@ -1,10 +1,15 @@
 package org.thetasinner.data.content;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.fge.jsonpatch.JsonPatch;
+import com.github.fge.jsonpatch.JsonPatchException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.thetasinner.data.exception.EBookNotFoundException;
+import org.thetasinner.data.model.Book;
 import org.thetasinner.data.model.Video;
 import org.thetasinner.data.storage.ILibraryStorage;
 import org.thetasinner.data.storage.StorageException;
@@ -73,5 +78,33 @@ public class VideoService {
 
     var library = libraryService.getLibrary(libraryName).getItem();
     return library.getVideos();
+  }
+
+  public Video updateVideo(String id, String libraryName, String videoPatch) throws IOException, JsonPatchException {
+    LOG.info("Updating video with id [{}] in library [{}]", id, libraryName);
+
+    Video video = getVideo(libraryName, id);
+
+    var mapper = new ObjectMapper();
+    var patch = mapper.readValue(videoPatch, JsonPatch.class);
+    var patchedNode = patch.apply(mapper.convertValue(video, JsonNode.class));
+    var updatedVideo = mapper.convertValue(patchedNode, Video.class);
+    putVideo(libraryName, updatedVideo);
+
+    return updatedVideo;
+  }
+
+  private void putVideo(String libraryName, Video video) {
+    LOG.trace("Putting video with id [{}] from library [{}]", video.getId(), libraryName);
+
+    var library = libraryService.getLibrary(libraryName).getItem();
+
+    Optional<Video> first = library.getVideos().stream().filter(b -> video.getId().equals(b.getId())).findFirst();
+    if (!first.isPresent()) {
+      throw new EBookNotFoundException("Missing video for put operation");
+    }
+
+    var index = library.getVideos().indexOf(first.get());
+    library.getVideos().set(index, video);
   }
 }

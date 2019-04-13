@@ -40,6 +40,7 @@ import java.util.List;
 import static org.thetasinner.web.events.ChangeEventData.ChangeType.BookCreated;
 import static org.thetasinner.web.events.ChangeEventData.ChangeType.BookUpdated;
 import static org.thetasinner.web.events.ChangeEventData.ChangeType.VideoCreated;
+import static org.thetasinner.web.events.ChangeEventData.ChangeType.VideoUpdated;
 
 @Service
 public class EBookDataService {
@@ -270,5 +271,23 @@ public class EBookDataService {
     var videos = videoService.getVideos(name);
 
     return videos == null ? new ArrayList<>() : videos;
+  }
+
+  public Video updateVideo(String id, String libraryName, String videoPatch) throws IOException, JsonPatchException {
+    if (StringUtils.isEmpty(id)) {
+      throw new InvalidRequestException("Missing request param: id");
+    }
+
+    if (videoPatch == null) {
+      throw new InvalidRequestException("Missing request body");
+    }
+
+    Video video = videoService.updateVideo(id, libraryName, videoPatch);
+
+    // Publish book updated change event.
+    ChangeEventData eventData = new ChangeEventData(VideoUpdated, id);
+    libraryChangeService.publish(libraryName, eventData);
+
+    return video;
   }
 }

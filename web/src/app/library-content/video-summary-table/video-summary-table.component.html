@@ -24,7 +24,7 @@
   </div>
   <div class="row es-book-row" *ngIf="isShowDetails(video.id) && isEditDetails(video.id)">
     <div class="col">
-      <app-content-edit [detailData]="video" [libraryName]="libraryName" (editFinished)="finishEdit(video.id, $event)"></app-content-edit>
+      <app-video-content-edit [detailData]="video" [libraryName]="libraryName" (editFinished)="finishEdit(video.id, $event)"></app-video-content-edit>
     </div>
   </div>
 </div>

@@ -1,9 +1,11 @@
 package org.thetasinner.web.controller;
 
+import com.github.fge.jsonpatch.JsonPatchException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.thetasinner.data.EBookDataService;
+import org.thetasinner.data.model.Book;
 import org.thetasinner.data.model.Video;
 import org.thetasinner.web.error.EBookControllerException;
 import org.thetasinner.web.model.UploadResponse;
@@ -32,7 +35,7 @@ public class VideoController {
 
   @RequestMapping(method = RequestMethod.GET)
   public @ResponseBody
-  List<Video> getBooks(@RequestParam(name = "name") String name) {
+  List<Video> getVideos(@RequestParam(name = "name") String name) {
     return dataService.getVideos(name);
   }
 
@@ -45,13 +48,19 @@ public class VideoController {
   }
 
   @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-  public void getBook(@PathVariable("id") String id, @RequestParam(name = "name") String name, HttpServletResponse response) {
+  public void getVideo(@PathVariable("id") String id, @RequestParam(name = "name") String name, HttpServletResponse response) {
     try {
       final String contentType = dataService.getVideo(id, name, response.getOutputStream());
       response.setContentType(contentType);
       response.flushBuffer();
     } catch (IOException e) {
-      throw new EBookControllerException("Failed to get book", e);
+      throw new EBookControllerException("Failed to get video", e);
     }
+  }
+
+  @RequestMapping(value = "/{id}", method = RequestMethod.PATCH)
+  public @ResponseBody
+  Video updateVideo(@PathVariable("id") String id, @RequestParam("libraryName") String libraryName, @RequestBody String videoPatch) throws IOException, JsonPatchException {
+    return dataService.updateVideo(id, libraryName, videoPatch);
   }
 }

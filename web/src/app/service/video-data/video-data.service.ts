@@ -56,4 +56,8 @@ export class VideoDataService {
 
     return this.client.delete(`${environment.mediaServerUrlBase}/videos/${id}`, options);
   }
+
+  updateVideo(id: string, diff: object, libraryName: string): Observable<any> {
+    return this.client.patch(`${environment.mediaServerUrlBase}/videos/${id}?libraryName=${libraryName}`, diff);
+  }
 }

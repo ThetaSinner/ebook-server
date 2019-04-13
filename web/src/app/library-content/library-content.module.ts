@@ -17,6 +17,7 @@ import {LibraryContentWorkspaceComponent} from './library-content-workspace/libr
 import {ValueListPipe} from './value-list/value-list.pipe';
 import {VideoSummaryTableComponent} from './video-summary-table/video-summary-table.component';
 import {VideoContentDetailComponent} from './video-content-detail/video-content-detail.component';
+import { VideoContentEditComponent } from './video-content-edit/video-content-edit.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,8 @@ import {VideoContentDetailComponent} from './video-content-detail/video-content-
     ChangeInfoComponent,
     ContentEditComponent,
     VideoSummaryTableComponent,
-    VideoContentDetailComponent
+    VideoContentDetailComponent,
+    VideoContentEditComponent
   ],
   imports: [
     CommonModule,
