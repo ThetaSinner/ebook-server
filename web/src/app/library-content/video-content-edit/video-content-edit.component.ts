@@ -29,10 +29,12 @@ export class VideoContentEditComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    console.log('starting with', this.detailData);
+
     const metadata: any = {};
-    if (this.detailData.metadata) {
-      metadata.rating = this.detailData.metadata.rating;
-      metadata.tags = this.detailData.metadata.tags;
+    if (this.detailData.videoMetadata) {
+      metadata.rating = this.detailData.videoMetadata.rating;
+      metadata.tags = this.detailData.videoMetadata.tags;
     }
 
     let tags = [
@@ -55,7 +57,7 @@ export class VideoContentEditComponent implements OnInit {
 
     this.detailForm = this.formBuilder.group({
       title: [this.detailData.title ? this.detailData.title : ''],
-      description: [this.detailData.publisher ? this.detailData.publisher : ''],
+      description: [this.detailData.description ? this.detailData.description : ''],
       rating: [metadata.rating ? metadata.rating : ''],
       releaseDate: [releaseDate],
       tags: this.formBuilder.array(tags)
@@ -80,7 +82,8 @@ export class VideoContentEditComponent implements OnInit {
     // Create update request with the fields that can't be edited.
     const updatedVideo: any = {
       id: this.detailData.id,
-      url: this.detailData.url
+      url: this.detailData.url,
+      duration: this.detailData.duration
     };
 
     if (formOutput.title) {
@@ -95,19 +98,20 @@ export class VideoContentEditComponent implements OnInit {
     }
 
     if (formOutput.rating || VideoContentEditComponent.isArrayValid(formOutput, 'tags')) {
-      updatedVideo.metadata = {};
+      updatedVideo.videoMetadata = {};
 
       if (formOutput.rating) {
-        updatedVideo.metadata.rating = formOutput.rating;
+        updatedVideo.videoMetadata.rating = formOutput.rating;
       }
 
       if (VideoContentEditComponent.isArrayValid(formOutput, 'tags')) {
-        updatedVideo.metadata.tags = formOutput.tags.filter(tag => tag);
+        updatedVideo.videoMetadata.tags = formOutput.tags.filter(tag => tag);
       }
     }
 
     const diff = compare(this.detailData, updatedVideo);
 
+    console.log(diff);
     const sub = this.videoDataService.updateVideo(this.detailData.id, diff, this.libraryName).subscribe((updatedVideo) => {
       this.finishEdit(updatedVideo);
       sub.unsubscribe();

@@ -48,7 +48,7 @@ export class VideoSummaryTableComponent implements OnInit {
   }
 
   finishEdit(rowId: string, updatedBook: any) {
-    this.editDetail[rowId] = false;
+    this.editDetails[rowId] = false;
 
     if (updatedBook == null) {
       return;
