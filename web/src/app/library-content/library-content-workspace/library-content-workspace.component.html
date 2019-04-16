@@ -1,7 +1,18 @@
 <div class="container">
   <app-control-bar [infoItems]="infoItems" (saveRequested)="handleSaveRequested()"></app-control-bar>
-  <h4>Books</h4>
-  <app-book-content-table [libraryData$]="libraryData$" (contentChanged)="handleBooksChanged()"></app-book-content-table>
-  <h4>Videos</h4>
-  <app-video-summary-table [videos$]="(libraryData$ | async)?.videos$" [libraryName]="(libraryData$ | async)?.libraryName" (contentChanged)="handleVideosChanged()"></app-video-summary-table>
+  <div class="card">
+    <h5 class="card-header">Books</h5>
+    <div class="card-body">
+      <app-book-content-table [libraryData$]="libraryData$" (contentChanged)="handleBooksChanged()"></app-book-content-table>
+    </div>
+  </div>
+  <br />
+  <div class="card">
+    <h5 class="card-header">
+      Videos
+    </h5>
+    <div class="card-body">
+      <app-video-summary-table [videos$]="(libraryData$ | async)?.videos$" [libraryName]="(libraryData$ | async)?.libraryName" (contentChanged)="handleVideosChanged()"></app-video-summary-table>
+    </div>
+  </div>
 </div>

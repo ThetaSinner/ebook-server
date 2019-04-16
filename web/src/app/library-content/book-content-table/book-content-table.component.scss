@@ -1,19 +1,25 @@
 %book-row {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    padding: 0.2em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0.2em;
 }
 
 div.row.es-book-row {
-    div {
-        @extend %book-row;
-    }
+  div {
+    @extend %book-row;
+  }
+}
+
+.es-book-row-container:nth-child(odd) > .es-book-row {
+  background: lightgray;
 }
 
 .es-book-header-row {
-    div {
-        @extend %book-row;
-        font-weight: bold;
-    }
+  div {
+    @extend %book-row;
+    font-weight: bold;
+    background: #212529;
+    color: white;
+  }
 }

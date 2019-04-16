@@ -8,6 +8,11 @@
     @extend %icon-button;
 }
 
+.es-icon-link {
+  @extend %icon-button;
+  color: white;
+}
+
 .es-icon-button-large {
     @extend %icon-button;
     font-size: 2em;
