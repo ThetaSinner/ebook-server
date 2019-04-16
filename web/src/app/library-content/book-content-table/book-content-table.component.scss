@@ -12,14 +12,12 @@ div.row.es-book-row {
 }
 
 .es-book-row-container:nth-child(odd) > .es-book-row {
-  background: lightgray;
+  background: rgba(0, 0, 0, 0.05);
 }
 
 .es-book-header-row {
   div {
     @extend %book-row;
     font-weight: bold;
-    background: #212529;
-    color: white;
   }
 }
